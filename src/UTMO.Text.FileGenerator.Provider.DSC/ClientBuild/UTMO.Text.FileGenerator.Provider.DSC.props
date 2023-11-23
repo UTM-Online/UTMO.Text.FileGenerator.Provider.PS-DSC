@@ -1,0 +1,37 @@
+<Project>
+
+    <ItemGroup>
+
+        <Folder Include="$(MSBuildProjectDirectory)\Templates\" Condition="Exists('$(MSBuildProjectDirectory)\Templates\')" />
+
+        <None Include="$(MSBuildThisFileDirectory)\..\Templates\**\*.liquid">
+            <Link>Templates\%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Visible>true</Visible>
+        </None>
+
+        <_TemplateFiles Include="$(MSBuildThisFileDirectory)\..\Templates\**\*.liquid" />
+
+    </ItemGroup>
+
+    <PropertyGroup>
+
+        <_ProcessingDirectory_>$(MSBuildProjectDirectory)\bin\$(Configuration)\FileGeneratorOut</_ProcessingDirectory_>
+
+        <_generateMofScriptPath_>$(MSBuildThisFileDirectory)\GenerateMofFiles.ps1</_generateMofScriptPath_>
+
+        <_restoreModulesScriptPath_>$(MSBuildThisFileDirectory)\RestoreRequiredModules.ps1</_restoreModulesScriptPath_>
+
+        <GeneratedOutputPath/>
+
+        <GenerationParameters/>
+
+        <RepositoryRoot/>
+
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(_SuppressExecCommandExpantion_)' == ''">
+        <_SuppressExecCommandExpantion_>true</_SuppressExecCommandExpantion_>
+    </PropertyGroup>
+
+</Project>

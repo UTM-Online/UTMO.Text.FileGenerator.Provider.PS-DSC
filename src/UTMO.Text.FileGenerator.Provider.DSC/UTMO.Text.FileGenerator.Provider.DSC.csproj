@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <OutputPath>bin\$(Configuration)</OutputPath>
+        <NoWarn>NU5110;NU5111</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.9" />
+      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
+        <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
+    </ItemGroup>
+
+</Project>
