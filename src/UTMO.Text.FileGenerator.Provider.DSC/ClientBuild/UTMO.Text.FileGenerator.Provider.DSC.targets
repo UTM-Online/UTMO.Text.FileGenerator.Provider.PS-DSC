@@ -93,7 +93,7 @@
             <_ConfigFiles Include=" $(_ProcessingDirectory_)\**\Configurations\*.ps1" />
         </ItemGroup>
         <PropertyGroup>
-            <_manifastPath_>$(MSBuildProjectDirectory)\$(OutputPath)ConfigGenOut\Manifests\RequiredModule.Manifest.json</_manifastPath_>
+            <_manifastPath_>$(GeneratedOutputPath)\Manifests\RequiredModule.Manifest.json</_manifastPath_>
         </PropertyGroup>
         <Error Text="You must define the &quot;GeneratedOutputPath&quot; property in your project file." Condition="'$(GeneratedOutputPath)' == ''" />
         <Error Text="Unable to locate the &quot;RequiredModule.Manifest.json&quot; manifest file. Have you built your project yet? Path: '$(_manifastPath_)'" Condition="!Exists('$(_manifastPath_)')" />
