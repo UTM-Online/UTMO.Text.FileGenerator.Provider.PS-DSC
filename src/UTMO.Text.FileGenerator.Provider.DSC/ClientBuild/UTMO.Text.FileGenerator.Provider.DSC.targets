@@ -66,7 +66,7 @@
         <Copy SourceFiles="@(_CustomTemplateFiles)" DestinationFolder="$(OutputPath)\Templates" SkipUnchangedFiles="true" />
     </Target>
 
-    <Target Name="RunConfigGenProject" AfterTargets="Build" DependsOnTargets="CopyTemplatesToOutputDirectory" >
+    <Target Name="RunConfigGenProject" AfterTargets="Build" DependsOnTargets="CopyTemplatesToOutputDirectory" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'release'" >
         <ItemGroup>
             <_ProjectExecutable Include="$(OutputPath)\*.exe" />
         </ItemGroup>
