@@ -52,13 +52,13 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
 
         public static ITemplateGenerationEnvironment UseDiscovery(this ITemplateGenerationEnvironment env)
         {
-            var discoveredTypes = Assembly.GetCallingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(DscComputer)) || t.IsSubclassOf(typeof(DscConfiguration)));
+            var discoveredTypes = Assembly.GetCallingAssembly()
+                .GetTypes()
+                .Where(t => t is { IsAbstract: false, IsInterface: false } && (t.IsSubclassOf(typeof(DscComputer)) || t.IsSubclassOf(typeof(DscConfiguration))));
             
             foreach (var type in discoveredTypes)
             {
-                var resource = Activator.CreateInstance(type) as ITemplateModel;
-
-                if (resource == null)
+                if (Activator.CreateInstance(type) is not ITemplateModel resource)
                 {
                     continue;
                 }
