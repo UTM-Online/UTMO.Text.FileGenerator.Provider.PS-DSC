@@ -1,4 +1,30 @@
 <Project>
+    <PropertyGroup Condition="'$(GeneratedOutputPath)' != ''">
+        <GeneratedOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\FileGeneratorOut\Default</GeneratedOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GenerationParameters)' != ''">
+        <GenerationParameters/>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(RepositoryRoot)' != ''">
+        <RepositoryRoot/>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(_SuppressExecCommandExpantion_)' == ''">
+        <_SuppressExecCommandExpantion_>true</_SuppressExecCommandExpantion_>
+    </PropertyGroup>
+
+    <PropertyGroup>
+
+        <_ProcessingDirectory_>$(MSBuildProjectDirectory)\bin\$(Configuration)\FileGeneratorOut\$(EnvName)</_ProcessingDirectory_>
+
+        <_generateMofScriptPath_>$(MSBuildThisFileDirectory)\GenerateMofFiles.ps1</_generateMofScriptPath_>
+
+        <_restoreModulesScriptPath_>$(MSBuildThisFileDirectory)\RestoreRequiredModules.ps1</_restoreModulesScriptPath_>
+
+    </PropertyGroup>
+    
     <Target Name="CleanGeneratedOutput" BeforeTargets="Clean;Build">
         <ItemGroup>
             <_OutTemplateFiles Include="$(OutputPath)\Templates\**\*.liquid" />
