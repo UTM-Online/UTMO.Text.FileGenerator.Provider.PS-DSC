@@ -22,12 +22,18 @@
 
         <_restoreModulesScriptPath_>$(MSBuildThisFileDirectory)\RestoreRequiredModules.ps1</_restoreModulesScriptPath_>
 
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(GeneratedOutputPath)' != ''">
         <GeneratedOutputPath/>
-
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(GenerationParameters)' != ''">
         <GenerationParameters/>
-
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(RepositoryRoot)' != ''">
         <RepositoryRoot/>
-
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(_SuppressExecCommandExpantion_)' == ''">
