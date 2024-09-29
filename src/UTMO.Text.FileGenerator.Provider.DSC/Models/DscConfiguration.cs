@@ -36,9 +36,17 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Resources
 		
         public List<RequiredModule> RequiredModules { get; } = new List<RequiredModule>();
         
+        public List<DscConfigurationItem> ConfigurationItems { get; } = new List<DscConfigurationItem>();
+        
         public DscConfiguration AddRequiredModule<T>() where T : RequiredModule, new()
         {
             this.RequiredModules.Add(new T());
+            return this;
+        }
+        
+        public DscConfiguration AddConfigurationItem<T>(T item) where T : DscConfigurationItem
+        {
+            this.ConfigurationItems.Add(item);
             return this;
         }
 
