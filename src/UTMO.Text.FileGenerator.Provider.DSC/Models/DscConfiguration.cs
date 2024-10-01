@@ -32,20 +32,22 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Resources
 
         protected virtual DscMode Mode { get; } = DscMode.Pull;
 
-        public virtual string TemplateName => this.FullName;
+        public virtual string TemplateName => "_Configuration_Base";
 		
-        public List<RequiredModule> RequiredModules { get; } = new List<RequiredModule>();
+        public List<RequiredModule> RequiredModules => this.ConfigurationItems.Select(x => x.SourceModule).Distinct().ToList();
         
-        public List<DscConfigurationItem> ConfigurationItems { get; } = new List<DscConfigurationItem>();
-        
-        public DscConfiguration AddRequiredModule<T>() where T : RequiredModule, new()
-        {
-            this.RequiredModules.Add(new T());
-            return this;
-        }
+        public List<DscConfigurationItem> ConfigurationItems { get; } = new();
         
         public DscConfiguration AddConfigurationItem<T>(T item) where T : DscConfigurationItem
         {
+            this.ConfigurationItems.Add(item);
+            return this;
+        }
+        
+        public DscConfiguration AddConfigurationItem<T>(Action<T> configure) where T : DscConfigurationItem, new()
+        {
+            var item = new T();
+            configure(item);
             this.ConfigurationItems.Add(item);
             return this;
         }

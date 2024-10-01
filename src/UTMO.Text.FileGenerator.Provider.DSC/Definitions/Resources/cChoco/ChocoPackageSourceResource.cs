@@ -1,8 +1,11 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Resources.Choco;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.cChoco;
 
-public class ChocoPackageSourceDsc : DscConfigurationItem
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Resources;
+
+public class ChocoPackageSourceResource : cChocoBase
 {
-    public ChocoPackageSourceDsc(string name) : base(name)
+    public ChocoPackageSourceResource(string name) : base(name)
     {
         this.PropertyBag["Name"] = string.Empty;
         this.PropertyBag["Source"] = string.Empty;

@@ -2,6 +2,7 @@
 
 using UTMO.Text.FileGenerator.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
 public abstract class DscConfigurationItem : RelatedTemplateResourceBase
 {
@@ -31,6 +32,8 @@ public abstract class DscConfigurationItem : RelatedTemplateResourceBase
     public sealed override bool GenerateManifest => false;
     
     public string DependencyName => $"[{this.ResourceId}]{this.Name}";
+    
+    public abstract RequiredModule SourceModule { get; }
     
     public DscConfigurationItem AddDependency<T>(T resource) where T : DscConfigurationItem
     {

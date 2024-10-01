@@ -1,8 +1,11 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Resources.FileSystem;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PSDesiredStateConfiguration;
 
-public class FileDsc : DscConfigurationItem
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Resources;
+
+public class FileResource : PSDesiredStateConfigurationBase
 {
-    public FileDsc(string name) : base(name)
+    public FileResource(string name) : base(name)
     {
         this.PropertyBag["DestinationPath"] = string.Empty;
         this.PropertyBag["Contents"] = string.Empty;

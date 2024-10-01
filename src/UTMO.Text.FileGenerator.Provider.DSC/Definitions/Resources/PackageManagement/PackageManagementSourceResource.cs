@@ -1,10 +1,11 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Resources.PowerShell;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PackageManagement;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Enums;
 
-public class PackageManagementSourceDsc : DscConfigurationItem
+public class PackageManagementSourceResource : PackageManagementBase
 {
-    public PackageManagementSourceDsc(string name) : base(name)
+    public PackageManagementSourceResource(string name) : base(name)
     {
         this.PropertyBag.Add("Name", string.Empty);
         this.PropertyBag.Add("ProviderName", string.Empty);

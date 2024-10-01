@@ -1,10 +1,11 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Resources.Windows;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PSDesiredStateConfiguration;
 
-using UTMO.Text.FileGenerator.Attributes;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Resources;
 
-public class RegistryDsc : DscConfigurationItem
+public class RegistryResource : PSDesiredStateConfigurationBase
 {
-    public RegistryDsc(string name) : base(name)
+    public RegistryResource(string name) : base(name)
     {
         this.PropertyBag.Add(nameof(this.Key), string.Empty);
         this.PropertyBag.Add(nameof(this.ValueName), string.Empty);
