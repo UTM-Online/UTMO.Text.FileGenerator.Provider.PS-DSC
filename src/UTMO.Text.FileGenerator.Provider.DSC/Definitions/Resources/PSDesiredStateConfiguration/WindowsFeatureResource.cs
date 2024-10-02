@@ -1,27 +1,27 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
-using UTMO.Text.FileGenerator.Provider.DSC.Resources;
+using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PSDesiredStateConfigurationConstants.WindowsFeature;
 
 public class WindowsFeatureResource : PSDesiredStateConfigurationBase
 {
     public WindowsFeatureResource(string name) : base(name)
     {
-        this.PropertyBag.Add("Name", string.Empty);
+        this.PropertyBag.Add(Constants.Properties.Name, string.Empty);
     }
 
     public string FeatureName
     {
         get
         {
-            return this.PropertyBag["Name"];
+            return this.PropertyBag[Constants.Properties.Name];
         }
         
         set
         {
-            this.PropertyBag["Name"] = value;
+            this.PropertyBag[Constants.Properties.Name] = value;
         }
     }
 
-    public override string ResourceId => "WindowsFeature";
+    public override string ResourceId => Constants.ResourceId;
 }

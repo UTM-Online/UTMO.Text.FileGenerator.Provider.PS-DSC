@@ -17,4 +17,16 @@ public static class cChocoConstants
             public const string Params = "Params"; 
         }
     }
+    
+    public static class ChocoPackageSource
+    {
+        public const string ResourceId = "cChocoSource";
+        
+        public static class Parameters
+        {
+            public const string Name = "Name";
+            
+            public const string Source = "Source";
+        }
+    }
 }

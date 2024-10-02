@@ -23,4 +23,8 @@
         <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Definitions\Resources\xPSDesiredStateConfiguration\" />
+    </ItemGroup>
+
 </Project>

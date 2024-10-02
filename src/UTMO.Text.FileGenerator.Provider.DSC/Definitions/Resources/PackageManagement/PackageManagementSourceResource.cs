@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PackageManagement;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Enums;
 
@@ -7,23 +8,24 @@ public class PackageManagementSourceResource : PackageManagementBase
 {
     public PackageManagementSourceResource(string name) : base(name)
     {
-        this.PropertyBag.Add("Name", string.Empty);
-        this.PropertyBag.Add("ProviderName", string.Empty);
-        this.PropertyBag.Add("SourceLocation", string.Empty);
+        this.PropertyBag.Add(PackageManagementConstants.PackageManagementSource.Properties.Name, string.Empty);
+        this.PropertyBag.Add(PackageManagementConstants.PackageManagementSource.Properties.ProviderName, string.Empty);
+        this.PropertyBag.Add(PackageManagementConstants.PackageManagementSource.Properties.SourceLocation, string.Empty);
+        this.PropertyBag.Add(PackageManagementConstants.PackageManagementSource.Properties.InstallationPolicy, string.Empty);
     }
 
-    public override string ResourceId => "PackageManagementSource";
+    public override string ResourceId => PackageManagementConstants.PackageManagementSource.ResourceId;
 
     public string RepositoryName
     {
         get
         {
-            return this.PropertyBag["Name"];
+            return this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.Name];
         }
         
         set
         {
-            this.PropertyBag["Name"] = value;
+            this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.Name] = value;
         }
     }
 
@@ -31,12 +33,12 @@ public class PackageManagementSourceResource : PackageManagementBase
     {
         get
         {
-            return this.PropertyBag["ProviderName"] != string.Empty ? (PSPackageProviders)Enum.Parse(typeof(PSPackageProviders), this.PropertyBag["ProviderName"]) : PSPackageProviders.PowerShellGet;
+            return this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.ProviderName] != string.Empty ? (PSPackageProviders)Enum.Parse(typeof(PSPackageProviders), this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.ProviderName]) : PSPackageProviders.PowerShellGet;
         }
         
         set
         {
-            this.PropertyBag["ProviderName"] = value.ToString();
+            this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.ProviderName] = value.ToString();
         }
     }
     
@@ -44,12 +46,12 @@ public class PackageManagementSourceResource : PackageManagementBase
     {
         get
         {
-            return this.PropertyBag["SourceLocation"];
+            return this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.SourceLocation];
         }
         
         set
         {
-            this.PropertyBag["SourceLocation"] = value;
+            this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.SourceLocation] = value;
         }
     }
     
@@ -57,12 +59,12 @@ public class PackageManagementSourceResource : PackageManagementBase
     {
         get
         {
-            return this.PropertyBag["InstallationPolicy"] != string.Empty ? (PSInstallPolicy)Enum.Parse(typeof(PSInstallPolicy), this.PropertyBag["InstallationPolicy"]) : PSInstallPolicy.Untrusted;
+            return this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.InstallationPolicy] != string.Empty ? (PSInstallPolicy)Enum.Parse(typeof(PSInstallPolicy), this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.InstallationPolicy]) : PSInstallPolicy.Untrusted;
         }
         
         set
         {
-            this.PropertyBag["InstallationPolicy"] = value.ToString();
+            this.PropertyBag[PackageManagementConstants.PackageManagementSource.Properties.InstallationPolicy] = value.ToString();
         }
     }
 }

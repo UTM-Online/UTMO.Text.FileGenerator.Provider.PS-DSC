@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.PackageManagement;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Enums;
 
@@ -7,23 +8,23 @@ public class PackageManagementResource : PackageManagementBase
 {
     public PackageManagementResource(string name) : base(name)
     {
-        this.PropertyBag["Name"] = string.Empty;
-        this.PropertyBag["ProviderName"] = string.Empty;
-        this.PropertyBag["Source"] = string.Empty;
+        this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Name]         = string.Empty;
+        this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.ProviderName] = string.Empty;
+        this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Source]              = string.Empty;
     }
 
-    public override string ResourceId => "PackageManagement";
+    public override string ResourceId => PackageManagementConstants.PackageManagement.ResourceId;
 
     public string PackageName
     {
         get
         {
-            return this.PropertyBag["Name"];
+            return this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Name];
         }
 
         set
         {
-            this.PropertyBag["Name"] = value;
+            this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Name] = value;
         }
     }
     
@@ -31,12 +32,12 @@ public class PackageManagementResource : PackageManagementBase
     {
         get
         {
-            return string.IsNullOrWhiteSpace(this.PropertyBag[nameof(this.ProviderName)]) ? PSPackageProviders.PowerShellGet : (PSPackageProviders)Enum.Parse(typeof(PSPackageProviders), this.PropertyBag[nameof(this.ProviderName)]);
+            return string.IsNullOrWhiteSpace(this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.ProviderName]) ? PSPackageProviders.PowerShellGet : (PSPackageProviders)Enum.Parse(typeof(PSPackageProviders), this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.ProviderName]);
         }
 
         set
         {
-            this.PropertyBag["ProviderName"] = value.ToString();
+            this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.ProviderName] = value.ToString();
         }
     }
     
@@ -44,12 +45,12 @@ public class PackageManagementResource : PackageManagementBase
     {
         get
         {
-            return this.PropertyBag["Source"];
+            return this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Source];
         }
 
         set
         {
-            this.PropertyBag["Source"] = value;
+            this.PropertyBag[PackageManagementConstants.PackageManagement.Properties.Source] = value;
         }
     }
 }

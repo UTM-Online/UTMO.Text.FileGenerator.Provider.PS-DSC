@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.cChoco;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Resources;
 
@@ -7,7 +8,7 @@ public class ChocoPackageSourceResource : cChocoBase
 {
     public ChocoPackageSourceResource(string name) : base(name)
     {
-        this.PropertyBag["Name"] = string.Empty;
+        this.PropertyBag[cChocoConstants.ChocoPackageSource.Parameters.Name] = string.Empty;
         this.PropertyBag["Source"] = string.Empty;
     }
 
@@ -15,12 +16,12 @@ public class ChocoPackageSourceResource : cChocoBase
     {
         get
         {
-            return this.PropertyBag["Name"];
+            return this.PropertyBag[cChocoConstants.ChocoPackageSource.Parameters.Name];
         }
         
         set
         {
-            this.PropertyBag["Name"] = value;
+            this.PropertyBag[cChocoConstants.ChocoPackageSource.Parameters.Name] = value;
         }
     }
     
@@ -28,14 +29,14 @@ public class ChocoPackageSourceResource : cChocoBase
     {
         get
         {
-            return this.PropertyBag["Source"];
+            return this.PropertyBag[cChocoConstants.ChocoPackageSource.Parameters.Source];
         }
         
         set
         {
-            this.PropertyBag["Source"] = value;
+            this.PropertyBag[cChocoConstants.ChocoPackageSource.Parameters.Source] = value;
         }
     }
 
-    public override string ResourceId => "cChocoSource";
+    public override string ResourceId => cChocoConstants.ChocoPackageSource.ResourceId;
 }
