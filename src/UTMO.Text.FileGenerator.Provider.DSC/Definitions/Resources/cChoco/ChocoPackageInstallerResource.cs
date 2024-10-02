@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.cChoco;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Resources;
 
@@ -7,22 +8,22 @@ public class ChocoPackageInstallerResource : cChocoBase
 {
     public ChocoPackageInstallerResource(string name) : base(name)
     {
-        this.PropertyBag.Add(nameof(this.PackageName), string.Empty);
-        this.PropertyBag.Add(nameof(this.PackageSource), string.Empty);
-        this.PropertyBag.Add(nameof(this.AutoUpgrade), string.Empty);
-        this.PropertyBag.Add("Params", string.Empty);
+        this.PropertyBag.Add(cChocoConstants.ChocoPackageInstaller.Parameters.PackageName, string.Empty);
+        this.PropertyBag.Add(cChocoConstants.ChocoPackageInstaller.Parameters.PackageSource, string.Empty);
+        this.PropertyBag.Add(cChocoConstants.ChocoPackageInstaller.Parameters.AutoUpgrade, string.Empty);
+        this.PropertyBag.Add(cChocoConstants.ChocoPackageInstaller.Parameters.Params, string.Empty);
     }
     
     public string PackageName
     {
         get
         {
-            return this.PropertyBag[nameof(this.PackageName)];
+            return this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.PackageName];
         }
         
         set
         {
-            this.PropertyBag[nameof(this.PackageName)] = value;
+            this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.PackageName] = value;
         }
     }
     
@@ -30,12 +31,12 @@ public class ChocoPackageInstallerResource : cChocoBase
     {
         get
         {
-            return this.PropertyBag[nameof(this.PackageSource)];
+            return this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.PackageSource];
         }
         
         set
         {
-            this.PropertyBag[nameof(this.PackageSource)] = value;
+            this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.PackageSource] = value;
         }
     }
     
@@ -43,12 +44,12 @@ public class ChocoPackageInstallerResource : cChocoBase
     {
         get
         {
-            return this.PropertyBag[nameof(this.AutoUpgrade)] != string.Empty && bool.Parse(this.PropertyBag[nameof(this.AutoUpgrade)]);
+            return this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.AutoUpgrade] != string.Empty && bool.Parse(this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.AutoUpgrade]);
         }
         
         set
         {
-            this.PropertyBag[nameof(this.AutoUpgrade)] = value.ToString();
+            this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.AutoUpgrade] = value.ToString();
         }
     }
 
@@ -56,14 +57,14 @@ public class ChocoPackageInstallerResource : cChocoBase
     {
         get
         {
-            return this.PropertyBag["Params"];
+            return this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.Params];
         }
         
         set
         {
-            this.PropertyBag["Params"] = value;
+            this.PropertyBag[cChocoConstants.ChocoPackageInstaller.Parameters.Params] = value;
         }
     }
     
-    public override string ResourceId => "cChocoPackageInstaller";
+    public override string ResourceId => cChocoConstants.ChocoPackageInstaller.ResourceId;
 }
