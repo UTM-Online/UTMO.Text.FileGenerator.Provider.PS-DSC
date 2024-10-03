@@ -34,4 +34,15 @@ public static class PSDesiredStateConfigurationConstants
             public const string Name = "Name";
         }
     }
+
+    public static class Group
+    {
+        public const string ResourceId = "Group";
+        
+        public static class Properties
+        {
+            public const string GroupName = "GroupName";
+            public const string MembersToInclude = "MembersToInclude";
+        }
+    }
 }

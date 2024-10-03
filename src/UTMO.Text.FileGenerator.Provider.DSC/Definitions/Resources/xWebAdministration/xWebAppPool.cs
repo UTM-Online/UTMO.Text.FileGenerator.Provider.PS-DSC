@@ -14,13 +14,13 @@ public class xWebAppPool : xWebAdministrationBase
     
     public string Name
     {
-        get => this.PropertyBag[Constants.Properties.Name];
+        get => this.PropertyBag[Constants.Properties.Name].ToString() ?? string.Empty;
         set => this.PropertyBag[Constants.Properties.Name] = value;
     }
     
     public xWebAppPoolIdentityType IdentityType
     {
-        get => string.IsNullOrWhiteSpace(this.PropertyBag[Constants.Properties.IdentityType]) ? xWebAppPoolIdentityType.ApplicationPoolIdentity : Enum.Parse<xWebAppPoolIdentityType>(this.PropertyBag[Constants.Properties.IdentityType]);
+        get => string.IsNullOrWhiteSpace(this.PropertyBag[Constants.Properties.IdentityType].ToString()) ? xWebAppPoolIdentityType.ApplicationPoolIdentity : Enum.Parse<xWebAppPoolIdentityType>(this.PropertyBag[Constants.Properties.IdentityType].ToString()!);
         set => this.PropertyBag[Constants.Properties.IdentityType] = value.ToString();
     }
 

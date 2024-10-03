@@ -7,6 +7,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <OutputPath>bin\$(Configuration)</OutputPath>
         <NoWarn>NU5110;NU5111</NoWarn>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -21,10 +22,6 @@
     <ItemGroup>
         <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
         <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Definitions\Resources\xPSDesiredStateConfiguration\" />
     </ItemGroup>
 
 </Project>

@@ -14,41 +14,23 @@ public class RegistryResource : PSDesiredStateConfigurationBase
     
     public string Key
     {
-        get
-        {
-            return this.PropertyBag[Constants.Properties.Key];
-        }
+        get => this.PropertyBag[Constants.Properties.Key].ToString() ?? string.Empty;
 
-        set
-        {
-            this.PropertyBag[Constants.Properties.Key] = value;
-        }
+        set => this.PropertyBag[Constants.Properties.Key] = value;
     }
 
     public string ValueName
     {
-        get
-        {
-            return this.PropertyBag[Constants.Properties.ValueName];
-        }
-        
-        set
-        {
-            this.PropertyBag[Constants.Properties.ValueName] = value;
-        }
+        get => this.PropertyBag[Constants.Properties.ValueName].ToString() ?? string.Empty;
+
+        set => this.PropertyBag[Constants.Properties.ValueName] = value;
     }
 
     public string ValueData
     {
-        get
-        {
-            return this.PropertyBag[Constants.Properties.ValueData];
-        }
-        
-        set
-        {
-            this.PropertyBag[Constants.Properties.ValueData] = value;
-        }
+        get => this.PropertyBag[Constants.Properties.ValueData].ToString() ?? string.Empty;
+
+        set => this.PropertyBag[Constants.Properties.ValueData] = value;
     }
     
     public override string ResourceId => Constants.ResourceId;

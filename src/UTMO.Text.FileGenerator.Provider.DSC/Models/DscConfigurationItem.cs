@@ -27,7 +27,7 @@ public abstract class DscConfigurationItem : RelatedTemplateResourceBase
     public List<string> DependsOn { get; set; } = new();
 
     [MemberName("property_bag")]
-    public Dictionary<string, string> PropertyBag { get; } = new();
+    public Dictionary<string, object> PropertyBag { get; } = new();
 
     public sealed override bool GenerateManifest => false;
     

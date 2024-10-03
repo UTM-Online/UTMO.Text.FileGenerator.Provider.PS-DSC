@@ -12,15 +12,9 @@ public class WindowsFeatureResource : PSDesiredStateConfigurationBase
 
     public string FeatureName
     {
-        get
-        {
-            return this.PropertyBag[Constants.Properties.Name];
-        }
-        
-        set
-        {
-            this.PropertyBag[Constants.Properties.Name] = value;
-        }
+        get => this.PropertyBag[Constants.Properties.Name].ToString() ?? string.Empty;
+
+        set => this.PropertyBag[Constants.Properties.Name] = value;
     }
 
     public override string ResourceId => Constants.ResourceId;
