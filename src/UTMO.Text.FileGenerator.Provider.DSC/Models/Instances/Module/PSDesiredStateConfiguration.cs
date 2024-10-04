@@ -12,9 +12,9 @@
 // // <summary></summary>
 // // ***********************************************************************
 
-namespace UTMO.Text.FileGenerator.Provider.DSC.Resources.Instances.Module
+namespace UTMO.Text.FileGenerator.Provider.DSC.Models.Instances.Module
 {
-    using SubResources;
+    using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
     public class PSDesiredStateConfiguration : RequiredModule
     {

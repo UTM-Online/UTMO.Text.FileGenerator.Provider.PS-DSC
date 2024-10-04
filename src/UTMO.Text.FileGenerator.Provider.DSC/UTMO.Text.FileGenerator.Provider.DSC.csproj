@@ -22,6 +22,7 @@
     <ItemGroup>
         <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
         <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
+        <None Remove="UTMO.Text.FileGenerator.Provider.DSC.csproj.DotSettings" />
     </ItemGroup>
 
 </Project>

@@ -7,23 +7,24 @@ public class FileResource : PSDesiredStateConfigurationBase
 {
     public FileResource(string name) : base(name)
     {
-        this.PropertyBag[Constants.Properties.DestinationPath] = string.Empty;
-        this.PropertyBag[Constants.Properties.Contents] = string.Empty;
+        this.PropertyBag.Init(Constants.Properties.DestinationPath);
+        this.PropertyBag.Init(Constants.Properties.Contents);
     }
 
     public string DestinationPath
     {
-        get => this.PropertyBag[Constants.Properties.DestinationPath].ToString() ?? string.Empty;
-
-        set => this.PropertyBag[Constants.Properties.DestinationPath] = value;
+        get => this.PropertyBag.Get(Constants.Properties.DestinationPath);
+        set => this.PropertyBag.Set(Constants.Properties.DestinationPath, value);
     }
     
     public string Contents
     {
-        get => this.PropertyBag[Constants.Properties.Contents].ToString() ?? string.Empty;
-
-        set => this.PropertyBag[Constants.Properties.Contents] = value;
+        get => this.PropertyBag.Get(Constants.Properties.Contents);
+        set => this.PropertyBag.Set(Constants.Properties.Contents, value);
     }
 
-    public override string ResourceId => Constants.ResourceId;
+    public override string ResourceId
+    {
+        get => Constants.ResourceId;
+    }
 }

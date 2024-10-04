@@ -15,9 +15,9 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC
 {
     using System.Reflection;
-    using Resources;
     using UTMO.Text.FileGenerator.Abstract;
-    
+    using UTMO.Text.FileGenerator.Provider.DSC.Models;
+
     public static class EnvironmentExtensions
     {
         public static ITemplateGenerationEnvironment AddComputer<T>(this ITemplateGenerationEnvironment env, T computer)

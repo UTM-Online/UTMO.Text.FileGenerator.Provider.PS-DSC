@@ -7,23 +7,26 @@ public class PredefinedFirewallResource : NetworkingDscBase
 {
     public PredefinedFirewallResource(string name) : base(name)
     {
-        this.PropertyBag.Add(Constants.Parameters.Enabled, string.Empty);
-        this.PropertyBag.Add(Constants.Parameters.Name, string.Empty);
+        this.PropertyBag.Init<bool>(Constants.Parameters.Enabled);
+        this.PropertyBag.Init(Constants.Parameters.Name);
     }
     
-    public bool Enabled
+    public bool EnableRule
     {
-        get => bool.Parse(this.PropertyBag[Constants.Parameters.Enabled].ToString() ?? throw new InvalidOperationException($"Property {Constants.Parameters.Enabled} is not set"));
+        get => this.PropertyBag.Get<bool>(Constants.Parameters.Enabled);
 
-        set => this.PropertyBag[Constants.Parameters.Enabled] = value.ToString();
+        set => this.PropertyBag.Set(Constants.Parameters.Enabled, value);
     }
     
-    public string Name
+    public string RuleName
     {
-        get => this.PropertyBag[Constants.Parameters.Name].ToString() ?? throw new InvalidOperationException($"Property {Constants.Parameters.Name} is not set");
+        get => this.PropertyBag.Get(Constants.Parameters.Name);
 
-        set => this.PropertyBag[Constants.Parameters.Name] = value;
+        set => this.PropertyBag.Set(Constants.Parameters.Name, value);
     }
 
-    public override string ResourceId => Constants.ResourceId;
+    public override string ResourceId
+    {
+        get => Constants.ResourceId;
+    }
 }

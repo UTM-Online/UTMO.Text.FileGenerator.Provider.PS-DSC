@@ -1,98 +1,101 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration;
 
-using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredStateConfigurationConstants.xDSCWebService;
 
 // ReSharper disable once InconsistentNaming
 public class xDscWebService : xPSDesiredStateConfigurationBase
 {
     public xDscWebService(string name) : base(name)
     {
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.EndpointName, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.Port, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.PhysicalPath, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.CertificateThumbPrint, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ModulePath, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ConfigurationPath, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.State, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.RegistrationKeyPath, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlProvider, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlConnectionString, string.Empty);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.AcceptSelfSignedCertificates, false);
-        this.PropertyBag.Add(xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.UseSecurityBestPractices, false);
+        this.PropertyBag.Init(Constants.Properties.EndpointName);
+        this.PropertyBag.Init<int>(Constants.Properties.Port);
+        this.PropertyBag.Init(Constants.Properties.PhysicalPath);
+        this.PropertyBag.Init(Constants.Properties.CertificateThumbPrint);
+        this.PropertyBag.Init(Constants.Properties.ModulePath);
+        this.PropertyBag.Init(Constants.Properties.ConfigurationPath);
+        this.PropertyBag.Init(Constants.Properties.State);
+        this.PropertyBag.Init(Constants.Properties.RegistrationKeyPath);
+        this.PropertyBag.Init(Constants.Properties.SqlProvider);
+        this.PropertyBag.Init(Constants.Properties.SqlConnectionString);
+        this.PropertyBag.Init<bool>(Constants.Properties.AcceptSelfSignedCertificates);
+        this.PropertyBag.Init<bool>(Constants.Properties.UseSecurityBestPractices);
     }
     
     public string EndpointName
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.EndpointName].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.EndpointName] = value;
+        get => this.PropertyBag.Get(Constants.Properties.EndpointName);
+        set => this.PropertyBag.Set(Constants.Properties.EndpointName, value);
     }
     
     public int Port
     {
-        get => (int)this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.Port];
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.Port] = value;
+        get => this.PropertyBag.Get<int>(Constants.Properties.Port);
+        set => this.PropertyBag.Set(Constants.Properties.Port, value);
     }
     
     public string PhysicalPath
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.PhysicalPath].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.PhysicalPath] = value;
+        get => this.PropertyBag.Get(Constants.Properties.PhysicalPath);
+        set => this.PropertyBag.Set(Constants.Properties.PhysicalPath, value);
     }
     
     public string CertificateThumbPrint
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.CertificateThumbPrint].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.CertificateThumbPrint] = value;
+        get => this.PropertyBag.Get(Constants.Properties.CertificateThumbPrint);
+        set => this.PropertyBag.Set(Constants.Properties.CertificateThumbPrint, value);
     }
     
     public string ModulePath
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ModulePath].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ModulePath] = value;
+        get => this.PropertyBag.Get(Constants.Properties.ModulePath);
+        set => this.PropertyBag.Set(Constants.Properties.ModulePath, value);
     }
     
     public string ConfigurationPath
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ConfigurationPath].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.ConfigurationPath] = value;
+        get => this.PropertyBag.Get(Constants.Properties.ConfigurationPath);
+        set => this.PropertyBag.Set(Constants.Properties.ConfigurationPath, value);
     }
     
     public string State
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.State].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.State] = value;
+        get => this.PropertyBag.Get(Constants.Properties.State);
+        set => this.PropertyBag.Set(Constants.Properties.State, value);
     }
     
     public string RegistrationKeyPath
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.RegistrationKeyPath].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.RegistrationKeyPath] = value;
+        get => this.PropertyBag.Get(Constants.Properties.RegistrationKeyPath);
+        set => this.PropertyBag.Set(Constants.Properties.RegistrationKeyPath, value);
     }
     
     public string SqlProvider
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlProvider].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlProvider] = value;
+        get => this.PropertyBag.Get(Constants.Properties.SqlProvider);
+        set => this.PropertyBag.Set(Constants.Properties.SqlProvider, value);
     }
     
     public string SqlConnectionString
     {
-        get => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlConnectionString].ToString() ?? string.Empty;
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.SqlConnectionString] = value;
+        get => this.PropertyBag.Get(Constants.Properties.SqlConnectionString);
+        set => this.PropertyBag.Set(Constants.Properties.SqlConnectionString, value);
     }
     
     public bool AcceptSelfSignedCertificates
     {
-        get => (bool)this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.AcceptSelfSignedCertificates];
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.AcceptSelfSignedCertificates] = value;
+        get => this.PropertyBag.Get<bool>(Constants.Properties.AcceptSelfSignedCertificates);
+        set => this.PropertyBag.Set(Constants.Properties.AcceptSelfSignedCertificates, value);
     }
     
     public bool UseSecurityBestPractices
     {
-        get => (bool)this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.UseSecurityBestPractices];
-        set => this.PropertyBag[xPSDesiredStateConfigurationConstants.xDSCWebService.Properties.UseSecurityBestPractices] = value;
+        get => this.PropertyBag.Get<bool>(Constants.Properties.UseSecurityBestPractices);
+        set => this.PropertyBag.Set(Constants.Properties.UseSecurityBestPractices, value);
     }
 
-    public override string ResourceId => xPSDesiredStateConfigurationConstants.xDSCWebService.ResourceId;
+    public override string ResourceId
+    {
+        get => Constants.ResourceId;
+    }
 }

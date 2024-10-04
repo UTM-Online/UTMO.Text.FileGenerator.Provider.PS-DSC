@@ -12,13 +12,13 @@
 // // <summary></summary>
 // // ***********************************************************************
 
-namespace UTMO.Text.FileGenerator.Provider.DSC.Resources
+namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 {
-    using Attributes;
-    using BaseTypes;
-    using Enums;
-    using Instances.Module;
-    using SubResources;
+    using UTMO.Text.FileGenerator.Attributes;
+    using UTMO.Text.FileGenerator.Provider.DSC.BaseTypes;
+    using UTMO.Text.FileGenerator.Provider.DSC.Enums;
+    using UTMO.Text.FileGenerator.Provider.DSC.Models.Instances.Module;
+    using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
     public abstract class DscManagedAdServiceAccounts : DscResourceBase
     {

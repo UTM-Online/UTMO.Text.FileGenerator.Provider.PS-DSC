@@ -16,7 +16,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.SubResources
 {
     using Attributes;
     using Enums;
-    using Resources;
+    using UTMO.Text.FileGenerator.Provider.DSC.Models;
 
     public abstract class ManagedServiceAccount : RelatedTemplateResourceBase
     {

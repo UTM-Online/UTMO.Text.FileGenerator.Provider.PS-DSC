@@ -11,6 +11,22 @@ public static class NetworkingDscConstants
             public const string Enabled = "Enabled";
             
             public const string Name = "Name";
+            
+            public const string Group = "Group";
+            
+            public const string DisplayName = "DisplayName";
+            
+            public const string Action = "Action";
+            
+            public const string Direction = "Direction";
+            
+            public const string Protocol = "Protocol";
+            
+            public const string RemoteMachine = "RemoteMachine";
+            
+            public const string Authentication = "Authentication";
+            
+            public const string Encryption = "Encryption";
         }
     }
 }

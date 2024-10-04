@@ -7,38 +7,38 @@ public class ChocoPackageInstallerResource : cChocoBase
 {
     public ChocoPackageInstallerResource(string name) : base(name)
     {
-        this.PropertyBag.Add(Constants.Parameters.PackageName, string.Empty);
-        this.PropertyBag.Add(Constants.Parameters.PackageSource, string.Empty);
-        this.PropertyBag.Add(Constants.Parameters.AutoUpgrade, string.Empty);
-        this.PropertyBag.Add(Constants.Parameters.Params, string.Empty);
+        this.PropertyBag.Init(Constants.Parameters.PackageName);
+        this.PropertyBag.Init(Constants.Parameters.PackageSource);
+        this.PropertyBag.Init(Constants.Parameters.AutoUpgrade);
+        this.PropertyBag.Init(Constants.Parameters.Params);
     }
     
     public string PackageName
     {
-        get => this.PropertyBag[Constants.Parameters.PackageName].ToString() ?? string.Empty;
+        get => this.PropertyBag.Get(Constants.Parameters.PackageName);
 
-        set => this.PropertyBag[Constants.Parameters.PackageName] = value;
+        set => this.PropertyBag.Set(Constants.Parameters.PackageName, value);
     }
     
     public string PackageSource
     {
-        get => this.PropertyBag[Constants.Parameters.PackageSource].ToString() ?? string.Empty;
+        get => this.PropertyBag.Get(Constants.Parameters.PackageSource);
 
-        set => this.PropertyBag[Constants.Parameters.PackageSource] = value;
+        set => this.PropertyBag.Set(Constants.Parameters.PackageSource, value);
     }
     
     public bool AutoUpgrade
     {
-        get => bool.TryParse(this.PropertyBag[Constants.Parameters.AutoUpgrade].ToString(), out var result) && result;
-
-        set => this.PropertyBag[Constants.Parameters.AutoUpgrade] = value.ToString();
+        get => this.PropertyBag.Get<bool>(Constants.Parameters.AutoUpgrade);
+        
+        set => this.PropertyBag.Set(Constants.Parameters.AutoUpgrade, value);
     }
 
     public string Parameters
     {
-        get => this.PropertyBag[Constants.Parameters.Params].ToString() ?? string.Empty;
+        get => this.PropertyBag.Get(Constants.Parameters.Params);
 
-        set => this.PropertyBag[Constants.Parameters.Params] = value;
+        set => this.PropertyBag.Set(Constants.Parameters.Params, value);
     }
     
     public override string ResourceId => Constants.ResourceId;

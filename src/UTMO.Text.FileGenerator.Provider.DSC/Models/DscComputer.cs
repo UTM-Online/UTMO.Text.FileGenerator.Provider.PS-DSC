@@ -12,13 +12,12 @@
 // // <summary></summary>
 // // ***********************************************************************
 
-namespace UTMO.Text.FileGenerator.Provider.DSC.Resources
+namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 {
-    using Abstract;
-    using Attributes;
-    using BaseTypes;
-    using Extensions;
-    using SubResources;
+    using UTMO.Text.FileGenerator.Attributes;
+    using UTMO.Text.FileGenerator.Extensions;
+    using UTMO.Text.FileGenerator.Provider.DSC.BaseTypes;
+    using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
     public abstract class DscComputer : DscResourceBase
     {

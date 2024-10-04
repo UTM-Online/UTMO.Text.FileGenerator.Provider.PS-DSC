@@ -12,11 +12,11 @@
 // // <summary></summary>
 // // ***********************************************************************
 
-namespace UTMO.Text.FileGenerator.Provider.DSC.Resources
+namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 {
-    using BaseTypes;
-    using Enums;
-    using SubResources;
+    using UTMO.Text.FileGenerator.Provider.DSC.BaseTypes;
+    using UTMO.Text.FileGenerator.Provider.DSC.Enums;
+    using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
     public abstract class DscConfiguration : DscResourceBase
     {

@@ -7,22 +7,22 @@ public class ChocoPackageSourceResource : cChocoBase
 {
     public ChocoPackageSourceResource(string name) : base(name)
     {
-        this.PropertyBag[Constants.Parameters.Name] = string.Empty;
-        this.PropertyBag[Constants.Parameters.Source] = string.Empty;
+        this.PropertyBag.Init(Constants.Parameters.Name);
+        this.PropertyBag.Init(Constants.Parameters.Source);
     }
 
     public string SourceName
     {
-        get => this.PropertyBag[Constants.Parameters.Name].ToString() ?? string.Empty;
-
-        set => this.PropertyBag[Constants.Parameters.Name] = value;
+        get => this.PropertyBag.Get(Constants.Parameters.Source);
+        
+        set => this.PropertyBag.Set(Constants.Parameters.Source, value);
     }
     
     public string SourceUri
     {
-        get => this.PropertyBag[Constants.Parameters.Source].ToString() ?? string.Empty;
-
-        set => this.PropertyBag[Constants.Parameters.Source] = value;
+        get => this.PropertyBag.Get(Constants.Parameters.Source);
+        
+        set => this.PropertyBag.Set(Constants.Parameters.Source, value);
     }
 
     public override string ResourceId => Constants.ResourceId;

@@ -7,9 +7,24 @@ public class GroupResource : PSDesiredStateConfigurationBase
 {
     public GroupResource(string name) : base(name)
     {
-        this.PropertyBag.Add(Constants.Properties.GroupName, string.Empty);
-        this.PropertyBag.Add(Constants.Properties.MembersToInclude, Array.Empty<string>());
+        this.PropertyBag.Init(Constants.Properties.GroupName);
+        this.PropertyBag.Init<string[]>(Constants.Properties.MembersToInclude);
+    }
+    
+    public string GroupName
+    {
+        get => this.PropertyBag.Get(Constants.Properties.GroupName);
+        set => this.PropertyBag.Set(Constants.Properties.GroupName, value);
+    }
+    
+    public string[] MembersToInclude
+    {
+        get => this.PropertyBag.Get<string[]>(Constants.Properties.MembersToInclude);
+        set => this.PropertyBag.Set(Constants.Properties.MembersToInclude, value);
     }
 
-    public override string ResourceId => Constants.ResourceId;
+    public override string ResourceId
+    {
+        get => Constants.ResourceId;
+    }
 }
