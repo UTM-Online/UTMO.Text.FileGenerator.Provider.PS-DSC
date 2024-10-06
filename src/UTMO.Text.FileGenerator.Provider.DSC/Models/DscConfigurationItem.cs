@@ -14,6 +14,13 @@ public abstract class DscConfigurationItem : RelatedTemplateResourceBase
         this.Name        = name;
         this.Description = string.Empty;
     }
+    
+    public static DscConfigurationItem Create<T>(string name, Action<T> configure) where T : DscConfigurationItem
+    {
+        var item = (T)Activator.CreateInstance(typeof(T), name)!;
+        configure(item);
+        return item;
+    }
 
     [MemberName("resource_id")]
     public abstract string ResourceId { get; }
