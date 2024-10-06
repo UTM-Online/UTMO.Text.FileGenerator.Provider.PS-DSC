@@ -19,6 +19,7 @@ trigger:
   branches:
     include:
       - main
+      - release/v2
   paths:
     include:
       - src/UTMO.Text.FileGenerator.Provider.DSC/*
