@@ -15,6 +15,13 @@ public class WindowsFeatureResource : PSDesiredStateConfigurationBase
         get => this.PropertyBag.Get(Constants.Properties.Name);
         set => this.PropertyBag.Set(Constants.Properties.Name, value);
     }
+    
+    public static WindowsFeatureResource Create(string name, Action<WindowsFeatureResource> configure)
+    {
+        var resource = new WindowsFeatureResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

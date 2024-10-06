@@ -22,6 +22,13 @@ public class GroupResource : PSDesiredStateConfigurationBase
         get => this.PropertyBag.Get<string[]>(Constants.Properties.MembersToInclude);
         set => this.PropertyBag.Set(Constants.Properties.MembersToInclude, value);
     }
+    
+    public static GroupResource Create(string name, Action<GroupResource> configure)
+    {
+        var resource = new GroupResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

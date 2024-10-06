@@ -24,9 +24,13 @@ public class PredefinedFirewallRuleResource : NetworkingDscBase
 
         set => this.PropertyBag.Set(Constants.Parameters.Name, value);
     }
-
-    public override string ResourceId
+    
+    public static PredefinedFirewallRuleResource Create(string name, Action<PredefinedFirewallRuleResource> configure)
     {
-        get => Constants.ResourceId;
+        var resource = new PredefinedFirewallRuleResource(name);
+        configure(resource);
+        return resource;
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

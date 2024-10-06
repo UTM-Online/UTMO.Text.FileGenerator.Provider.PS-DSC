@@ -44,6 +44,13 @@ public class WmiNamespaceSecurityResource : WmiNameSpaceSecurityBase
         get => this.PropertyBag.Get(Constants.Properties.AppliesTo);
         set => this.PropertyBag.Set(Constants.Properties.AppliesTo, value);
     }
+    
+    public static WmiNamespaceSecurityResource Create(string name, Action<WmiNamespaceSecurityResource> configure)
+    {
+        var resource = new WmiNamespaceSecurityResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

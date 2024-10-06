@@ -93,6 +93,13 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
         get => this.PropertyBag.Get<bool>(Constants.Properties.UseSecurityBestPractices);
         set => this.PropertyBag.Set(Constants.Properties.UseSecurityBestPractices, value);
     }
+    
+    public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure)
+    {
+        var resource = new xDscWebServiceResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

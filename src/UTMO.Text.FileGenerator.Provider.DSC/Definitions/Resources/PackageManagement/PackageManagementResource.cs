@@ -35,4 +35,11 @@ public class PackageManagementResource : PackageManagementBase
         
         set => this.PropertyBag.Set(Constants.Properties.Source, value);
     }
+    
+    public static PackageManagementResource Create(string name, Action<PackageManagementResource> configure)
+    {
+        var resource = new PackageManagementResource(name);
+        configure(resource);
+        return resource;
+    }
 }

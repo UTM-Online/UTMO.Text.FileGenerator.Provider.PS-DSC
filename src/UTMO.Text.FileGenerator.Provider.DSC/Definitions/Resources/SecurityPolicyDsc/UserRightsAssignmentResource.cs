@@ -29,6 +29,13 @@ public class UserRightsAssignmentResource : SecurityPolicyDscBase
         get => this.PropertyBag.Get<bool>(Constants.Properties.Force);
         set => this.PropertyBag.Set(Constants.Properties.Force, value);
     }
+    
+    public static UserRightsAssignmentResource Create(string name, Action<UserRightsAssignmentResource> configure)
+    {
+        var resource = new UserRightsAssignmentResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

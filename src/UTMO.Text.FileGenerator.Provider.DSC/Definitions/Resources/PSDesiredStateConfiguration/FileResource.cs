@@ -22,6 +22,13 @@ public class FileResource : PSDesiredStateConfigurationBase
         get => this.PropertyBag.Get(Constants.Properties.Contents);
         set => this.PropertyBag.Set(Constants.Properties.Contents, value);
     }
+    
+    public static FileResource Create(string name, Action<FileResource> configure)
+    {
+        var resource = new FileResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

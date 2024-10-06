@@ -86,6 +86,13 @@ public class SimpleFirewallRuleResource : NetworkingDscBase
         get => this.PropertyBag.Get<bool>(Constants.Parameters.Enabled);
         set => this.PropertyBag.Set(Constants.Parameters.Enabled, value);
     }
+    
+    public static SimpleFirewallRuleResource Create(string name, Action<SimpleFirewallRuleResource> configure)
+    {
+        var resource = new SimpleFirewallRuleResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {

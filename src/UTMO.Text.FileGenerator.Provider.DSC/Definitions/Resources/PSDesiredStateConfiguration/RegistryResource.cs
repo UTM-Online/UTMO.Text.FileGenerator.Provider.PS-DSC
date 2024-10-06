@@ -33,6 +33,13 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.ValueData, value);
     }
     
+    public static RegistryResource Create(string name, Action<RegistryResource> configure)
+    {
+        var resource = new RegistryResource(name);
+        configure(resource);
+        return resource;
+    }
+    
     public override string ResourceId
     {
         get => Constants.ResourceId;

@@ -89,9 +89,13 @@ public class SecureFirewallRuleResource : NetworkingDscBase
         
         set => this.PropertyBag.Set(Constants.Parameters.Encryption, value);
     }
-
-    public override string ResourceId
+    
+    public static SecureFirewallRuleResource Create(string name, Action<SecureFirewallRuleResource> configure)
     {
-        get => Constants.ResourceId;
+        var resource = new SecureFirewallRuleResource(name);
+        configure(resource);
+        return resource;
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

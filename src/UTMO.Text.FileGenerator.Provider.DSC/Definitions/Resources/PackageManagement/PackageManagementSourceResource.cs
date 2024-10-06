@@ -44,4 +44,11 @@ public class PackageManagementSourceResource : PackageManagementBase
         
         set => this.PropertyBag.Set(Constants.Properties.InstallationPolicy, value);
     }
+    
+    public static PackageManagementSourceResource Create(string name, Action<PackageManagementSourceResource> configure)
+    {
+        var resource = new PackageManagementSourceResource(name);
+        configure(resource);
+        return resource;
+    }
 }

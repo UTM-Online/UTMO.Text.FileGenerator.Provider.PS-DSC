@@ -37,6 +37,13 @@ public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase
         get => this.PropertyBag.Get(Constants.Properties.LogPath);
         set => this.PropertyBag.Set(Constants.Properties.LogPath, value);
     }
+    
+    public static xWindowsFeatureSetResource Create(string name, Action<xWindowsFeatureSetResource> configure)
+    {
+        var resource = new xWindowsFeatureSetResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId => Constants.ResourceId;
 }

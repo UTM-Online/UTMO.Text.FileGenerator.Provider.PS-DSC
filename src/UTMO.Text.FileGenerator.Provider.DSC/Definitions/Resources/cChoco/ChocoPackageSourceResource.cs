@@ -24,6 +24,13 @@ public class ChocoPackageSourceResource : cChocoBase
         
         set => this.PropertyBag.Set(Constants.Parameters.Source, value);
     }
+    
+    public static ChocoPackageSourceResource Create(string name, Action<ChocoPackageSourceResource> configure)
+    {
+        var resource = new ChocoPackageSourceResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId => Constants.ResourceId;
 }

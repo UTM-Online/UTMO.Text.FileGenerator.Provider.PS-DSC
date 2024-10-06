@@ -30,6 +30,13 @@ public class xDiskResource : xStorageBase
         get => this.PropertyBag.Get(Constants.Properties.FSFormat);
         set => this.PropertyBag.Set(Constants.Properties.FSFormat, value);
     }
+    
+    public static xDiskResource Create(string name, Action<xDiskResource> configure)
+    {
+        var resource = new xDiskResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId => Constants.ResourceId;
 }

@@ -88,6 +88,13 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         
         set => this.PropertyBag.Set(Constants.Properties.BuiltInAccount, value);
     }
+    
+    public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure)
+    {
+        var resource = new ScheduledTaskResource(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId => Constants.ResourceId;
 }

@@ -23,6 +23,13 @@ public class xWebAppPool : xWebAdministrationBase
         get => this.PropertyBag.Get<xWebAppPoolIdentityType>(Constants.Properties.IdentityType);
         set => this.PropertyBag.Set(Constants.Properties.IdentityType, value);
     }
+    
+    public static xWebAppPool Create(string name, Action<xWebAppPool> configure)
+    {
+        var resource = new xWebAppPool(name);
+        configure(resource);
+        return resource;
+    }
 
     public override string ResourceId
     {
