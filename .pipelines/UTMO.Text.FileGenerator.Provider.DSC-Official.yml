@@ -9,7 +9,7 @@ parameters:
       - Debug
   - name: MajorVersion
     type: string
-    default: 1
+    default: 2
   - name: MinorVersion
     type: string
     default: 0
