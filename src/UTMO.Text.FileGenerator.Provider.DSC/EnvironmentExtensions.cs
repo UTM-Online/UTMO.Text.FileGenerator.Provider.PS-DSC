@@ -49,24 +49,5 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
             env.AddResource(configuration);
             return env;
         }
-
-        public static ITemplateGenerationEnvironment UseDiscovery(this ITemplateGenerationEnvironment env)
-        {
-            var discoveredTypes = Assembly.GetCallingAssembly()
-                .GetTypes()
-                .Where(t => t is { IsAbstract: false, IsInterface: false } && (t.IsSubclassOf(typeof(DscComputer)) || t.IsSubclassOf(typeof(DscConfiguration))));
-            
-            foreach (var type in discoveredTypes)
-            {
-                if (Activator.CreateInstance(type) is not ITemplateModel resource)
-                {
-                    continue;
-                }
-                
-                env.AddResource(resource);
-            }
-            
-            return env;
-        }
     }
 }

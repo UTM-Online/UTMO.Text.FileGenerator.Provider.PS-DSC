@@ -24,7 +24,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 
         public override string TemplatePath => this.FullName;
 
-        public abstract string Description { get; }
+        public virtual string Description { get; } = string.Empty;
         
         public abstract string FullName { get; }
 
@@ -32,7 +32,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 
         protected virtual DscMode Mode { get; } = DscMode.Pull;
 
-        public virtual string TemplateName => "_Configuration_Base";
+        public virtual string TemplateName => "DscConfiguration";
 		
         public List<RequiredModule> RequiredModules => this.ConfigurationItems.Select(x => x.SourceModule).Distinct().ToList();
         
