@@ -36,4 +36,20 @@ public static class xPSDesiredStateConfigurationConstants
             public const string UseSecurityBestPractices = "UseSecurityBestPractices";
         }
     }
+    
+    public static class xWindowsFeatureSet
+    {
+        public const string ResourceId = "xWindowsFeatureSet";
+        
+        public static class Properties
+        {
+            public const string Name = "Name";
+            
+            public const string Source = "Source";
+            
+            public const string IncludeAllSubFeature = "IncludeAllSubFeature";
+            
+            public const string LogPath = "LogPath";
+        }
+    }
 }

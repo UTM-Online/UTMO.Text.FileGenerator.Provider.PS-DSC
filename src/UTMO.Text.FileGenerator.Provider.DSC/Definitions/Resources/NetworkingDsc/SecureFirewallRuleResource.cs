@@ -4,9 +4,9 @@ using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.NetworkingDsc.Enums;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.NetworkingDscConstants.Firewall;
 
-public class SecureFirewallResource : NetworkingDscBase
+public class SecureFirewallRuleResource : NetworkingDscBase
 {
-    public SecureFirewallResource(string name) : base(name)
+    public SecureFirewallRuleResource(string name) : base(name)
     {
         this.PropertyBag.Init<bool>(Constants.Parameters.Enabled);
         this.PropertyBag.Init(Constants.Parameters.Name);

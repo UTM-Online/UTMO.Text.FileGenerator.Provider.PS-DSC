@@ -27,6 +27,14 @@ public static class NetworkingDscConstants
             public const string Authentication = "Authentication";
             
             public const string Encryption = "Encryption";
+            
+            public const string LocalPort = "LocalPort";
+            
+            public const string RemotePort = "RemotePort";
+            
+            public const string LocalAddress = "LocalAddress";
+            
+            public const string RemoteAddress = "RemoteAddress";
         }
     }
 }
