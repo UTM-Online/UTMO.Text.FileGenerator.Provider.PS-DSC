@@ -10,6 +10,7 @@ public static class PSDesiredStateConfigurationConstants
         {
             public const string DestinationPath = "DestinationPath";
             public const string Contents = "Contents";
+            public const string Type = "Type";
         }
     }
 

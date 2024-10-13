@@ -9,6 +9,7 @@ public class FileResource : PSDesiredStateConfigurationBase
     {
         this.PropertyBag.Init(Constants.Properties.DestinationPath);
         this.PropertyBag.Init(Constants.Properties.Contents);
+        this.PropertyBag.Set(Constants.Properties.Type, "File");
     }
 
     public string DestinationPath
