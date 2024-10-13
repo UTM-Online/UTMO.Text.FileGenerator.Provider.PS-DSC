@@ -34,6 +34,8 @@ public static class xPSDesiredStateConfigurationConstants
             public const string AcceptSelfSignedCertificates = "AcceptSelfSignedCertificates";
             
             public const string UseSecurityBestPractices = "UseSecurityBestPractices";
+            
+            public const string AppPoolName = "ApplicationPoolName";
         }
     }
     

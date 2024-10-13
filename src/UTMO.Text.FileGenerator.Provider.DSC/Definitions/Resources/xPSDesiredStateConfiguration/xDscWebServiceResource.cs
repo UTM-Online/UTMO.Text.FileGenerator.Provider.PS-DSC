@@ -20,6 +20,7 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
         this.PropertyBag.Init(Constants.Properties.SqlConnectionString);
         this.PropertyBag.Init<bool>(Constants.Properties.AcceptSelfSignedCertificates);
         this.PropertyBag.Init<bool>(Constants.Properties.UseSecurityBestPractices);
+        this.PropertyBag.Init(Constants.Properties.AppPoolName);
     }
     
     public string EndpointName
@@ -92,6 +93,12 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
     {
         get => this.PropertyBag.Get<bool>(Constants.Properties.UseSecurityBestPractices);
         set => this.PropertyBag.Set(Constants.Properties.UseSecurityBestPractices, value);
+    }
+    
+    public string AppPoolName
+    {
+        get => this.PropertyBag.Get(Constants.Properties.AppPoolName);
+        set => this.PropertyBag.Set(Constants.Properties.AppPoolName, value);
     }
     
     public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure)
