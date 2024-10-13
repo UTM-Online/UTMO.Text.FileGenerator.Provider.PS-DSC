@@ -17,6 +17,7 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         this.PropertyBag.Init(Constants.Properties.TaskName);
         this.PropertyBag.Init(Constants.Properties.TaskPath);
         this.PropertyBag.Init(Constants.Properties.BuiltInAccount);
+        this.PropertyBag.Init<bool>(Constants.Properties.Enable);
     }
 
     public string TaskDescription
@@ -87,6 +88,13 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         get => this.PropertyBag.Get(Constants.Properties.BuiltInAccount);
         
         set => this.PropertyBag.Set(Constants.Properties.BuiltInAccount, value);
+    }
+    
+    public bool Enable
+    {
+        get => this.PropertyBag.Get<bool>(Constants.Properties.Enable);
+        
+        set => this.PropertyBag.Set(Constants.Properties.Enable, value);
     }
     
     public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure)

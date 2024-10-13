@@ -12,6 +12,8 @@ public static class ComputerManagementDscConstants
             
             public const string TaskPath = "TaskPath";
             
+            public const string Enable = "Enable";
+            
             public const string Description = "Description";
             
             public const string ActionExecutable = "ActionExecutable";
