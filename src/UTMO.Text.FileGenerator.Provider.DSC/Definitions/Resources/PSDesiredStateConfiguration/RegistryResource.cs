@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PSDesiredStateC
 
 public class RegistryResource : PSDesiredStateConfigurationBase
 {
-    public RegistryResource(string name) : base(name)
+    private RegistryResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.Key);
         this.PropertyBag.Init(Constants.Properties.ValueName);
@@ -36,6 +36,13 @@ public class RegistryResource : PSDesiredStateConfigurationBase
     public static RegistryResource Create(string name, Action<RegistryResource> configure)
     {
         var resource = new RegistryResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static RegistryResource Create(string name, Action<RegistryResource> configure, out RegistryResource resource)
+    {
+        resource = new RegistryResource(name);
         configure(resource);
         return resource;
     }

@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredState
 // ReSharper disable once InconsistentNaming
 public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
 {
-    public xDscWebServiceResource(string name) : base(name)
+    private xDscWebServiceResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.EndpointName);
         this.PropertyBag.Init<int>(Constants.Properties.Port);
@@ -97,6 +97,13 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
     public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure)
     {
         var resource = new xDscWebServiceResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure, out xDscWebServiceResource resource)
+    {
+        resource = new xDscWebServiceResource(name);
         configure(resource);
         return resource;
     }

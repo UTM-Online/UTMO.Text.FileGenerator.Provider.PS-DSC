@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.SecurityPolicyD
 
 public class UserRightsAssignmentResource : SecurityPolicyDscBase
 {
-    public UserRightsAssignmentResource(string name) : base(name)
+    private UserRightsAssignmentResource(string name) : base(name)
     {
         this.PropertyBag.Init<string[]>(Constants.Properties.Identity);
         this.PropertyBag.Init(Constants.Properties.Policy);
@@ -33,6 +33,13 @@ public class UserRightsAssignmentResource : SecurityPolicyDscBase
     public static UserRightsAssignmentResource Create(string name, Action<UserRightsAssignmentResource> configure)
     {
         var resource = new UserRightsAssignmentResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static UserRightsAssignmentResource Create(string name, Action<UserRightsAssignmentResource> configure, out UserRightsAssignmentResource resource)
+    {
+        resource = new UserRightsAssignmentResource(name);
         configure(resource);
         return resource;
     }

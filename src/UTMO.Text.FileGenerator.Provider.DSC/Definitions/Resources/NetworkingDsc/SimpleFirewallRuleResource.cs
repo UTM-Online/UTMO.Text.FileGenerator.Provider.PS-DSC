@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.NetworkingDscCo
 
 public class SimpleFirewallRuleResource : NetworkingDscBase
 {
-    public SimpleFirewallRuleResource(string name) : base(name)
+    private SimpleFirewallRuleResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Parameters.Name);
         this.PropertyBag.Init(Constants.Parameters.DisplayName);
@@ -90,6 +90,13 @@ public class SimpleFirewallRuleResource : NetworkingDscBase
     public static SimpleFirewallRuleResource Create(string name, Action<SimpleFirewallRuleResource> configure)
     {
         var resource = new SimpleFirewallRuleResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static SimpleFirewallRuleResource Create(string name, Action<SimpleFirewallRuleResource> configure, out SimpleFirewallRuleResource resource)
+    {
+        resource = new SimpleFirewallRuleResource(name);
         configure(resource);
         return resource;
     }

@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PSDesiredStateC
 
 public class FileResource : PSDesiredStateConfigurationBase
 {
-    public FileResource(string name) : base(name)
+    private FileResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.DestinationPath);
         this.PropertyBag.Init(Constants.Properties.Contents);
@@ -26,6 +26,13 @@ public class FileResource : PSDesiredStateConfigurationBase
     public static FileResource Create(string name, Action<FileResource> configure)
     {
         var resource = new FileResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static FileResource Create(string name, Action<FileResource> configure, out FileResource resource)
+    {
+        resource = new FileResource(name);
         configure(resource);
         return resource;
     }

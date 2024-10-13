@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredState
 // ReSharper disable once InconsistentNaming
 public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase
 {
-    public xWindowsFeatureSetResource(string name) : base(name)
+    private xWindowsFeatureSetResource(string name) : base(name)
     {
         this.PropertyBag.Init<string[]>(Constants.Properties.Name);
         this.PropertyBag.Init(Constants.Properties.Source);
@@ -41,6 +41,13 @@ public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase
     public static xWindowsFeatureSetResource Create(string name, Action<xWindowsFeatureSetResource> configure)
     {
         var resource = new xWindowsFeatureSetResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static xWindowsFeatureSetResource Create(string name, Action<xWindowsFeatureSetResource> configure, out xWindowsFeatureSetResource resource)
+    {
+        resource = new xWindowsFeatureSetResource(name);
         configure(resource);
         return resource;
     }

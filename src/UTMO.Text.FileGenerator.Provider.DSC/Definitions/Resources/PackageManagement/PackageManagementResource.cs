@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PackageManageme
 
 public class PackageManagementResource : PackageManagementBase
 {
-    public PackageManagementResource(string name) : base(name)
+    private PackageManagementResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.Name);
         this.PropertyBag.Init<PSPackageProviders>(Constants.Properties.ProviderName);
@@ -39,6 +39,13 @@ public class PackageManagementResource : PackageManagementBase
     public static PackageManagementResource Create(string name, Action<PackageManagementResource> configure)
     {
         var resource = new PackageManagementResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static PackageManagementResource Create(string name, Action<PackageManagementResource> configure, out PackageManagementResource resource)
+    {
+        resource = new PackageManagementResource(name);
         configure(resource);
         return resource;
     }

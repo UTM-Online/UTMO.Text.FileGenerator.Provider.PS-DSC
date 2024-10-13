@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.ComputerManagem
 
 public class ScheduledTaskResource : ComputerManagementDscBase
 {
-    public ScheduledTaskResource(string name) : base(name)
+    private ScheduledTaskResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.Description);
         this.PropertyBag.Init<int>(Constants.Properties.Priority);
@@ -93,6 +93,14 @@ public class ScheduledTaskResource : ComputerManagementDscBase
     {
         var resource = new ScheduledTaskResource(name);
         configure(resource);
+        return resource;
+    }
+    
+    public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure, out ScheduledTaskResource resourceRef)
+    {
+        var resource = new ScheduledTaskResource(name);
+        configure(resource);
+        resourceRef = resource;
         return resource;
     }
 

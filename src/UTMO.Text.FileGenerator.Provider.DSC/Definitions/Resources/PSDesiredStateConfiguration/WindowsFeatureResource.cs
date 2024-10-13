@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PSDesiredStateC
 
 public class WindowsFeatureResource : PSDesiredStateConfigurationBase
 {
-    public WindowsFeatureResource(string name) : base(name)
+    private WindowsFeatureResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.Name);
     }
@@ -19,6 +19,13 @@ public class WindowsFeatureResource : PSDesiredStateConfigurationBase
     public static WindowsFeatureResource Create(string name, Action<WindowsFeatureResource> configure)
     {
         var resource = new WindowsFeatureResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static WindowsFeatureResource Create(string name, Action<WindowsFeatureResource> configure, out WindowsFeatureResource resource)
+    {
+        resource = new WindowsFeatureResource(name);
         configure(resource);
         return resource;
     }

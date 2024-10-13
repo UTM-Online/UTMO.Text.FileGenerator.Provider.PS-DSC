@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xStorageConstan
 // ReSharper disable once InconsistentNaming
 public class xDiskResource : xStorageBase
 {
-    public xDiskResource(string name) : base(name)
+    private xDiskResource(string name) : base(name)
     {
         this.PropertyBag.Init<char>(Constants.Properties.DriveLetter);
         this.PropertyBag.Init<int>(Constants.Properties.DiskId);
@@ -34,6 +34,13 @@ public class xDiskResource : xStorageBase
     public static xDiskResource Create(string name, Action<xDiskResource> configure)
     {
         var resource = new xDiskResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static xDiskResource Create(string name, Action<xDiskResource> configure, out xDiskResource resource)
+    {
+        resource = new xDiskResource(name);
         configure(resource);
         return resource;
     }

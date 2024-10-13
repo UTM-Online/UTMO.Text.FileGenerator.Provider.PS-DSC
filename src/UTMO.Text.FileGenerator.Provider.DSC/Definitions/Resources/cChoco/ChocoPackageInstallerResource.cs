@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.cChocoConstants
 
 public class ChocoPackageInstallerResource : cChocoBase
 {
-    public ChocoPackageInstallerResource(string name) : base(name)
+    private ChocoPackageInstallerResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Parameters.PackageName);
         this.PropertyBag.Init(Constants.Parameters.PackageSource);
@@ -46,6 +46,15 @@ public class ChocoPackageInstallerResource : cChocoBase
     {
         var resource = new ChocoPackageInstallerResource(name);
         configure(resource);
+        return resource;
+    }
+
+    public static ChocoPackageInstallerResource Create(string name, Action<ChocoPackageInstallerResource> configure,
+                                                       out ChocoPackageInstallerResource resourceRef)
+    {
+        var resource = new ChocoPackageInstallerResource(name);
+        configure(resource);
+        resourceRef = resource;
         return resource;
     }
 

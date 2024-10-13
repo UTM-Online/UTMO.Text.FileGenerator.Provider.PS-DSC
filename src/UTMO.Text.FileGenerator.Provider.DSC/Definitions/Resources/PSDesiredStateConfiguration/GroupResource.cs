@@ -5,7 +5,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.PSDesiredStateC
 
 public class GroupResource : PSDesiredStateConfigurationBase
 {
-    public GroupResource(string name) : base(name)
+    private GroupResource(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.GroupName);
         this.PropertyBag.Init<string[]>(Constants.Properties.MembersToInclude);
@@ -26,6 +26,13 @@ public class GroupResource : PSDesiredStateConfigurationBase
     public static GroupResource Create(string name, Action<GroupResource> configure)
     {
         var resource = new GroupResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static GroupResource Create(string name, Action<GroupResource> configure, out GroupResource resource)
+    {
+        resource = new GroupResource(name);
         configure(resource);
         return resource;
     }

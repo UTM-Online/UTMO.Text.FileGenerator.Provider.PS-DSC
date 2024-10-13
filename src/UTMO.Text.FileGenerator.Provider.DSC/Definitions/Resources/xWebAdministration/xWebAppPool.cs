@@ -6,7 +6,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xWebAdministrat
 // ReSharper disable once InconsistentNaming
 public class xWebAppPool : xWebAdministrationBase
 {
-    public xWebAppPool(string name) : base(name)
+    private xWebAppPool(string name) : base(name)
     {
         this.PropertyBag.Init(Constants.Properties.Name);
         this.PropertyBag.Init(Constants.Properties.IdentityType);
@@ -27,6 +27,13 @@ public class xWebAppPool : xWebAdministrationBase
     public static xWebAppPool Create(string name, Action<xWebAppPool> configure)
     {
         var resource = new xWebAppPool(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static xWebAppPool Create(string name, Action<xWebAppPool> configure, out xWebAppPool resource)
+    {
+        resource = new xWebAppPool(name);
         configure(resource);
         return resource;
     }
