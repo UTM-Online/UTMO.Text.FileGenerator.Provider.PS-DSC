@@ -29,4 +29,16 @@ public static class cChocoConstants
             public const string Source = "Source";
         }
     }
+    
+    public static class ChocoInstaller
+    {
+        public const string ResourceId = "cChocoInstaller";
+        
+        public static class Parameters
+        {
+            public const string InstallDirectory = "InstallDir";
+            
+            public const string ChocoInstallScriptUrl = "ChocoInstallScriptUrl";
+        }
+    }
 }
