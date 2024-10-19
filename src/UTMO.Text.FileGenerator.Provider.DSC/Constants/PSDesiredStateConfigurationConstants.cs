@@ -23,6 +23,7 @@ public static class PSDesiredStateConfigurationConstants
             public const string Key       = "Key";
             public const string ValueName = "ValueName";
             public const string ValueData = "ValueData";
+            public const string ValueType = "ValueType";
         }
     }
     

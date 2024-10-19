@@ -10,6 +10,7 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         this.PropertyBag.Init(Constants.Properties.Key);
         this.PropertyBag.Init(Constants.Properties.ValueName);
         this.PropertyBag.Init(Constants.Properties.ValueData);
+        this.PropertyBag.Init(Constants.Properties.ValueType);
     }
     
     public string Key
@@ -33,6 +34,13 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.ValueData, value);
     }
     
+    public RegistryValueType ValueType
+    {
+        get => this.PropertyBag.Get<RegistryValueType>(Constants.Properties.ValueType);
+        
+        set => this.PropertyBag.Set(Constants.Properties.ValueType, value);
+    }
+    
     public static RegistryResource Create(string name, Action<RegistryResource> configure)
     {
         var resource = new RegistryResource(name);
@@ -47,8 +55,5 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         return resource;
     }
     
-    public override string ResourceId
-    {
-        get => Constants.ResourceId;
-    }
+    public override string ResourceId => Constants.ResourceId;
 }
