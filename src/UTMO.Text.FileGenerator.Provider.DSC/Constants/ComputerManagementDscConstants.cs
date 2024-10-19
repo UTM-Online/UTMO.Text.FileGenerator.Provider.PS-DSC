@@ -29,6 +29,10 @@ public static class ComputerManagementDscConstants
             public const string BuiltInAccount = "BuiltInAccount";
             
             public const string RunLevel = "RunLevel";
+            
+            public const string RepeatInterval = "RepeatInterval";
+            
+            public const string RepetitionDuration = "RepetitionDuration";
         }
     }
 }

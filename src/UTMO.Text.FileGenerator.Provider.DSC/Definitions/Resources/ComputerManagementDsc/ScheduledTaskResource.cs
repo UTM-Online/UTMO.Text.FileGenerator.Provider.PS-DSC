@@ -18,6 +18,8 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         this.PropertyBag.Init(Constants.Properties.TaskPath);
         this.PropertyBag.Init(Constants.Properties.BuiltInAccount);
         this.PropertyBag.Init<bool>(Constants.Properties.Enable);
+        this.PropertyBag.Init<TimeSpan>(Constants.Properties.RepeatInterval);
+        this.PropertyBag.Init<TimeSpan>(Constants.Properties.RepetitionDuration);
     }
 
     public string TaskDescription
@@ -95,6 +97,20 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         get => this.PropertyBag.Get<bool>(Constants.Properties.Enable);
         
         set => this.PropertyBag.Set(Constants.Properties.Enable, value);
+    }
+    
+    public TimeSpan RepeatInterval
+    {
+        get => this.PropertyBag.Get<TimeSpan>(Constants.Properties.RepeatInterval);
+        
+        set => this.PropertyBag.Set(Constants.Properties.RepeatInterval, value);
+    }
+    
+    public TimeSpan RepetitionDuration
+    {
+        get => this.PropertyBag.Get<TimeSpan>(Constants.Properties.RepetitionDuration);
+        
+        set => this.PropertyBag.Set(Constants.Properties.RepetitionDuration, value);
     }
     
     public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure)
