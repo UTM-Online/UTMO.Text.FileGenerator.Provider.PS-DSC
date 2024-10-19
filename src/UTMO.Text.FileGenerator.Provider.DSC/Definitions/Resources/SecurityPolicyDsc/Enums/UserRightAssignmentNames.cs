@@ -87,4 +87,6 @@ public static class UserRightAssignmentNames
     public const string SynchronizeDirectoryServiceData = "Synchronize_directory_service_data";
 
     public const string TakeOwnershipOfFilesOrOtherObjects = "Take_ownership_of_files_or_other_objects";
+    
+    public const string LogOnAsAService = "Log_on_as_a_service";
 }
