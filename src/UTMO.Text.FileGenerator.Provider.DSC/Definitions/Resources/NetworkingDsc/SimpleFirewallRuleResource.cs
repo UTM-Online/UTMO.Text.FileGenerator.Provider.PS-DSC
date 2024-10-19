@@ -15,7 +15,7 @@ public class SimpleFirewallRuleResource : NetworkingDscBase
         this.PropertyBag.Init<int[]>(Constants.Parameters.LocalPort);
         this.PropertyBag.Init<int[]>(Constants.Parameters.RemotePort);
         this.PropertyBag.Init(Constants.Parameters.LocalAddress);
-        this.PropertyBag.Init(Constants.Parameters.RemoteAddress);
+        this.PropertyBag.Init<string[]>(Constants.Parameters.RemoteAddress);
         this.PropertyBag.Init<FirewallRuleProtocols>(Constants.Parameters.Protocol);
         this.PropertyBag.Init(Constants.Parameters.Group);
         this.PropertyBag.Init<bool>(Constants.Parameters.Enabled);
@@ -63,9 +63,9 @@ public class SimpleFirewallRuleResource : NetworkingDscBase
         set => this.PropertyBag.Set(Constants.Parameters.LocalAddress, value);
     }
     
-    public string RemoteAddress
+    public string[] RemoteAddress
     {
-        get => this.PropertyBag.Get(Constants.Parameters.RemoteAddress);
+        get => this.PropertyBag.Get<string[]>(Constants.Parameters.RemoteAddress);
         set => this.PropertyBag.Set(Constants.Parameters.RemoteAddress, value);
     }
     
