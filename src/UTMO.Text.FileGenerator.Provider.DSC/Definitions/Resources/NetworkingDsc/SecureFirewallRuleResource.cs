@@ -18,6 +18,7 @@ public class SecureFirewallRuleResource : NetworkingDscBase
         this.PropertyBag.Init(Constants.Parameters.RemoteMachine);
         this.PropertyBag.Init<FirewallRuleAuthentication>(Constants.Parameters.Authentication);
         this.PropertyBag.Init<FirewallRuleEncryption>(Constants.Parameters.Encryption);
+        this.PropertyBag.Init<int[]>(Constants.Parameters.LocalPort);
     }
     
     public bool Enabled
@@ -88,6 +89,13 @@ public class SecureFirewallRuleResource : NetworkingDscBase
         get => this.PropertyBag.Get<FirewallRuleEncryption>(Constants.Parameters.Encryption);
         
         set => this.PropertyBag.Set(Constants.Parameters.Encryption, value);
+    }
+    
+    public int[] LocalPort
+    {
+        get => this.PropertyBag.Get<string[]>(Constants.Parameters.LocalPort).Select(int.Parse).ToArray();
+        
+        set => this.PropertyBag.Set(Constants.Parameters.LocalPort, value.Select(x => x.ToString()).ToArray());
     }
     
     public static SecureFirewallRuleResource Create(string name, Action<SecureFirewallRuleResource> configure)
