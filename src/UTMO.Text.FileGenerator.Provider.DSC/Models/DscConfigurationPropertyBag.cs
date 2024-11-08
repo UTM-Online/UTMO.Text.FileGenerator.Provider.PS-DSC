@@ -1,5 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
 
+using System.Diagnostics.CodeAnalysis;
+
 public class DscConfigurationPropertyBag
 {
     private readonly Dictionary<string,object> _propertyBag = new();
@@ -69,9 +71,21 @@ public class DscConfigurationPropertyBag
 
         return typeof(T) switch
                  {
-                     {IsEnum: true} t => (T) Enum.Parse(t, value.ToString()!),
+                     {IsEnum: true} t => this.SafeParseEnum<T>(value.ToString()!),
                      var _            => (T) value,
                  };
+    }
+    
+    private T SafeParseEnum<T>([NotNull]  string value)
+    {
+        try
+        {
+            return (T) Enum.Parse(typeof(T), value);
+        }
+        catch (Exception e)
+        {
+            return default!;
+        }
     }
     
     public string Get(string key)

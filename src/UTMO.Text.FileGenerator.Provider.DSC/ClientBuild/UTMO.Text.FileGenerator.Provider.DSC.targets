@@ -3,11 +3,11 @@
         <GeneratedOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\FileGeneratorOut\Default</GeneratedOutputPath>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(GenerationParameters)' != ''">
+    <PropertyGroup Condition="'$(GenerationParameters)' == ''">
         <GenerationParameters/>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(RepositoryRoot)' != ''">
+    <PropertyGroup Condition="'$(RepositoryRoot)' == ''">
         <RepositoryRoot/>
     </PropertyGroup>
 
