@@ -10,9 +10,9 @@ public class WmiNamespaceSecurityResource : WmiNameSpaceSecurityBase
     {
         this.PropertyBag.Init(Constants.Properties.Path);
         this.PropertyBag.Init(Constants.Properties.Principal);
-        this.PropertyBag.Init<WmiSecurityAppliesTo[]>(Constants.Properties.Permission);
+        this.PropertyBag.Init<NamespacePermissions[]>(Constants.Properties.Permission);
         this.PropertyBag.Init(Constants.Properties.AccessType);
-        this.PropertyBag.Init(Constants.Properties.AppliesTo);
+        this.PropertyBag.Init<WmiSecurityAppliesTo>(Constants.Properties.AppliesTo);
     }
     
     public string Path
@@ -27,21 +27,24 @@ public class WmiNamespaceSecurityResource : WmiNameSpaceSecurityBase
         set => this.PropertyBag.Set(Constants.Properties.Principal, value);
     }
     
-    public WmiSecurityAppliesTo[] Permission
+    public NamespacePermissions[] Permission
     {
-        get => this.PropertyBag.Get<WmiSecurityAppliesTo[]>(Constants.Properties.Permission);
+        get => this.PropertyBag.Get<NamespacePermissions[]>(Constants.Properties.Permission);
         set => this.PropertyBag.Set(Constants.Properties.Permission, value);
     }
     
+    /// <summary>
+    /// Available Options in <see cref="WmiSecurityAccessType"/>
+    /// </summary>
     public string AccessType
     {
         get => this.PropertyBag.Get(Constants.Properties.AccessType);
         set => this.PropertyBag.Set(Constants.Properties.AccessType, value);
     }
     
-    public string AppliesTo
+    public WmiSecurityAppliesTo AppliesTo
     {
-        get => this.PropertyBag.Get(Constants.Properties.AppliesTo);
+        get => this.PropertyBag.Get<WmiSecurityAppliesTo>(Constants.Properties.AppliesTo);
         set => this.PropertyBag.Set(Constants.Properties.AppliesTo, value);
     }
     
