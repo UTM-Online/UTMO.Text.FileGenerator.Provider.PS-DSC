@@ -3,4 +3,6 @@
 public enum RegistryValueType
 {
     DWord,
+    String,
+    QWord,
 }
