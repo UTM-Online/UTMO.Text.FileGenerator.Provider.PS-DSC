@@ -1,5 +1,5 @@
 <Project>
-    <PropertyGroup Condition="'$(GeneratedOutputPath)' != ''">
+    <PropertyGroup Condition="'$(GeneratedOutputPath)' == ''">
         <GeneratedOutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)\FileGeneratorOut\Default</GeneratedOutputPath>
     </PropertyGroup>
 
