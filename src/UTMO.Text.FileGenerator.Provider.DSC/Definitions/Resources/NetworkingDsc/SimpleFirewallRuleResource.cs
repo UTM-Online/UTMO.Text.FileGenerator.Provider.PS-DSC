@@ -45,15 +45,15 @@ public class SimpleFirewallRuleResource : NetworkingDscBase
         set => this.PropertyBag.Set(Constants.Parameters.Direction, value);
     }
     
-    public int[] LocalPort
+    public string[] LocalPort
     {
-        get => this.PropertyBag.Get<int[]>(Constants.Parameters.LocalPort);
+        get => this.PropertyBag.Get<string[]>(Constants.Parameters.LocalPort);
         set => this.PropertyBag.Set(Constants.Parameters.LocalPort, value);
     }
     
-    public int[] RemotePort
+    public string[] RemotePort
     {
-        get => this.PropertyBag.Get<int[]>(Constants.Parameters.RemotePort);
+        get => this.PropertyBag.Get<string[]>(Constants.Parameters.RemotePort);
         set => this.PropertyBag.Set(Constants.Parameters.RemotePort, value);
     }
     

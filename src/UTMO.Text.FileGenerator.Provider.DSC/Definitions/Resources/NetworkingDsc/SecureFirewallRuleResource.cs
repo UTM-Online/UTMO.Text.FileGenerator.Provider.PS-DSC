@@ -91,11 +91,11 @@ public class SecureFirewallRuleResource : NetworkingDscBase
         set => this.PropertyBag.Set(Constants.Parameters.Encryption, value);
     }
     
-    public int[] LocalPort
+    public string[] LocalPort
     {
-        get => this.PropertyBag.Get<string[]>(Constants.Parameters.LocalPort).Select(int.Parse).ToArray();
+        get => this.PropertyBag.Get<string[]>(Constants.Parameters.LocalPort);
         
-        set => this.PropertyBag.Set(Constants.Parameters.LocalPort, value.Select(x => x.ToString()).ToArray());
+        set => this.PropertyBag.Set(Constants.Parameters.LocalPort, value);
     }
     
     public static SecureFirewallRuleResource Create(string name, Action<SecureFirewallRuleResource> configure)
