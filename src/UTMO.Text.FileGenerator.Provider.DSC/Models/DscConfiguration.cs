@@ -14,15 +14,16 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 {
+    using Attributes;
     using UTMO.Text.FileGenerator.Provider.DSC.BaseTypes;
     using UTMO.Text.FileGenerator.Provider.DSC.Enums;
     using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
 
     public abstract class DscConfiguration : DscResourceBase
     {
-        public override string ResourceTypeName => "/DSC/Configurations";
+        public sealed override string ResourceTypeName => "/DSC/Configurations";
 
-        public override string TemplatePath => nameof(DscConfiguration);
+        public sealed override string TemplatePath => nameof(DscConfiguration);
 
         public virtual string Description { get; } = string.Empty;
         
@@ -36,6 +37,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 		
         public List<RequiredModule> RequiredModules => this.ConfigurationItems.Select(x => x.SourceModule).Distinct().ToList();
         
+        [MemberName("ConfigurationResources")]
         public abstract IEnumerable<DscConfigurationItem> ConfigurationItems { get; }
 
         public sealed override string OutputExtension => "ps1";
