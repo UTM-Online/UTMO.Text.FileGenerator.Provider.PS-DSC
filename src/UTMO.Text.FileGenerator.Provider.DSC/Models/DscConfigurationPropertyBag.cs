@@ -77,7 +77,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                  };
     }
     
-    private T SafeParseEnum<T>([NotNull]  string value)
+    private T SafeParseEnum<T>(string value, T defaultValue = default)
     {
         try
         {
@@ -85,7 +85,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
         catch (Exception e)
         {
-            return default!;
+            return defaultValue!;
         }
     }
     
@@ -96,6 +96,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
 
     public object ToLiquid()
     {
-        return Hash.FromDictionary(this._propertyBag);
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default).ToDictionary(a => a.Key, a => a.Value));
     }
 }
