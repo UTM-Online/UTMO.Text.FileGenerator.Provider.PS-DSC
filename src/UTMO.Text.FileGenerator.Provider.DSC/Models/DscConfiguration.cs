@@ -35,10 +35,14 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 
         public virtual string TemplateName => nameof(DscConfiguration);
 		
+        [MemberName(nameof(RequiredModules))]
         public List<RequiredModule> RequiredModules => this.ConfigurationItems.Select(x => x.SourceModule).Distinct().ToList();
         
-        [MemberName("ConfigurationResources")]
+        [IgnoreMember]
         public abstract IEnumerable<DscConfigurationItem> ConfigurationItems { get; }
+        
+        [MemberName(nameof(ConfigurationResources))]
+        public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems.ToList();
 
         public sealed override string OutputExtension => "ps1";
 
