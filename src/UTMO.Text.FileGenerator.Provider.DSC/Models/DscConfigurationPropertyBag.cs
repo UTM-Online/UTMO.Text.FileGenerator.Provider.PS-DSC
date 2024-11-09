@@ -1,8 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
 
 using System.Diagnostics.CodeAnalysis;
+using DotLiquid;
 
-public class DscConfigurationPropertyBag
+public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
     
@@ -91,5 +92,10 @@ public class DscConfigurationPropertyBag
     public string Get(string key)
     {
         return this._propertyBag.TryGetValue(key, out var value) ? value.ToString()! : string.Empty;
+    }
+
+    public object ToLiquid()
+    {
+        return Hash.FromDictionary(this._propertyBag);
     }
 }
