@@ -37,7 +37,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Models
 		
         public List<RequiredModule> RequiredModules => this.ConfigurationItems.Select(x => x.SourceModule).Distinct().ToList();
         
-        [IgnoreMember]
+        [MemberName("ConfigurationResources")]
         public abstract IEnumerable<DscConfigurationItem> ConfigurationItems { get; }
 
         public sealed override string OutputExtension => "ps1";
