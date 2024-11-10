@@ -12,7 +12,7 @@ Configuration {{ FullName }}
 {% for resource in ConfigurationResources -%}
     {{ resource.resource_id }} {{ resource.name }}
     {
-        {% for value in resource.property_bag %}{{ value.key }} = '{{ value.value }}'{% if forloop.last == false %}`{% endif %}{% endfor %}
+        {% for value in resource.property_bag %}{{ value.Key }} = '{{ value.Value }}'{% if forloop.last == false %}`{% endif %}{% endfor %}
         {% if resource.depends_on != empty %}DependsOn = '[{% for item in resource.depends_on %}{{ item }}{% if forloop.last == false %}, {% endif %}{% endfor %}]'{% endif %}
     }{% if forloop.last == false %}
 
