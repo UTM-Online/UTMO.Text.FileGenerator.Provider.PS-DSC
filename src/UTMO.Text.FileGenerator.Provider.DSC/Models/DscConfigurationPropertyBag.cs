@@ -1,6 +1,8 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
 
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using DotLiquid;
 
 public class DscConfigurationPropertyBag : ILiquidizable
@@ -102,6 +104,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
                                        if (a.Value is bool valBool)
                                        {
                                            return new KeyValuePair<string, object>(a.Key, $"${valBool.ToString().ToLower()}");
+                                       }
+                                       
+                                       if (a.Value is string valString)
+                                       {
+                                           return new KeyValuePair<string, object>(a.Key, $"'{valString}'");
                                        }
 
                                        return a;
