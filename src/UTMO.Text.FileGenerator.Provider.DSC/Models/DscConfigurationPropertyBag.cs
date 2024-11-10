@@ -97,6 +97,6 @@ public class DscConfigurationPropertyBag : ILiquidizable
     public object ToLiquid()
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default).ToDictionary(a => a.Key, a => a.Value));
+        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default || (a.Value is string valString && !string.IsNullOrWhiteSpace(valString))).ToDictionary(a => a.Key, a => a.Value));
     }
 }
