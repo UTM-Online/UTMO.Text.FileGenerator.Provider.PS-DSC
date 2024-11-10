@@ -11,6 +11,7 @@ public static class PackageManagementConstants
             public const string Name = "Name";
             public const string ProviderName = "ProviderName";
             public const string Source = "Source";
+            public const string RequiredVersion = "RequiredVersion";
         }
     }
     
