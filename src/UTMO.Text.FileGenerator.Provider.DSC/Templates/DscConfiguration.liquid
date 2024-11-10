@@ -9,10 +9,10 @@ Configuration {{ FullName }}
     Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}
     {% endif -%}
 {%- endfor %}
-{% for resource in ConfigurationResources %}{{ resource.resource_id }} {{ resource.name }}
+{% for resource in ConfigurationResources %}    {{ resource.resource_id }} {{ resource.name }}
     {
-        {% if resource.depends_on != empty %}DependsOn = '[{% for item in resource.depends_on %}{{ item }}{% if forloop.last == false %}, {% endif %}{% endfor %}]'{% endif %}
         {% for value in resource.property_bag %}{{ value.key }} = '{{ value.value }}'{% if forloop.last == false %}`{% endif %}{% endfor %}
+        {% if resource.depends_on != empty %}DependsOn = '[{% for item in resource.depends_on %}{{ item }}{% if forloop.last == false %}, {% endif %}{% endfor %}]'{% endif %}
     }{% endfor %}
 }
 
