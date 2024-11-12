@@ -3,17 +3,22 @@
 Configuration {{ FullName }}
 {
 {%- for module in RequiredModules %}
-    {% if module.UseAlternateFormat == true -%}
+{% if module.UseAlternateFormat == true -%}
     Import-DscResource -ModuleName @{ModuleName = '{{ module.Name }}'; RequiredVersion = '{{ module.Version }}'}
-    {% else -%}
+{% else -%}
     Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}
-    {% endif -%}
-{%- endfor %}
-{% for resource in ConfigurationResources %}{{ resource.resource_id }} {{ resource.name }}
+{% endif %}{% endfor %}
+
+{% for resource in ConfigurationResources -%}
+    {{ resource.resource_id }} {{ resource.name }}
     {
-        {% if resource.depends_on != empty %}DependsOn = '[{% for item in resource.depends_on %}{{ item }}{% if forloop.last == false %}, {% endif %}{% endfor %}]'{% endif %}
-        {% for value in resource.property_bag %}{{ value.key }} = '{{ value.value }}'{% if forloop.last == false %}`{% endif %}{% endfor %}
-    }{% endfor %}
+        {% for value in resource.property_bag %}{{ value.Key }} = {{ value.Value }}{% if forloop.last == false %}
+         Ensure = '{{ resource.ensure }}'
+        {% endif %}{% endfor %}{% if resource.depends_on != empty %}
+        DependsOn = @[{% for item in resource.depends_on %}'{{ item }}'{% if forloop.last == false %}, {% endif %}{% endfor %}]{% endif %}
+    }{% if forloop.last == false %}
+
+{% endif %}{% endfor %}
 }
 
 {{ FullName }} -OutputPath $OutputPath

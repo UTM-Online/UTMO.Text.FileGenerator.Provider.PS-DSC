@@ -25,4 +25,8 @@
         <None Remove="UTMO.Text.FileGenerator.Provider.DSC.csproj.DotSettings" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Definitions\Resources\cChoco\Enums\" />
+    </ItemGroup>
+
 </Project>

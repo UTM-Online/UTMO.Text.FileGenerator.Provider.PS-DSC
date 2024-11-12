@@ -51,4 +51,11 @@ public class PackageManagementSourceResource : PackageManagementBase
         configure(resource);
         return resource;
     }
+    
+    public static PackageManagementSourceResource Create(string name, Action<PackageManagementSourceResource> configure, out PackageManagementSourceResource resource)
+    {
+        resource = new PackageManagementSourceResource(name);
+        configure(resource);
+        return resource;
+    }
 }

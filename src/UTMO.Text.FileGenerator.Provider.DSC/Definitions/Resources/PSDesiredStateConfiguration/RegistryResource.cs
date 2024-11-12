@@ -10,7 +10,6 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         this.PropertyBag.Init(Constants.Properties.Key);
         this.PropertyBag.Init(Constants.Properties.ValueName);
         this.PropertyBag.Init(Constants.Properties.ValueData);
-        this.PropertyBag.Init(Constants.Properties.ValueType);
     }
     
     public string Key

@@ -11,7 +11,6 @@ public class ChocoPackageInstallerResource : cChocoBase
         this.PropertyBag.Init(Constants.Parameters.PackageName);
         this.PropertyBag.Init(Constants.Parameters.PackageSource);
         this.PropertyBag.Init(Constants.Parameters.AutoUpgrade);
-        this.PropertyBag.Init(Constants.Parameters.Params);
     }
     
     public string PackageName

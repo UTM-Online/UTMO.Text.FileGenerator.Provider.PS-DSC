@@ -8,9 +8,9 @@ public static class cChocoConstants
         
         public static class Parameters
         {
-            public const string PackageName = "PackageName";
+            public const string PackageName = "Name";
             
-            public const string PackageSource = "PackageSource";
+            public const string PackageSource = "Source";
             
             public const string AutoUpgrade = "AutoUpgrade";
             

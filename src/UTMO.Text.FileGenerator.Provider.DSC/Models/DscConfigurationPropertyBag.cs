@@ -1,6 +1,8 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
 
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using DotLiquid;
 
 public class DscConfigurationPropertyBag : ILiquidizable
@@ -97,6 +99,19 @@ public class DscConfigurationPropertyBag : ILiquidizable
     public object ToLiquid()
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default).ToDictionary(a => a.Key, a => a.Value));
+        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default || (a.Value is string valString && !string.IsNullOrWhiteSpace(valString))).Select(a =>
+                                   {
+                                       if (a.Value is bool valBool)
+                                       {
+                                           return new KeyValuePair<string, object>(a.Key, $"${valBool.ToString().ToLower()}");
+                                       }
+                                       
+                                       if (a.Value is string valString)
+                                       {
+                                           return new KeyValuePair<string, object>(a.Key, $"'{valString}'");
+                                       }
+
+                                       return a;
+                                   }).ToDictionary(a => a.Key, a => a.Value));
     }
 }

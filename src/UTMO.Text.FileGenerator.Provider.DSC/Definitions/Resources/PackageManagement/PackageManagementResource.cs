@@ -36,6 +36,13 @@ public class PackageManagementResource : PackageManagementBase
         set => this.PropertyBag.Set(Constants.Properties.Source, value);
     }
     
+    public string RequiredVersion
+    {
+        get => this.PropertyBag.Get(Constants.Properties.RequiredVersion);
+        
+        set => this.PropertyBag.Set(Constants.Properties.RequiredVersion, value);
+    }
+    
     public static PackageManagementResource Create(string name, Action<PackageManagementResource> configure)
     {
         var resource = new PackageManagementResource(name);
