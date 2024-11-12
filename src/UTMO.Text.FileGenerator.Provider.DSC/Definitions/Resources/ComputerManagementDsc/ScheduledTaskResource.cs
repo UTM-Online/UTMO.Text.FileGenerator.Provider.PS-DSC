@@ -12,14 +12,11 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         this.PropertyBag.Init(Constants.Properties.ActionArguments);
         this.PropertyBag.Init(Constants.Properties.ActionExecutable);
         this.PropertyBag.Init(Constants.Properties.ActionWorkingPath);
-        this.PropertyBag.Init<ScheduleTaskRunLevel>(Constants.Properties.RunLevel);
         this.PropertyBag.Init<ScheduleTaskScheduleType>(Constants.Properties.ScheduleType);
         this.PropertyBag.Init(Constants.Properties.TaskName);
         this.PropertyBag.Init(Constants.Properties.TaskPath);
         this.PropertyBag.Init(Constants.Properties.BuiltInAccount);
         this.PropertyBag.Init<bool>(Constants.Properties.Enable);
-        this.PropertyBag.Init<TimeSpan>(Constants.Properties.RepeatInterval);
-        this.PropertyBag.Init<TimeSpan>(Constants.Properties.RepetitionDuration);
     }
 
     public string TaskDescription
