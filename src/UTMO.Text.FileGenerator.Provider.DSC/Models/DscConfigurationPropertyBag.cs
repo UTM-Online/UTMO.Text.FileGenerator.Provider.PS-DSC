@@ -2,8 +2,10 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using DotLiquid;
+using Exceptions;
 
 public class DscConfigurationPropertyBag : ILiquidizable
 {
@@ -65,18 +67,30 @@ public class DscConfigurationPropertyBag : ILiquidizable
         this._propertyBag[key] = string.Empty;
     }
     
-    public T Get<T>(string key)
+    public T Get<T>(string key, [CallerFilePath] string caller = "")
     {
-        if (!this._propertyBag.TryGetValue(key, out var value))
+        try
         {
-            return default!;
-        }
+            if (!this._propertyBag.TryGetValue(key, out var value))
+            {
+                return default!;
+            }
 
-        return typeof(T) switch
-                 {
-                     {IsEnum: true} t => this.SafeParseEnum<T>(value.ToString()!),
-                     var _            => (T) value,
-                 };
+            return typeof(T) switch
+            {
+                { IsEnum: true } t => this.SafeParseEnum<T>(value.ToString()!),
+                var _ => (T)value,
+            };
+        }
+        catch (NullReferenceException)
+        {
+            throw new MandatoryParameterNullException(key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
     
     private T SafeParseEnum<T>(string value, T defaultValue = default)
