@@ -7,15 +7,11 @@ public class ScheduledTaskResource : ComputerManagementDscBase
 {
     private ScheduledTaskResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.Description);
-        this.PropertyBag.Init<int>(Constants.Properties.Priority);
         this.PropertyBag.Init(Constants.Properties.ActionArguments);
         this.PropertyBag.Init(Constants.Properties.ActionExecutable);
-        this.PropertyBag.Init(Constants.Properties.ActionWorkingPath);
         this.PropertyBag.Init<ScheduleTaskScheduleType>(Constants.Properties.ScheduleType);
         this.PropertyBag.Init(Constants.Properties.TaskName);
         this.PropertyBag.Init(Constants.Properties.TaskPath);
-        this.PropertyBag.Init(Constants.Properties.BuiltInAccount);
         this.PropertyBag.Init<bool>(Constants.Properties.Enable);
     }
 
