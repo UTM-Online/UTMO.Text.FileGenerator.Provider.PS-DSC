@@ -86,6 +86,10 @@ public class DscConfigurationPropertyBag : ILiquidizable
         {
             throw new MandatoryParameterNullException(key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
         }
+        catch (InvalidCastException ice)
+        {
+            throw new InvalidPropertyBagCastException(ice, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+        }
         catch (Exception e)
         {
             Console.WriteLine(e);
