@@ -109,9 +109,10 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
     }
     
-    public string Get(string key)
+    public string Get(string key, [CallerFilePath] string caller = "")
     {
-        return this._propertyBag.TryGetValue(key, out var value) ? value.ToString()! : string.Empty;
+        // ReSharper disable once ExplicitCallerInfoArgument
+        return this.Get<string>(key, caller);
     }
 
     public object ToLiquid()
