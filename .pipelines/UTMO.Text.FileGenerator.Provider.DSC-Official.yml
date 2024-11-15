@@ -12,7 +12,7 @@ parameters:
     default: 2
   - name: MinorVersion
     type: string
-    default: 0
+    default: 1
 
 trigger:
   batch: true
@@ -34,7 +34,11 @@ resources:
       
 variables:
   - name: Projects
-    value: $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC/UTMO.Text.FileGenerator.Provider.DSC.csproj
+    value:
+      - $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC/UTMO.Text.FileGenerator.Provider.DSC.csproj
+      - $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC.Abstract/UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj
+      - $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC.cChoco/UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj
+      - $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC.WindowsCore/UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj
 
 extends:
   template: v2/Pipelines/UserTemplates/Build/Build.NugetPkg.Template.yml@Templates
