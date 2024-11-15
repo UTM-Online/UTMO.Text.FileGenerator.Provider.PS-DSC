@@ -13,5 +13,9 @@
         <_TemplateFiles Include="$(MSBuildThisFileDirectory)\..\Templates\**\*.liquid" />
 
     </ItemGroup>
+    
+    <PropertyGroup>
+        <EnableManifestValidation>false</EnableManifestValidation>
+    </PropertyGroup>
 
 </Project>
