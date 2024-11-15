@@ -1,8 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 
 using System.Diagnostics.CodeAnalysis;
-using UTMO.Text.FileGenerator.Provider.DSC.Models;
-using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public abstract class xStorageBase : DscConfigurationItem

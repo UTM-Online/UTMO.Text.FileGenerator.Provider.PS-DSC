@@ -16,7 +16,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
 {
     using System.Reflection;
     using UTMO.Text.FileGenerator.Abstract;
-    using UTMO.Text.FileGenerator.Provider.DSC.Models;
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
     public static class EnvironmentExtensions
     {

@@ -14,7 +14,7 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Modules
 {
-    using UTMO.Text.FileGenerator.Provider.DSC.SubResources;
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
     public class xWebAdministration : RequiredModule
     {
