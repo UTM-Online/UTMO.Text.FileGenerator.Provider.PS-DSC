@@ -21,7 +21,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
     public static class EnvironmentExtensions
     {
         public static ITemplateGenerationEnvironment AddComputer<T>(this ITemplateGenerationEnvironment env, T computer)
-            where T : DscComputer
+            where T : DscLcmConfiguration
         {
             env.AddResource(computer);
             return env;
@@ -35,7 +35,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
         }
         
         public static ITemplateGenerationEnvironment AddComputer<T>(this ITemplateGenerationEnvironment env)
-            where T : DscComputer, new()
+            where T : DscLcmConfiguration, new()
         {
             var computer = new T();
             env.AddResource(computer);

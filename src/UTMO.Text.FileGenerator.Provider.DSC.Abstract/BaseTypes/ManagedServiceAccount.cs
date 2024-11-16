@@ -32,9 +32,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         public string ManagingPrinciples => string.Join(',', this._managingPrinciples.Select(x => $"\"{x.NodeName}$\""));
         
         [IgnoreMember]
-        private List<DscComputer> _managingPrinciples = new();
+        private List<DscLcmConfiguration> _managingPrinciples = new();
         
-        public ManagedServiceAccount RegisterPrinciple<T>() where T : DscComputer, new()
+        public ManagedServiceAccount RegisterPrinciple<T>() where T : DscLcmConfiguration, new()
         {
             this._managingPrinciples.Add(new T());
             return this;

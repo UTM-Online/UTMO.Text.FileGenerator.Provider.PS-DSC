@@ -7,12 +7,12 @@ Configuration LocalConfigApplication
     {
         Settings
         {
-            RefreshFrequencyMins = 30;
-            RefreshMode = "PULL";
-            ConfigurationMode = "ApplyAndAutoCorrect";
-            AllowModuleOverwrite = $true;
-            RebootNodeIfNeeded = $true;
-            ConfigurationModeFrequencyMins = 15;
+            RefreshFrequencyMins = {{ lcm_settings.RefreshFrequencyMins }};
+            RefreshMode = '{{ lcm_settings.RefreshMode }}';
+            ConfigurationMode = '{{ lcm_settings.ConfigurationMode }}';
+            AllowModuleOverwrite = {{ lcm_settings.AllowModuleOverwrite }};
+            RebootNodeIfNeeded = {{ lcm_settings.RebootNodeIfNeeded }};
+            ConfigurationModeFrequencyMins = {{ lcm_settings.ConfigurationModeFrequencyMins }};
         }
     
         ConfigurationRepositoryWeb PullSrvCfg

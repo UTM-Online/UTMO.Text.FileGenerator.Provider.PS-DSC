@@ -8,7 +8,7 @@ public abstract class DscGenerationEnvironmentBase : GenerationEnvironmentBase
     {
     }
 
-    protected DscGenerationEnvironmentBase AddComputer<T>() where T : DscComputer, new()
+    protected DscGenerationEnvironmentBase AddComputer<T>() where T : DscLcmConfiguration, new()
     {
         this.AddResource<T>(new T());
         return this;

@@ -14,10 +14,11 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using Enums;
     using UTMO.Text.FileGenerator.Attributes;
     using UTMO.Text.FileGenerator.Extensions;
 
-    public abstract class DscComputer : DscResourceBase
+    public abstract class DscLcmConfiguration : DscResourceBase
     {
         public sealed override string ResourceTypeName => "/DSC/Computers";
 
@@ -34,34 +35,17 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         
         public List<string> RunAsAccounts { get; } = new List<string>();
         
-        [MemberName("required_modules")]
-        public List<Dictionary<string,object>> RequiredModules => this.ComputeRequiredModules();
-        
         [MemberName("partial_configs")]
-        public List<DscConfiguration> DscConfiguration { get; } = new List<DscConfiguration>();
+        public List<DscConfiguration> DscConfiguration { get; } = new();
         
-        public NodeNetworkSettings NodeNetworkSettings { get; } = new NodeNetworkSettings();
+        [MemberName("lcm_settings")]
+        public virtual DscLcmSettings LcmSettings { get; } = new();
         
-        protected DscComputer AddConfiguration<T>() where T : DscConfiguration, new()
+        protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
         {
             var resource = new T();
             this.DscConfiguration.Add(resource);
             return this;
-        }
-        
-        private List<Dictionary<string, object>> ComputeRequiredModules()
-        {
-            var requiredModules = new Dictionary<string, RequiredModule>();
-            
-            foreach (var dscConfiguration in this.DscConfiguration)
-            {
-                foreach (var requiredModule in dscConfiguration.RequiredModules)
-                {
-                    requiredModules.AddOrUpdate(requiredModule.ModuleName, requiredModule);
-                }
-            }
-
-            return requiredModules.ToTemplateContext();
         }
 
         public sealed override dynamic? ToManifest()
@@ -74,6 +58,36 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                            RunAsAccounts = this.RunAsAccounts,
                            PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList<string>()
                        };
+        }
+        
+        public class DscLcmSettings : RelatedTemplateResourceBase
+        {
+            public int RefreshFrequencyMins { get; set; } = 30;
+            
+            public int ConfigurationModeFrequencyMins { get; set; } = 15;
+            
+            public DscLcmConfigurationMode ConfigurationMode { get; set; } = DscLcmConfigurationMode.ApplyAndAutoCorrect;
+            
+            public bool RebootNodeIfNeeded { get; set; } = true;
+            
+            public bool AllowModuleOverwrite { get; set; } = true;
+            
+            public DscMode RefreshMode { get; set; } = DscMode.Pull;
+
+            public sealed override bool GenerateManifest => false;
+
+            public override Dictionary<string, object> ToTemplateContext()
+            {
+                return new()
+                           {
+                               { "RefreshFrequencyMins", this.RefreshFrequencyMins },
+                               { "ConfigurationModeFrequencyMins", this.ConfigurationModeFrequencyMins },
+                               { "ConfigurationMode", this.ConfigurationMode },
+                               { "RebootNodeIfNeeded", $"${this.RebootNodeIfNeeded}" },
+                               { "AllowModuleOverwrite", $"${this.AllowModuleOverwrite}" },
+                               { "RefreshMode", this.RefreshMode }
+                           };
+            }
         }
     }
 }
