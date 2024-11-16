@@ -3,49 +3,45 @@
 [DscLocalConfigurationManager()]
 Configuration LocalConfigApplication
 {
-node {{ node_name }}
-{
-Settings
-{
-RefreshFrequencyMins            = 30;
-RefreshMode                     = "PULL";
-ConfigurationMode               = "ApplyAndAutoCorrect";
-AllowModuleOverwrite            = $true;
-RebootNodeIfNeeded              = $true;
-ConfigurationModeFrequencyMins  = 15;
-}
-
-ConfigurationRepositoryWeb PullSrvCfg
-{
-ServerURL = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-ConfigurationNames = @({% for cfg in partial_configs %}"{{ cfg.FullName }}"{% if partial_configs.last != cfg  %},{% endif %}{% endfor %})
-}
-
-ResourceRepositoryWeb PullSrvMod
-{
-ServerUrl       = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-}
-
-ReportServerWeb PullSrvRpt
-{
-ServerURL = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-}
-
-{% for cfg in partial_configs %}
+    node {{ node_name }}
+    {
+        Settings
+        {
+            RefreshFrequencyMins = 30;
+            RefreshMode                     = "PULL";
+            ConfigurationMode               = "ApplyAndAutoCorrect";
+            AllowModuleOverwrite = $true;
+            RebootNodeIfNeeded              = $true;
+            ConfigurationModeFrequencyMins = 15;
+        }
+    
+    ConfigurationRepositoryWeb PullSrvCfg
+    {
+        ServerURL = "{{ server_url }}"
+        RegistrationKey = "{{ registration_key }}"
+        ConfigurationNames = @({% for cfg in partial_configs %}"{{ cfg.FullName }}"{% if partial_configs.last != cfg  %},{% endif %}{% endfor %})
+    }
+    
+    ResourceRepositoryWeb PullSrvMod
+    {
+        ServerUrl       = "{{ server_url }}"
+        RegistrationKey = "{{ registration_key }}"
+    }
+    
+    ReportServerWeb PullSrvRpt
+    {
+        ServerURL = "{{ server_url }}"
+        RegistrationKey = "{{ registration_key }}"
+    }
+    
+    {% for cfg in partial_configs %}
     PartialConfiguration {{ cfg.FullName }}
     {
-    Description = "{{ cfg.Description }}"
-    RefreshMode = "{{ cfg.Mode }}"
-    {%- if cfg.Mode == "Pull" %}
+        Description = "{{ cfg.Description }}"
+        RefreshMode = "{{ cfg.Mode }}"{%- if cfg.Mode == "Pull" %}
         ResourceModuleSource = "{{ module_source }}"
-        ConfigurationSource = "{{ config_source }}"
-    {%- endif %}
-    }
-{% endfor %}
-}
+        ConfigurationSource = "{{ config_source }}"{%- endif %}
+    }{% endfor %}
 }
 
 LocalConfigApplication -OutputPath $OutputPath
