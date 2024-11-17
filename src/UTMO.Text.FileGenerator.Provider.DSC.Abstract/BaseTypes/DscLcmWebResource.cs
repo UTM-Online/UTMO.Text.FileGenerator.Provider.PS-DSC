@@ -16,7 +16,7 @@ public class DscLcmWebResource : RelatedTemplateResourceBase
     public DscWebResourceTypes LcmResourceType { get; set; }
 
     [MemberName("lcm_resource_name")]
-    public new string ResourceName { get; set; } = null!;
+    public string LcmResourceName { get; set; } = null!;
     
     [MemberName("server_url")]
     public string ServerUrl { get; set; } = null!;
