@@ -41,6 +41,12 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         
         [MemberName(nameof(ConfigurationResources))]
         public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems.ToList();
+        
+        [MemberName("module_source")]
+        public abstract string ModuleSource { get; }
+        
+        [MemberName("config_source")]
+        public abstract string ConfigSource { get; }
 
         public sealed override string OutputExtension => "ps1";
 
