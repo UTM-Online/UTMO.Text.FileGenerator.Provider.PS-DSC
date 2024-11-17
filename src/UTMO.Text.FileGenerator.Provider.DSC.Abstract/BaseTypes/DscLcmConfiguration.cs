@@ -27,19 +27,30 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [MemberName("node_name")]
         public abstract string NodeName { get; }
 
-        public override string ResourceName => this.NodeName;
+        public sealed override string ResourceName => this.NodeName;
 
         public virtual bool Enabled { get; } = true;
         
         public virtual bool IsClientNode { get; } = false;
         
-        public List<string> RunAsAccounts { get; } = new List<string>();
+        public List<string> RunAsAccounts { get; } = new();
         
         [MemberName("partial_configs")]
         public List<DscConfiguration> DscConfiguration { get; } = new();
         
         [MemberName("lcm_settings")]
         public virtual DscLcmSettings LcmSettings { get; } = new();
+
+        [MemberName("web_resources")]
+        public Dictionary<DscWebResourceTypes, DscLcmWebResource> WebResources { get; } = new();
+        
+        public Dictionary<DscWebResourceTypes, DscLcmWebResource> AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
+        {
+            var resource = new DscLcmWebResource();
+            resourceDefinition(resource);
+            this.WebResources.Add(type, resource);
+            return this.WebResources;
+        }
         
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
         {

@@ -14,25 +14,15 @@ Configuration LocalConfigApplication
             RebootNodeIfNeeded = {{ lcm_settings.RebootNodeIfNeeded }};
             ConfigurationModeFrequencyMins = {{ lcm_settings.ConfigurationModeFrequencyMins }};
         }
-    
-        ConfigurationRepositoryWeb PullSrvCfg
+
+{%- for resource in web_resources %}
+        {{ resource.Key }} {{ resource.Value.resource_name }}
         {
-            ServerURL = "{{ server_url }}"
-            RegistrationKey = "{{ registration_key }}"
-            ConfigurationNames = @({% for cfg in partial_configs %}"{{ cfg.FullName }}"{% if partial_configs.last != cfg  %},{% endif %}{% endfor %})
+            ServerURL = "{{ resource.Value.server_url }}"
+            RegistrationKey = "{{ resource.Value.registration_key }}"{% if resource.Value.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in resource.Value.configuration_names %}"{{ cfg }}"{% if forloop.last != cfg  %},{% endif %}{% endfor %}){% endif %}
         }
-        
-        ResourceRepositoryWeb PullSrvMod
-        {
-            ServerUrl       = "{{ server_url }}"
-            RegistrationKey = "{{ registration_key }}"
-        }
-        
-        ReportServerWeb PullSrvRpt
-        {
-            ServerURL = "{{ server_url }}"
-            RegistrationKey = "{{ registration_key }}"
-        }
+{% endfor %}
         
         {% for cfg in partial_configs %}
         PartialConfiguration {{ cfg.FullName }}
