@@ -14,16 +14,14 @@ Configuration LocalConfigApplication
             RebootNodeIfNeeded = {{ lcm_settings.RebootNodeIfNeeded }};
             ConfigurationModeFrequencyMins = {{ lcm_settings.ConfigurationModeFrequencyMins }};
         }
-
-{%- for resource in web_resources %}
+{% for resource in web_resources %}
         {{ resource.lcm_resource_type }} {{ resource.lcm_resource_name }}
         {
             ServerURL = "{{ resource.server_url }}"
             RegistrationKey = "{{ resource.registration_key }}"{% if resource.configuration_names != empty %}
             ConfigurationNames = @({% for cfg in resource.configuration_names %}"{{ cfg }}"{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
         }
-{% endfor %}
-{% for cfg in partial_configs %}
+{% endfor %}{% for cfg in partial_configs %}
         PartialConfiguration {{ cfg.FullName }}
         {
             Description = "{{ cfg.Description }}"
@@ -31,8 +29,7 @@ Configuration LocalConfigApplication
             ResourceModuleSource = "{{ cfg.module_source }}"
             ConfigurationSource = "{{ cfg.config_source }}"{%- endif %}
         }{% if forloop.last == false %}
-
-    {% endif %}{% endfor %}
+{% endif %}{% endfor %}
     }
 }
 
