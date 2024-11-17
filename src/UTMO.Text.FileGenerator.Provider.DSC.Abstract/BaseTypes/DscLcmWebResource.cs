@@ -5,9 +5,10 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 public class DscLcmWebResource : RelatedTemplateResourceBase
 {
-    internal DscLcmWebResource(DscWebResourceTypes resourceTypes)
+    internal DscLcmWebResource(DscWebResourceTypes resourceTypes, DscLcmConfiguration parent)
     {
         this.LcmResourceType = resourceTypes;
+        this.Parent = parent;
     }
     
     public sealed override bool GenerateManifest => false;
@@ -25,5 +26,8 @@ public class DscLcmWebResource : RelatedTemplateResourceBase
     public string RegistrationKey { get; set; } = null!;
     
     [MemberName("configuration_names")]
-    public List<string> ConfigurationNames { get; set; } = new();
+    public List<string> ConfigurationNames => this.Parent.DscConfiguration.Select(a => a.FullName).ToList();
+    
+    [IgnoreMember]
+    private DscLcmConfiguration Parent { get; }
 }

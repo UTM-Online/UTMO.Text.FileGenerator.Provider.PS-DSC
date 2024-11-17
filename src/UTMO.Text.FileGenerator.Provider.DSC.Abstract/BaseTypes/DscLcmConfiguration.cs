@@ -53,12 +53,12 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [MemberName("web_resources")]
         public List<DscLcmWebResource> WebResources => this.InternalWebResources.Values.ToList();
         
-        public Dictionary<DscWebResourceTypes, DscLcmWebResource> AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
+        public DscLcmConfiguration AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
         {
-            var resource = new DscLcmWebResource(type);
+            var resource = new DscLcmWebResource(type, this);
             resourceDefinition(resource);
             this.InternalWebResources.Add(type, resource);
-            return this.InternalWebResources;
+            return this;
         }
         
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
