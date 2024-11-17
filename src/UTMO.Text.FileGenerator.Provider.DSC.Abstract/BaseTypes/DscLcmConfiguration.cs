@@ -97,8 +97,8 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                                { "RefreshFrequencyMins", this.RefreshFrequencyMins },
                                { "ConfigurationModeFrequencyMins", this.ConfigurationModeFrequencyMins },
                                { "ConfigurationMode", this.ConfigurationMode },
-                               { "RebootNodeIfNeeded", $"${this.RebootNodeIfNeeded}" },
-                               { "AllowModuleOverwrite", $"${this.AllowModuleOverwrite}" },
+                               { "RebootNodeIfNeeded", $"${this.RebootNodeIfNeeded.ToString().ToLower()}" },
+                               { "AllowModuleOverwrite", $"${this.AllowModuleOverwrite.ToString().ToLower()}" },
                                { "RefreshMode", this.RefreshMode }
                            };
             }
