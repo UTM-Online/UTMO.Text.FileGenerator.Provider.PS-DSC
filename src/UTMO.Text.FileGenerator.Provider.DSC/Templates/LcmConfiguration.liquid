@@ -20,7 +20,7 @@ Configuration LocalConfigApplication
         {
             ServerURL = "{{ resource.server_url }}"
             RegistrationKey = "{{ resource.registration_key }}"{% if resource.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in resource.configuration_names %}"{{ cfg }}"{% if forloop.last != cfg  %},{% endif %}{% endfor %}){% endif %}
+            ConfigurationNames = @({% for cfg in resource.configuration_names %}"{{ cfg }}"{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
         }
 {% endfor %}
         
