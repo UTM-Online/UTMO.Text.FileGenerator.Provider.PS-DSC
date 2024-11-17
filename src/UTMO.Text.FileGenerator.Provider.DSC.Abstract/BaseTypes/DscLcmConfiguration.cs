@@ -14,10 +14,12 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using System.Diagnostics.CodeAnalysis;
     using Enums;
     using UTMO.Text.FileGenerator.Attributes;
-    using UTMO.Text.FileGenerator.Extensions;
 
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class DscLcmConfiguration : DscResourceBase
     {
         public sealed override string ResourceTypeName => "/DSC/Computers";
@@ -29,30 +31,34 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public sealed override string ResourceName => this.NodeName;
 
+        // ReSharper disable once MemberCanBeProtected.Global
         public virtual bool Enabled { get; } = true;
         
+        // ReSharper disable once MemberCanBeProtected.Global
         public virtual bool IsClientNode { get; } = false;
         
+        // ReSharper disable once MemberCanBePrivate.Global
         public List<string> RunAsAccounts { get; } = new();
         
         [MemberName("partial_configs")]
+        // ReSharper disable once MemberCanBePrivate.Global
         public List<DscConfiguration> DscConfiguration { get; } = new();
         
         [MemberName("lcm_settings")]
         public virtual DscLcmSettings LcmSettings { get; } = new();
 
         [IgnoreMember]
-        public Dictionary<DscWebResourceTypes, DscLcmWebResource> WebResources { get; } = new();
+        private Dictionary<DscWebResourceTypes, DscLcmWebResource> InternalWebResources { get; } = new();
         
         [MemberName("web_resources")]
-        public List<DscLcmWebResource> WebResourcesList => this.WebResources.Values.ToList();
+        public List<DscLcmWebResource> WebResources => this.InternalWebResources.Values.ToList();
         
         public Dictionary<DscWebResourceTypes, DscLcmWebResource> AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
         {
             var resource = new DscLcmWebResource(type);
             resourceDefinition(resource);
-            this.WebResources.Add(type, resource);
-            return this.WebResources;
+            this.InternalWebResources.Add(type, resource);
+            return this.InternalWebResources;
         }
         
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
@@ -62,18 +68,19 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return this;
         }
 
-        public sealed override dynamic? ToManifest()
+        public sealed override dynamic ToManifest()
         {
             return new
                        {
-                           NodeName = this.NodeName,
-                           Enabled = this.Enabled,
-                           IsClientNode = this.IsClientNode,
-                           RunAsAccounts = this.RunAsAccounts,
-                           PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList<string>()
+                           this.NodeName,
+                           this.Enabled,
+                           this.IsClientNode,
+                           this.RunAsAccounts,
+                           PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList(),
                        };
         }
         
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         public class DscLcmSettings : RelatedTemplateResourceBase
         {
             public int RefreshFrequencyMins { get; set; } = 30;
@@ -99,7 +106,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                                { "ConfigurationMode", this.ConfigurationMode },
                                { "RebootNodeIfNeeded", $"${this.RebootNodeIfNeeded.ToString().ToLower()}" },
                                { "AllowModuleOverwrite", $"${this.AllowModuleOverwrite.ToString().ToLower()}" },
-                               { "RefreshMode", this.RefreshMode }
+                               { "RefreshMode", this.RefreshMode },
                            };
             }
         }
