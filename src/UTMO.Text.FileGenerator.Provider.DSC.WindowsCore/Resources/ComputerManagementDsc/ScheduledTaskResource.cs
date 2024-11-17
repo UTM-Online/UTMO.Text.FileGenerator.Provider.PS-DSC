@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc.Enums;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.ComputerManagementDscConstants.ScheduledTask;
 
-public class ScheduledTaskResource : ComputerManagementDscBase
+public class ScheduledTaskResource : ComputerManagementDscBase, IScheduledTaskResource
 {
     private ScheduledTaskResource(string name) : base(name)
     {
@@ -107,14 +108,14 @@ public class ScheduledTaskResource : ComputerManagementDscBase
         set => this.PropertyBag.Set(Constants.Properties.RepetitionDuration, value);
     }
     
-    public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure)
+    public static ScheduledTaskResource Create(string name, Action<IScheduledTaskResource> configure)
     {
         var resource = new ScheduledTaskResource(name);
         configure(resource);
         return resource;
     }
     
-    public static ScheduledTaskResource Create(string name, Action<ScheduledTaskResource> configure, out ScheduledTaskResource resourceRef)
+    public static ScheduledTaskResource Create(string name, Action<IScheduledTaskResource> configure, out ScheduledTaskResource resourceRef)
     {
         var resource = new ScheduledTaskResource(name);
         configure(resource);
