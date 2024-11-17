@@ -23,7 +23,6 @@ Configuration LocalConfigApplication
             ConfigurationNames = @({% for cfg in resource.configuration_names %}"{{ cfg }}"{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
         }
 {% endfor %}
-        
 {% for cfg in partial_configs %}
         PartialConfiguration {{ cfg.FullName }}
         {
@@ -31,7 +30,9 @@ Configuration LocalConfigApplication
             RefreshMode = "{{ cfg.Mode }}"{%- if cfg.Mode == "Pull" %}
             ResourceModuleSource = "{{ module_source }}"
             ConfigurationSource = "{{ config_source }}"{%- endif %}
-        }{% endfor %}
+        }{% if forloop.last == false %}
+
+    {% endif %}{% endfor %}
     }
 }
 
