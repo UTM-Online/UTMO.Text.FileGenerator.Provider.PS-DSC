@@ -75,7 +75,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
 
             return typeof(T) switch
             {
-                { IsEnum: true } t => this.SafeParseEnum<T>(value.ToString()!),
+                { IsEnum: true } _ => this.SafeParseEnum<T>(value.ToString()!),
                 var _ => (T)value,
             };
         }
@@ -94,13 +94,15 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
     }
     
+    #pragma warning disable CS8601 // Possible null reference assignment.
     private T SafeParseEnum<T>(string value, T defaultValue = default)
+        #pragma warning restore CS8601 // Possible null reference assignment.
     {
         try
         {
             return (T) Enum.Parse(typeof(T), value);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return defaultValue!;
         }
