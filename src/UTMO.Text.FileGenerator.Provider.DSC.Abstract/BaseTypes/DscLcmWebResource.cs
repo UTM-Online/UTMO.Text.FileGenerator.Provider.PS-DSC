@@ -1,8 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
+using System.Diagnostics.CodeAnalysis;
 using UTMO.Text.FileGenerator.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
 public class DscLcmWebResource : RelatedTemplateResourceBase
 {
     internal DscLcmWebResource(DscWebResourceTypes resourceTypes, DscLcmConfiguration parent)
@@ -24,9 +27,10 @@ public class DscLcmWebResource : RelatedTemplateResourceBase
     
     [MemberName("registration_key")]
     public string RegistrationKey { get; set; } = null!;
-    
+
     [MemberName("configuration_names")]
-    public List<string> ConfigurationNames => this.Parent.DscConfiguration.Select(a => a.FullName).ToList();
+    public List<string> ConfigurationNames =>
+        this.LcmResourceType == DscWebResourceTypes.ConfigurationRepositoryWeb ? this.Parent.DscConfiguration.Select(a => a.FullName).ToList() : new List<string>();
     
     [IgnoreMember]
     private DscLcmConfiguration Parent { get; }
