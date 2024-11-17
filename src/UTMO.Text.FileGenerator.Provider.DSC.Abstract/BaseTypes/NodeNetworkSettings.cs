@@ -14,8 +14,10 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using System.Diagnostics.CodeAnalysis;
     using UTMO.Text.FileGenerator.Attributes;
 
+    [SuppressMessage("ReSharper", "CollectionNeverQueried.Local")]
     public class NodeNetworkSettings : RelatedTemplateResourceBase
     {
         public sealed override bool GenerateManifest => false;
@@ -23,7 +25,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [MemberName("primary_net_adapter")]
         public NetworkAdapter PrimaryNetworkAdapter { get; } = new NetworkAdapter()
         {
-            Name = "Ethernet"
+            Name = "Ethernet",
         };
         
         [MemberName("secondary_net_adapters")]

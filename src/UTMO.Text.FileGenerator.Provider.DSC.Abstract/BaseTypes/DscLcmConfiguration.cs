@@ -41,12 +41,15 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [MemberName("lcm_settings")]
         public virtual DscLcmSettings LcmSettings { get; } = new();
 
-        [MemberName("web_resources")]
+        [IgnoreMember]
         public Dictionary<DscWebResourceTypes, DscLcmWebResource> WebResources { get; } = new();
+        
+        [MemberName("web_resources")]
+        public List<DscLcmWebResource> WebResourcesList => this.WebResources.Values.ToList();
         
         public Dictionary<DscWebResourceTypes, DscLcmWebResource> AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
         {
-            var resource = new DscLcmWebResource();
+            var resource = new DscLcmWebResource(type);
             resourceDefinition(resource);
             this.WebResources.Add(type, resource);
             return this.WebResources;

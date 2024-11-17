@@ -5,16 +5,24 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 public class DscLcmWebResource : RelatedTemplateResourceBase
 {
+    internal DscLcmWebResource(DscWebResourceTypes resourceTypes)
+    {
+        this.LcmResourceType = resourceTypes;
+    }
+    
     public sealed override bool GenerateManifest => false;
     
-    [MemberName("resource_name")]
-    public string ResourceName { get; set; }
+    [MemberName("lcm_resource_type")]
+    public DscWebResourceTypes LcmResourceType { get; set; }
+
+    [MemberName("lcm_resource_name")]
+    public new string ResourceName { get; set; } = null!;
     
     [MemberName("server_url")]
-    public string ServerUrl { get; set; }
+    public string ServerUrl { get; set; } = null!;
     
     [MemberName("registration_key")]
-    public string RegistrationKey { get; set; }
+    public string RegistrationKey { get; set; } = null!;
     
     [MemberName("configuration_names")]
     public List<string> ConfigurationNames { get; set; } = new();

@@ -16,11 +16,11 @@ Configuration LocalConfigApplication
         }
 
 {%- for resource in web_resources %}
-        {{ resource.Key }} {{ resource.Value.resource_name }}
+        {{ resource.lcm_resource_type }} {{ resource.lcm_resource_name }}
         {
-            ServerURL = "{{ resource.Value.server_url }}"
-            RegistrationKey = "{{ resource.Value.registration_key }}"{% if resource.Value.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in resource.Value.configuration_names %}"{{ cfg }}"{% if forloop.last != cfg  %},{% endif %}{% endfor %}){% endif %}
+            ServerURL = "{{ resource.server_url }}"
+            RegistrationKey = "{{ resource.registration_key }}"{% if resource.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in resource.configuration_names %}"{{ cfg }}"{% if forloop.last != cfg  %},{% endif %}{% endfor %}){% endif %}
         }
 {% endfor %}
         
