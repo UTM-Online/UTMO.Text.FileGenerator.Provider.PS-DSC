@@ -56,17 +56,21 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
+        var instructionCounter = 0;
 
         try
         {
-            using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
-            ps.AddScript(scriptConfig);
-            ps.AddParameter("OutputPath", mofOutputFile);
-            ps.Invoke();
+            using var ps = PowerShell.Create(RunspaceMode.NewRunspace); // 0
+            instructionCounter++;
+            ps.AddScript(scriptConfig); // 1
+            instructionCounter++;
+            ps.AddParameter("OutputPath", mofOutputFile); // 2
+            instructionCounter++;
+            ps.Invoke(); // 3
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
+            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName} at instruction {instructionCounter}");
             throw;
         }
     }
