@@ -17,12 +17,13 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     using System.Diagnostics.CodeAnalysis;
     using Enums;
     using UTMO.Text.FileGenerator.Attributes;
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class DscLcmConfiguration : DscResourceBase
     {
-        public sealed override string ResourceTypeName => "/DSC/Computers";
+        public sealed override string ResourceTypeName => DscResourceTypeNames.DscLcmConfiguration;
 
         public sealed override string TemplatePath => "LcmConfiguration";
         

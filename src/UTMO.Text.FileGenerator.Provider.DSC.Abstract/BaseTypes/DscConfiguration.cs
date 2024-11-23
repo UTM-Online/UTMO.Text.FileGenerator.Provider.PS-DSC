@@ -15,11 +15,12 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
     using UTMO.Text.FileGenerator.Attributes;
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
     public abstract class DscConfiguration : DscResourceBase
     {
-        public sealed override string ResourceTypeName => "/DSC/Configurations";
+        public sealed override string ResourceTypeName => DscResourceTypeNames.DscConfiguration;
 
         public sealed override string TemplatePath => nameof(DscConfiguration);
 

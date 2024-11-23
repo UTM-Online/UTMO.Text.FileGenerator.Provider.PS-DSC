@@ -4,6 +4,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
@@ -15,7 +16,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     public void HandleTemplate(ITemplateModel model)
     {
-        if (model.GetType() != typeof(DscLcmConfiguration) && model.GetType() != typeof(DscConfiguration))
+        if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
             Console.WriteLine($"Skipping {model.ResourceName} as it is not a DSC Configuration or LCM Configuration");
             return;
@@ -37,9 +38,10 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             throw;
         }
         
-        var    fileName      = model.ResourceName;
-        var    fileType      = model.GetType() == typeof(DscLcmConfiguration) ? "Configuration" : "Computers";
-        string    mofOutputFile;
+        var    fileName = model.ResourceName;
+        var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+        
+        string mofOutputFile;
         
         try
         {
