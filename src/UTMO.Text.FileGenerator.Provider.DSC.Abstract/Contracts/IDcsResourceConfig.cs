@@ -4,7 +4,7 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 public interface IDcsResourceConfig
 {
-    DscEnsure Ensure { get; }
+    DscEnsure Ensure { get; set; }
     
     List<string> DependsOn { get; }
 }
