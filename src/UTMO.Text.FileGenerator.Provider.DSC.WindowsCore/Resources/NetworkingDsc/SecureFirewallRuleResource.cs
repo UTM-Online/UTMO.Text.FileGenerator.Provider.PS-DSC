@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Enums;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.NetworkingDscConstants.Firewall;
 
-public class SecureFirewallRuleResource : NetworkingDscBase
+public class SecureFirewallRuleResource : NetworkingDscBase, ISecureFirewallRuleResource
 {
     private SecureFirewallRuleResource(string name) : base(name)
     {
@@ -98,14 +99,14 @@ public class SecureFirewallRuleResource : NetworkingDscBase
         set => this.PropertyBag.Set(Constants.Parameters.LocalPort, value);
     }
     
-    public static SecureFirewallRuleResource Create(string name, Action<SecureFirewallRuleResource> configure)
+    public static SecureFirewallRuleResource Create(string name, Action<ISecureFirewallRuleResource> configure)
     {
         var resource = new SecureFirewallRuleResource(name);
         configure(resource);
         return resource;
     }
     
-    public static SecureFirewallRuleResource Create(string name, Action<SecureFirewallRuleResource> configure, out SecureFirewallRuleResource resource)
+    public static SecureFirewallRuleResource Create(string name, Action<ISecureFirewallRuleResource> configure, out SecureFirewallRuleResource resource)
     {
         resource = new SecureFirewallRuleResource(name);
         configure(resource);

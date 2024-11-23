@@ -1,8 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco.Resources;
 
+using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoPackageSource;
 
-public class ChocoPackageSourceResource : cChocoBase
+public class ChocoPackageSourceResource : cChocoBase, IChocoPackageSourceResource
 {
     private ChocoPackageSourceResource(string name) : base(name)
     {

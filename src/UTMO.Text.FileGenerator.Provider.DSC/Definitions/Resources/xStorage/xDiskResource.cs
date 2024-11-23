@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xStorage;
 
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xStorage.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xStorageConstants.xDisk;
 
 // ReSharper disable once InconsistentNaming
-public class xDiskResource : xStorageBase
+public class xDiskResource : xStorageBase, IxDiskResource
 {
     private xDiskResource(string name) : base(name)
     {
@@ -31,14 +32,14 @@ public class xDiskResource : xStorageBase
         set => this.PropertyBag.Set(Constants.Properties.FSFormat, value);
     }
     
-    public static xDiskResource Create(string name, Action<xDiskResource> configure)
+    public static xDiskResource Create(string name, Action<IxDiskResource> configure)
     {
         var resource = new xDiskResource(name);
         configure(resource);
         return resource;
     }
     
-    public static xDiskResource Create(string name, Action<xDiskResource> configure, out xDiskResource resource)
+    public static xDiskResource Create(string name, Action<IxDiskResource> configure, out xDiskResource resource)
     {
         resource = new xDiskResource(name);
         configure(resource);

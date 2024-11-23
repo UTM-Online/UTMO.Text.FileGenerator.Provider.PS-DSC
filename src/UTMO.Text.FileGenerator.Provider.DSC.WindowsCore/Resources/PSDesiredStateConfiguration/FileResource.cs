@@ -1,9 +1,10 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.File;
 
-public class FileResource : PSDesiredStateConfigurationBase
+public class FileResource : PSDesiredStateConfigurationBase, IFileResource
 {
     private FileResource(string name) : base(name)
     {
@@ -24,14 +25,14 @@ public class FileResource : PSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.Contents, value);
     }
     
-    public static FileResource Create(string name, Action<FileResource> configure)
+    public static FileResource Create(string name, Action<IFileResource> configure)
     {
         var resource = new FileResource(name);
         configure(resource);
         return resource;
     }
     
-    public static FileResource Create(string name, Action<FileResource> configure, out FileResource resource)
+    public static FileResource Create(string name, Action<IFileResource> configure, out FileResource resource)
     {
         resource = new FileResource(name);
         configure(resource);

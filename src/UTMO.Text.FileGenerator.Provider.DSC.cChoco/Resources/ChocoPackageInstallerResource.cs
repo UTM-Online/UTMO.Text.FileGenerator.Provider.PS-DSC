@@ -1,8 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco.Resources;
 
+using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoPackageInstaller;
 
-public class ChocoPackageInstallerResource : cChocoBase
+public class ChocoPackageInstallerResource : cChocoBase, IChocoPackageInstallerResource
 {
     private ChocoPackageInstallerResource(string name) : base(name)
     {
@@ -38,14 +39,14 @@ public class ChocoPackageInstallerResource : cChocoBase
         set => this.PropertyBag.Set(Constants.Parameters.Params, value);
     }
 
-    public static ChocoPackageInstallerResource Create(string name, Action<ChocoPackageInstallerResource> configure)
+    public static ChocoPackageInstallerResource Create(string name, Action<IChocoPackageInstallerResource> configure)
     {
         var resource = new ChocoPackageInstallerResource(name);
         configure(resource);
         return resource;
     }
 
-    public static ChocoPackageInstallerResource Create(string name, Action<ChocoPackageInstallerResource> configure,
+    public static ChocoPackageInstallerResource Create(string name, Action<IChocoPackageInstallerResource> configure,
                                                        out ChocoPackageInstallerResource resourceRef)
     {
         var resource = new ChocoPackageInstallerResource(name);

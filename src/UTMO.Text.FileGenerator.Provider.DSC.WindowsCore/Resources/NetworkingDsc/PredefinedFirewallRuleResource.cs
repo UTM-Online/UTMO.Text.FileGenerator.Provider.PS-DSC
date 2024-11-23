@@ -1,9 +1,10 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.NetworkingDscConstants.Firewall;
 
-public class PredefinedFirewallRuleResource : NetworkingDscBase
+public class PredefinedFirewallRuleResource : NetworkingDscBase, IPredefinedFirewallRuleResource
 {
     private PredefinedFirewallRuleResource(string name) : base(name)
     {
@@ -25,14 +26,14 @@ public class PredefinedFirewallRuleResource : NetworkingDscBase
         set => this.PropertyBag.Set(Constants.Parameters.Name, value);
     }
     
-    public static PredefinedFirewallRuleResource Create(string name, Action<PredefinedFirewallRuleResource> configure)
+    public static PredefinedFirewallRuleResource Create(string name, Action<IPredefinedFirewallRuleResource> configure)
     {
         var resource = new PredefinedFirewallRuleResource(name);
         configure(resource);
         return resource;
     }
     
-    public static PredefinedFirewallRuleResource Create(string name, Action<PredefinedFirewallRuleResource> configure, out PredefinedFirewallRuleResource resourceRef)
+    public static PredefinedFirewallRuleResource Create(string name, Action<IPredefinedFirewallRuleResource> configure, out PredefinedFirewallRuleResource resourceRef)
     {
         var resource = new PredefinedFirewallRuleResource(name);
         configure(resource);

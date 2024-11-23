@@ -2,9 +2,10 @@
 
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PackageManagement.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PackageManagementConstants.PackageManagementSource;
 
-public class PackageManagementSourceResource : PackageManagementBase
+public class PackageManagementSourceResource : PackageManagementBase, IPackageManagementSourceResource
 {
     public PackageManagementSourceResource(string name) : base(name)
     {
@@ -44,14 +45,14 @@ public class PackageManagementSourceResource : PackageManagementBase
         set => this.PropertyBag.Set(Constants.Properties.InstallationPolicy, value);
     }
     
-    public static PackageManagementSourceResource Create(string name, Action<PackageManagementSourceResource> configure)
+    public static PackageManagementSourceResource Create(string name, Action<IPackageManagementSourceResource> configure)
     {
         var resource = new PackageManagementSourceResource(name);
         configure(resource);
         return resource;
     }
     
-    public static PackageManagementSourceResource Create(string name, Action<PackageManagementSourceResource> configure, out PackageManagementSourceResource resource)
+    public static PackageManagementSourceResource Create(string name, Action<IPackageManagementSourceResource> configure, out PackageManagementSourceResource resource)
     {
         resource = new PackageManagementSourceResource(name);
         configure(resource);

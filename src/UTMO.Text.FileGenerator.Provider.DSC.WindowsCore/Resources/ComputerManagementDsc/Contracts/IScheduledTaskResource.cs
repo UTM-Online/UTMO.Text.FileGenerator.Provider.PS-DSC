@@ -3,7 +3,7 @@
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc.Enums;
 
-public interface IScheduledTaskResource : IDcsResourceConfig
+public interface IScheduledTaskResource : IDscResourceConfig
 {
     string TaskDescription { get; set; }
 

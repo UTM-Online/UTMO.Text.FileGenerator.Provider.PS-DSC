@@ -2,7 +2,7 @@
 
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
-public interface IDcsResourceConfig
+public interface IDscResourceConfig
 {
     DscEnsure Ensure { get; set; }
     

@@ -1,9 +1,10 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.SecurityPolicyDsc;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.SecurityPolicyDsc.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.SecurityPolicyDscConstants.UserRightsAssignment;
 
-public class UserRightsAssignmentResource : SecurityPolicyDscBase
+public class UserRightsAssignmentResource : SecurityPolicyDscBase, IUserRightsAssignmentResource
 {
     private UserRightsAssignmentResource(string name) : base(name)
     {
@@ -30,14 +31,14 @@ public class UserRightsAssignmentResource : SecurityPolicyDscBase
         set => this.PropertyBag.Set(Constants.Properties.Force, value);
     }
     
-    public static UserRightsAssignmentResource Create(string name, Action<UserRightsAssignmentResource> configure)
+    public static UserRightsAssignmentResource Create(string name, Action<IUserRightsAssignmentResource> configure)
     {
         var resource = new UserRightsAssignmentResource(name);
         configure(resource);
         return resource;
     }
     
-    public static UserRightsAssignmentResource Create(string name, Action<UserRightsAssignmentResource> configure, out UserRightsAssignmentResource resource)
+    public static UserRightsAssignmentResource Create(string name, Action<IUserRightsAssignmentResource> configure, out UserRightsAssignmentResource resource)
     {
         resource = new UserRightsAssignmentResource(name);
         configure(resource);

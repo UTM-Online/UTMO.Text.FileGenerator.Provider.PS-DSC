@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Enums;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.Registry;
 
-public class RegistryResource : PSDesiredStateConfigurationBase
+public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResource
 {
     private RegistryResource(string name) : base(name)
     {
@@ -41,14 +42,14 @@ public class RegistryResource : PSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.ValueType, value);
     }
     
-    public static RegistryResource Create(string name, Action<RegistryResource> configure)
+    public static RegistryResource Create(string name, Action<IRegistryResource> configure)
     {
         var resource = new RegistryResource(name);
         configure(resource);
         return resource;
     }
     
-    public static RegistryResource Create(string name, Action<RegistryResource> configure, out RegistryResource resource)
+    public static RegistryResource Create(string name, Action<IRegistryResource> configure, out RegistryResource resource)
     {
         resource = new RegistryResource(name);
         configure(resource);

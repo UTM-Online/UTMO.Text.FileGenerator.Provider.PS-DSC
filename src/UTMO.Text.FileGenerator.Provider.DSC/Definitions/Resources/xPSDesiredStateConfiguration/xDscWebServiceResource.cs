@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredStateConfigurationConstants.xDSCWebService;
 
 // ReSharper disable once InconsistentNaming
-public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
+public class xDscWebServiceResource : xPSDesiredStateConfigurationBase, IxDscWebServiceResource
 {
     private xDscWebServiceResource(string name) : base(name)
     {
@@ -101,14 +102,14 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.AppPoolName, value);
     }
     
-    public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure)
+    public static xDscWebServiceResource Create(string name, Action<IxDscWebServiceResource> configure)
     {
         var resource = new xDscWebServiceResource(name);
         configure(resource);
         return resource;
     }
     
-    public static xDscWebServiceResource Create(string name, Action<xDscWebServiceResource> configure, out xDscWebServiceResource resource)
+    public static xDscWebServiceResource Create(string name, Action<IxDscWebServiceResource> configure, out xDscWebServiceResource resource)
     {
         resource = new xDscWebServiceResource(name);
         configure(resource);

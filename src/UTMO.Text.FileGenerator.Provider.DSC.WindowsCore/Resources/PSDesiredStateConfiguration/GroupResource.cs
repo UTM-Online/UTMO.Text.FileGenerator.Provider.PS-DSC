@@ -1,9 +1,10 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.Group;
 
-public class GroupResource : PSDesiredStateConfigurationBase
+public class GroupResource : PSDesiredStateConfigurationBase, IGroupResource
 {
     private GroupResource(string name) : base(name)
     {
@@ -23,14 +24,14 @@ public class GroupResource : PSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.MembersToInclude, value);
     }
     
-    public static GroupResource Create(string name, Action<GroupResource> configure)
+    public static GroupResource Create(string name, Action<IGroupResource> configure)
     {
         var resource = new GroupResource(name);
         configure(resource);
         return resource;
     }
     
-    public static GroupResource Create(string name, Action<GroupResource> configure, out GroupResource resource)
+    public static GroupResource Create(string name, Action<IGroupResource> configure, out GroupResource resource)
     {
         resource = new GroupResource(name);
         configure(resource);

@@ -1,10 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration.Contracts;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredStateConfigurationConstants.xWindowsFeatureSet;
 
 // ReSharper disable once InconsistentNaming
-public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase
+public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase, IxWindowsFeatureSetResource
 {
     private xWindowsFeatureSetResource(string name) : base(name)
     {
@@ -38,14 +39,14 @@ public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase
         set => this.PropertyBag.Set(Constants.Properties.LogPath, value);
     }
     
-    public static xWindowsFeatureSetResource Create(string name, Action<xWindowsFeatureSetResource> configure)
+    public static xWindowsFeatureSetResource Create(string name, Action<IxWindowsFeatureSetResource> configure)
     {
         var resource = new xWindowsFeatureSetResource(name);
         configure(resource);
         return resource;
     }
     
-    public static xWindowsFeatureSetResource Create(string name, Action<xWindowsFeatureSetResource> configure, out xWindowsFeatureSetResource resource)
+    public static xWindowsFeatureSetResource Create(string name, Action<IxWindowsFeatureSetResource> configure, out xWindowsFeatureSetResource resource)
     {
         resource = new xWindowsFeatureSetResource(name);
         configure(resource);
