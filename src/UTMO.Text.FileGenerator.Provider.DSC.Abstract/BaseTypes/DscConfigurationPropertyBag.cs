@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using DotLiquid;
+using DotLiquid.Tags;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 
 public class DscConfigurationPropertyBag : ILiquidizable
@@ -116,20 +117,26 @@ public class DscConfigurationPropertyBag : ILiquidizable
 
     public object ToLiquid()
     {
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        return Hash.FromDictionary(this._propertyBag.Where(a => a.Value != default || (a.Value is string valString && !string.IsNullOrWhiteSpace(valString))).Select(a =>
-                                   {
-                                       if (a.Value is bool valBool)
-                                       {
-                                           return new KeyValuePair<string, object>(a.Key, $"${valBool.ToString().ToLower()}");
-                                       }
-                                       
-                                       if (a.Value is string valString)
-                                       {
-                                           return new KeyValuePair<string, object>(a.Key, $"'{valString}'");
-                                       }
+        var liquidObject = new Dictionary<string, object>();
 
-                                       return a;
-                                   }).ToDictionary(a => a.Key, a => a.Value));
+        foreach (var prop in this._propertyBag)
+        {
+            switch (prop.Value)
+            {
+                case bool b:
+                {
+                    liquidObject[prop.Key] = b ? "$true" : "$false";
+                    continue;
+                }
+                case string s when string.IsNullOrWhiteSpace(s):
+                {
+                    continue;
+                }
+            }
+
+            liquidObject[prop.Key] = prop.Value;
+        }
+        
+        return liquidObject;
     }
 }
