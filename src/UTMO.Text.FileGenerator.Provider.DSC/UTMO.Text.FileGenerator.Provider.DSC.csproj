@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
+      <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
       <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.22" />
       <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.22" />
     </ItemGroup>
