@@ -1,22 +1,23 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Text;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    public GenerateMofFilesPlugin(IGeneralFileWriter writer, ITemplateGenerationEnvironment environment)
+    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath)
     {
         this.Writer = writer;
-        this.Environment = environment;
+        this.OutputPath = outputPath;
     }
 
     public void HandleTemplate(ITemplateModel model)
     {
         Guard.StringNotNull(nameof(model.ResourceTypeName), model.ResourceTypeName);
-        Guard.StringNotNull("Environment.OutputPath", this.Environment.OutputPath);
 
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
@@ -30,7 +31,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            scriptConfig = model.ProduceOutputPath(this.Environment.OutputPath);
+            scriptConfig = model.ProduceOutputPath(this.OutputPath);
         }
         catch (Exception e)
         {
@@ -47,7 +48,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.GetFullPath(Path.Join(scriptConfig, @"..\..", "MOF", fileType, $"{fileName}.mof"));
+            mofOutputFile = $@"..\..\MOF\{fileType}\{fileName}.mof";
         }
         catch (Exception e)
         {
@@ -56,26 +57,31 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
-        var instructionCounter = 0;
 
         try
         {
-            using var ps = PowerShell.Create(RunspaceMode.NewRunspace); // 0
-            instructionCounter++;
-            ps.AddScript(scriptConfig); // 1
-            instructionCounter++;
-            ps.AddParameter("OutputPath", mofOutputFile); // 2
-            instructionCounter++;
-            ps.Invoke(); // 3
+            // launch a new instance of powershell and run the script
+            using var runspace = RunspaceFactory.CreateRunspace();
+            runspace.Open();
+            using var pipeline = PowerShell.Create(RunspaceMode.NewRunspace);
+            pipeline.Runspace = runspace;
+            var sb = new StringBuilder();
+            sb.AppendLine($"$exp = \"{scriptConfig}\" -OutputPath {mofOutputFile}");
+            sb.AppendLine("Invoke-Expression $exp");
+            var script = sb.ToString();
+            pipeline.AddScript(script);
+            pipeline.Invoke();
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName} at instruction {instructionCounter}");
+            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
             throw;
         }
     }
 
     public IGeneralFileWriter Writer { get; init; }
 
-    public ITemplateGenerationEnvironment Environment { get; init; }
+    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+
+    private string OutputPath { get; init; }
 }

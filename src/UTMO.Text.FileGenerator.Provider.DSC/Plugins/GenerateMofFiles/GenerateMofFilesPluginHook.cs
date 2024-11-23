@@ -4,13 +4,15 @@ using UTMO.Text.FileGenerator.Abstract;
 
 public static class GenerateMofFilesPluginHook
 {
-    public static IRegisterPluginManager UseGenerateMofFilesPlugin(this IRegisterPluginManager pluginManager)
+    public static IRegisterPluginManager UseGenerateMofFilesPlugin(this IRegisterPluginManager pluginManager, string outputPath)
     {
-        if (pluginManager is IPluginManager pm)
+        if (pluginManager is not IPluginManager pm)
         {
-            var plugin = new GenerateMofFilesPlugin(pm.Resolve<IGeneralFileWriter>(), pm.Resolve<ITemplateGenerationEnvironment>());
-            pluginManager.RegisterAfterRenderPlugin(plugin);
+            return pluginManager;
         }
+
+        var plugin = new GenerateMofFilesPlugin(pm.Resolve<IGeneralFileWriter>(), outputPath);
+        pluginManager.RegisterAfterRenderPlugin(plugin);
 
         return pluginManager;
     }
