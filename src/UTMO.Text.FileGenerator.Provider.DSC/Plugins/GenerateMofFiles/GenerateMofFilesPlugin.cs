@@ -1,7 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
@@ -17,6 +16,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     public void HandleTemplate(ITemplateModel model)
     {
         Guard.StringNotNull(nameof(model.ResourceTypeName), model.ResourceTypeName);
+        Guard.StringNotNull("Environment.OutputPath", this.Environment.OutputPath);
 
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
@@ -59,14 +59,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            using var ps = PowerShell.Create();
-            if (ps == null)
-            {
-                throw new InvalidOperationException("Failed to create PowerShell instance.");
-            }
-
-            ps.AddCommand($"{scriptConfig}")
-              .AddParameter("OutputPath", mofOutputFile);
+            using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
+            ps.AddScript(scriptConfig);
+            ps.AddParameter("OutputPath", mofOutputFile);
             ps.Invoke();
         }
         catch (Exception e)
