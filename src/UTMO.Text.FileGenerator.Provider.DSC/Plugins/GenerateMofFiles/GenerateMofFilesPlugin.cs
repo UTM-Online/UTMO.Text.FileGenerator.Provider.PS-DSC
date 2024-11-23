@@ -15,14 +15,48 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     public void HandleTemplate(ITemplateModel model)
     {
-        var scriptConfig  = model.ProduceOutputPath(this.Environment.OutputPath);
-        var fileName      = model.ResourceName;
-        var fileType      = model.GetType() == typeof(DscLcmConfiguration) ? "Configuration" : "Computers";
-        var mofOutputFile = Path.GetFullPath(Path.Join(scriptConfig, @"..\..", "MOF", fileType, $"{fileName}.mof"));
+        if (model.GetType() != typeof(DscLcmConfiguration) && model.GetType() != typeof(DscConfiguration))
+        {
+            return;
+        }
+        
+        string scriptConfig;
 
-        using var ps = PowerShell.Create(InitialSessionState.CreateDefault2());
-        ps.AddCommand($"{scriptConfig} -OutputPath {mofOutputFile}");
-        ps.Invoke();
+        try
+        {
+            scriptConfig = model.ProduceOutputPath(this.Environment.OutputPath);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
+            throw;
+        }
+        
+        var    fileName      = model.ResourceName;
+        var    fileType      = model.GetType() == typeof(DscLcmConfiguration) ? "Configuration" : "Computers";
+        string    mofOutputFile;
+        
+        try
+        {
+            mofOutputFile = Path.GetFullPath(Path.Join(scriptConfig, @"..\..", "MOF", fileType, $"{fileName}.mof"));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
+            throw;
+        }
+
+        try
+        {
+            using var ps = PowerShell.Create(InitialSessionState.CreateDefault2());
+            ps.AddCommand($"{scriptConfig} -OutputPath {mofOutputFile}");
+            ps.Invoke();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
+            throw;
+        }
     }
 
     public IGeneralFileWriter Writer { get; init; }
