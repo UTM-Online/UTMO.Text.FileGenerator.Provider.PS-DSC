@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.22" />
-      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.22" />
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.23" />
+      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.23" />
     </ItemGroup>
 
 </Project>
