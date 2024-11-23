@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
