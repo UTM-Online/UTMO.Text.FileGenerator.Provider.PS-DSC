@@ -4,5 +4,5 @@ public static class DscResourceTypeNames
 {
     public const string DscConfiguration = "/DSC/Configurations";
     
-    public const string DscLcmConfiguration = "/DSC/LCMConfigurations";
+    public const string DscLcmConfiguration = "/DSC/Computers";
 }
