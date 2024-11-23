@@ -4,7 +4,6 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
-using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
@@ -18,7 +17,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     public void HandleTemplate(ITemplateModel model)
     {
         Guard.StringNotNull(nameof(model.ResourceTypeName), model.ResourceTypeName);
-        
+
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
             Console.WriteLine($"Skipping {model.ResourceName} as it is not a DSC Configuration or LCM Configuration");
@@ -38,14 +37,14 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
             throw;
         }
-        
+
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
-        
-        var    fileName = model.ResourceName;
+
+        var fileName = model.ResourceName;
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-        
+
         string mofOutputFile;
-        
+
         try
         {
             mofOutputFile = Path.GetFullPath(Path.Join(scriptConfig, @"..\..", "MOF", fileType, $"{fileName}.mof"));
@@ -55,12 +54,17 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
             throw;
         }
-        
+
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
 
         try
         {
-            using var ps = PowerShell.Create(InitialSessionState.CreateDefault2());
+            using var ps = PowerShell.Create();
+            if (ps == null)
+            {
+                throw new InvalidOperationException("Failed to create PowerShell instance.");
+            }
+
             ps.AddCommand($"{scriptConfig}")
               .AddParameter("OutputPath", mofOutputFile);
             ps.Invoke();
