@@ -1,8 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Contracts;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Enums;
 
-public interface ISimpleFirewallRuleResource
+public interface ISimpleFirewallRuleResource : IDscResourceConfig
 {
     string RuleName { get; set; }
 

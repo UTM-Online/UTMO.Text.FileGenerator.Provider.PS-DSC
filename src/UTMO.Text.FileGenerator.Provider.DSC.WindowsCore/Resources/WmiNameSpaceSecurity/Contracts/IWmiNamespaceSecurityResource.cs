@@ -1,8 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.WmiNameSpaceSecurity.Contracts;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.WmiNameSpaceSecurity.Enums;
 
-public interface IWmiNamespaceSecurityResource
+public interface IWmiNamespaceSecurityResource : IDscResourceConfig
 {
     string Path { get; set; }
 
