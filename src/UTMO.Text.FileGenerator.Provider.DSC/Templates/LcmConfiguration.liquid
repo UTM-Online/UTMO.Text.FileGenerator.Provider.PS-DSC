@@ -18,7 +18,7 @@ Configuration LocalConfigApplication
         {{ resource.lcm_resource_type }} {{ resource.lcm_resource_name }}
         {
             ServerURL = '{{ resource.server_url }}'
-            RegistrationKey = '{{ resource.registration_key }}'{% if resource.configuration_names != empty %}
+            RegistrationKey = '{{ registration_key }}'{% if resource.configuration_names != empty %}
             ConfigurationNames = @({% for cfg in resource.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
         }
 {% endfor %}{% for cfg in partial_configs %}
