@@ -17,7 +17,12 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     {
         if (model.GetType() != typeof(DscLcmConfiguration) && model.GetType() != typeof(DscConfiguration))
         {
+            Console.WriteLine($"Skipping {model.ResourceName} as it is not a DSC Configuration or LCM Configuration");
             return;
+        }
+        else
+        {
+            Console.WriteLine($"Generating MOF file for {model.ResourceName}");
         }
         
         string scriptConfig;
