@@ -128,7 +128,12 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = b ? "$true" : "$false";
                     continue;
                 }
-                case string s when string.IsNullOrWhiteSpace(s):
+                case string s when !string.IsNullOrWhiteSpace(s):
+                {
+                    liquidObject[prop.Key] = $"'{s}'";
+                    continue;
+                }
+                case string:
                 {
                     continue;
                 }
