@@ -1,8 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
@@ -48,9 +46,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = $@"..\..\MOF\{fileType}\{fileName}.mof";
+            mofOutputFile = Path.GetFullPath($@"..\..\MOF\{fileType}\{fileName}.mof", System.Environment.CurrentDirectory);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
             throw;
@@ -61,17 +59,14 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         try
         {
             // launch a new instance of powershell and run the script
-            using var runspace = RunspaceFactory.CreateRunspace();
-            runspace.Open();
-            using var pipeline = PowerShell.Create(RunspaceMode.NewRunspace);
-            pipeline.Runspace = runspace;
+            using var ps = PowerShell.Create();
             var script = File.ReadAllText(scriptConfig);
             Guard.StringNotNull(nameof(script), script);
-            pipeline.AddScript(script);
-            pipeline.AddParameter("OutputPath", mofOutputFile);
-            pipeline.Invoke();
+            ps.AddScript(script);
+            ps.AddParameter("OutputPath", mofOutputFile);
+            ps.Invoke();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
             throw;
