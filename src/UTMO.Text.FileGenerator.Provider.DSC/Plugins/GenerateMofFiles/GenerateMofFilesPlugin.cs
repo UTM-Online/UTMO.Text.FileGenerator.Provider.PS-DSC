@@ -47,7 +47,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.GetFullPath($@"..\MOF\{fileType}\{fileName}", System.Environment.CurrentDirectory);
+            mofOutputFile = Path.GetFullPath($@"MOF\{fileType}\{fileName}", this.Environment.OutputPath);
         }
         catch (Exception)
         {
