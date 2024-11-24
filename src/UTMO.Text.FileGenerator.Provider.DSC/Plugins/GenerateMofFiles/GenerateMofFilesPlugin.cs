@@ -75,20 +75,26 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                               {
                                   FileName = "PowerShell.exe",
                                   Arguments = $"-ExecutionPolicy Bypass -File {scriptConfig} -OutputPath {mofOutputFile}",
-                                  RedirectStandardOutput = !this.EnhancedLogging,
-                                  RedirectStandardError = !this.EnhancedLogging,
+                                  RedirectStandardOutput = true,
+                                  RedirectStandardError = true,
                                   UseShellExecute = false,
                                   CreateNoWindow = true,
                               };
+
+            string? stdOut;
             
             using (var process = Process.Start(processInfo))
             {
-                if (!this.EnhancedLogging)
-                {
-                    var stdOut = process?.StandardOutput.ReadToEnd();
-                    stdErr = process?.StandardError.ReadToEnd();
-                }
+                stdOut = process?.StandardOutput.ReadToEnd();
+                stdErr = process?.StandardError.ReadToEnd();
                 process?.WaitForExit();
+            }
+
+            if (this.EnhancedLogging)
+            {
+                Console.WriteLine($"Standard Output: {stdOut}");
+                Console.WriteLine();
+                Console.WriteLine($"Standard Error: {stdErr}");
             }
             
             Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
@@ -97,7 +103,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         {
             Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
 
-            if (!this.EnhancedLogging && !string.IsNullOrWhiteSpace(stdErr))
+            if (!string.IsNullOrWhiteSpace(stdErr))
             {
                 Console.WriteLine($"Standard Error: {stdErr}");
             }
