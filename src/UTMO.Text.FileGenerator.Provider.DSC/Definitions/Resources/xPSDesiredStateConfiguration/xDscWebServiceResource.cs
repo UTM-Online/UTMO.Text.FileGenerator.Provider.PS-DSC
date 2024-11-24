@@ -17,7 +17,7 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase, IxDscWeb
         this.PropertyBag.Init(Constants.Properties.ConfigurationPath);
         this.PropertyBag.Init(Constants.Properties.State);
         this.PropertyBag.Init(Constants.Properties.RegistrationKeyPath);
-        this.PropertyBag.Init(Constants.Properties.SqlProvider);
+        this.PropertyBag.Init<bool>(Constants.Properties.SqlProvider);
         this.PropertyBag.Init(Constants.Properties.SqlConnectionString);
         this.PropertyBag.Init<bool>(Constants.Properties.AcceptSelfSignedCertificates);
         this.PropertyBag.Init<bool>(Constants.Properties.UseSecurityBestPractices);
@@ -72,9 +72,9 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase, IxDscWeb
         set => this.PropertyBag.Set(Constants.Properties.RegistrationKeyPath, value);
     }
     
-    public string SqlProvider
+    public bool SqlProvider
     {
-        get => this.PropertyBag.Get(Constants.Properties.SqlProvider);
+        get => this.PropertyBag.Get<bool>(Constants.Properties.SqlProvider);
         set => this.PropertyBag.Set(Constants.Properties.SqlProvider, value);
     }
     

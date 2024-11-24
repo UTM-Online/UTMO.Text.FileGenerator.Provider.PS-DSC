@@ -20,7 +20,7 @@ public interface IxDscWebServiceResource : IDscResourceConfig
 
     string RegistrationKeyPath { get; set; }
 
-    string SqlProvider { get; set; }
+    bool SqlProvider { get; set; }
 
     string SqlConnectionString { get; set; }
 
