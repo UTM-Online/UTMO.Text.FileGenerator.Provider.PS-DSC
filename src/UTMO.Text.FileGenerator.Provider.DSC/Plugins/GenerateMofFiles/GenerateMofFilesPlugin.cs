@@ -8,10 +8,11 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath)
+    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging)
     {
         this.Writer = writer;
         this.OutputPath = outputPath;
+        this.EnhancedLogging = enhancedLogging;
     }
 
     public void HandleTemplate(ITemplateModel model)
@@ -40,6 +41,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
 
+        if (this.EnhancedLogging)
+        {
+            Console.WriteLine($"Script Config Path: {scriptConfig}");
+        }
+
         var fileName = model.ResourceName;
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
 
@@ -56,6 +62,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
+        
+        if (this.EnhancedLogging)
+        {
+            Console.WriteLine($"MOF Output Path: {mofOutputFile}");
+        }
 
         string? stdErr = null;
         try
@@ -64,8 +75,8 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                               {
                                   FileName = "PowerShell.exe",
                                   Arguments = $"-ExecutionPolicy Bypass -File {scriptConfig} -OutputPath {mofOutputFile}",
-                                  RedirectStandardOutput = true,
-                                  RedirectStandardError = true,
+                                  RedirectStandardOutput = !this.EnhancedLogging,
+                                  RedirectStandardError = !this.EnhancedLogging,
                                   UseShellExecute = false,
                                   CreateNoWindow = true,
                               };
@@ -97,4 +108,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     public ITemplateGenerationEnvironment Environment { get; init; } = null!;
 
     private string OutputPath { get; init; }
+    
+    private bool EnhancedLogging { get; init; }
 }
