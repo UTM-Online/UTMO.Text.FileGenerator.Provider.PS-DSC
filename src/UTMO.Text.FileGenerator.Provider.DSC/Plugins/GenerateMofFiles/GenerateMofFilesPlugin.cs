@@ -8,11 +8,12 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging)
+    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, TimeSpan? overrideMaxRuntime = null)
     {
         this.Writer = writer;
         this.OutputPath = outputPath;
         this.EnhancedLogging = enhancedLogging;
+        this.MaxRuntime = overrideMaxRuntime ?? TimeSpan.FromSeconds(45);
     }
 
     public void HandleTemplate(ITemplateModel model)
@@ -128,5 +129,5 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     
     private bool EnhancedLogging { get; init; }
 
-    public TimeSpan MaxRuntime => TimeSpan.FromMinutes(2);
+    public TimeSpan MaxRuntime { get; }
 }
