@@ -127,4 +127,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     private string OutputPath { get; init; }
     
     private bool EnhancedLogging { get; init; }
+
+    public TimeSpan MaxRuntime => TimeSpan.FromMinutes(2);
 }
