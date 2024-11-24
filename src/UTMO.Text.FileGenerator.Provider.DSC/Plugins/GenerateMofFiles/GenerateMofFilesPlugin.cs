@@ -33,7 +33,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         {
             scriptConfig = model.ProduceOutputPath(this.OutputPath);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
             throw;
