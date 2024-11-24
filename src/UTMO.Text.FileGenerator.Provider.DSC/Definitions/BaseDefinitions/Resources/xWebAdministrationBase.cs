@@ -11,4 +11,6 @@ public abstract class xWebAdministrationBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => xWebAdministration.Instance;
+    
+    public sealed override bool HasEnsure => true;
 }

@@ -11,4 +11,6 @@ public abstract class PSDesiredStateConfigurationBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => PSDesiredStateConfiguration.Instance;
+    
+    public sealed override bool HasEnsure => true;
 }

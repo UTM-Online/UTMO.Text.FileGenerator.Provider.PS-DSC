@@ -32,7 +32,10 @@ public abstract class DscConfigurationItem : RelatedTemplateResourceBase
 
     [MemberName("property_bag")]
     public DscConfigurationPropertyBag PropertyBag { get; } = new();
-
+    
+    [MemberName("has_ensure")]
+    public abstract bool HasEnsure { get; }
+    
     public sealed override bool GenerateManifest => false;
 
     public string DependencyName => $"[{this.ResourceId}]{this.Name}";

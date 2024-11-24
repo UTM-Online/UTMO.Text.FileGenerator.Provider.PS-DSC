@@ -11,4 +11,6 @@ public abstract class xPSDesiredStateConfigurationBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => xPSDesiredStateConfiguration.Instance;
+
+    public sealed override bool HasEnsure => true;
 }

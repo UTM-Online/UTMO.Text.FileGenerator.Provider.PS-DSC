@@ -10,4 +10,6 @@ public abstract class PackageManagementBase : DscConfigurationItem
     }
     
     public sealed override RequiredModule SourceModule => PackageManagement.Instance;
+    
+    public sealed override bool HasEnsure => true;
 }

@@ -10,4 +10,6 @@ public abstract class SecurityPolicyDscBase : DscConfigurationItem
     }
 
     public override RequiredModule SourceModule => SecurityPolicyDsc.Instance;
+    
+    public override bool HasEnsure => true;
 }

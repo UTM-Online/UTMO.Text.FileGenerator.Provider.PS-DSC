@@ -10,4 +10,6 @@ public abstract class ComputerManagementDscBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => ComputerManagementDsc.Instance;
+
+    public sealed override bool HasEnsure => true;
 }

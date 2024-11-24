@@ -10,4 +10,6 @@ public abstract class NetworkingDscBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => NetworkingDsc.Instance;
+    
+    public sealed override bool HasEnsure => true;
 }

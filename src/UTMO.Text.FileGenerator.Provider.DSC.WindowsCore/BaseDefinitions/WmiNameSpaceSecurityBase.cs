@@ -9,8 +9,7 @@ public abstract class WmiNameSpaceSecurityBase : DscConfigurationItem
     {
     }
 
-    public sealed override RequiredModule SourceModule
-    {
-        get => WmiNamespaceSecurity.Instance;
-    }
+    public sealed override RequiredModule SourceModule => WmiNamespaceSecurity.Instance;
+    
+    public sealed override bool HasEnsure => true;
 }

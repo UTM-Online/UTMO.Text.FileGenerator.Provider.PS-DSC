@@ -38,4 +38,6 @@ public class ChocoInstallerResource : cChocoBase, IChocoInstallerResource
     }
 
     public override string ResourceId => Constants.ResourceId;
+
+    public sealed override bool HasEnsure => false;
 }

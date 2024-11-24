@@ -42,4 +42,6 @@ public class ChocoPackageSourceResource : cChocoBase, IChocoPackageSourceResourc
     }
 
     public override string ResourceId => Constants.ResourceId;
+    
+    public override bool HasEnsure => true;
 }
