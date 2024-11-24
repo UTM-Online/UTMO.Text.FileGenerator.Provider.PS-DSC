@@ -92,9 +92,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
             if (this.EnhancedLogging)
             {
-                Console.WriteLine($"Standard Output: {stdOut}");
+                Console.WriteLine($"Standard Output: {stdOut ?? "None"}");
                 Console.WriteLine();
-                Console.WriteLine($"Standard Error: {stdErr}");
+                Console.WriteLine($"Standard Error: {stdErr ?? "None"}");
             }
             
             Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
