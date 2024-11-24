@@ -97,7 +97,15 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 Console.WriteLine($"Standard Error: {stdErr ?? "None"}");
             }
             
-            Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
+            if (!string.IsNullOrWhiteSpace(stdErr))
+            {
+                Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
+                Console.WriteLine($"Standard Error: {stdErr}");
+            }
+            else
+            {
+                Console.WriteLine($"Successfully generated the MOF file for {model.ResourceName}");
+            }
         }
         catch (Exception)
         {
