@@ -83,8 +83,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             
             using (var process = Process.Start(processInfo))
             {
-                var stdOut = process?.StandardOutput.ReadToEnd();
-                stdErr = process?.StandardError.ReadToEnd();
+                if (!this.EnhancedLogging)
+                {
+                    var stdOut = process?.StandardOutput.ReadToEnd();
+                    stdErr = process?.StandardError.ReadToEnd();
+                }
                 process?.WaitForExit();
             }
             
@@ -94,7 +97,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         {
             Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
 
-            if (!string.IsNullOrWhiteSpace(stdErr))
+            if (!this.EnhancedLogging && !string.IsNullOrWhiteSpace(stdErr))
             {
                 Console.WriteLine($"Standard Error: {stdErr}");
             }
