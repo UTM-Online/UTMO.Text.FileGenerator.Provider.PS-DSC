@@ -47,7 +47,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.GetFullPath($@"..\..\MOF\{fileType}\{fileName}.mof", System.Environment.CurrentDirectory);
+            mofOutputFile = Path.GetFullPath($@"..\MOF\{fileType}\{fileName}", System.Environment.CurrentDirectory);
         }
         catch (Exception)
         {
@@ -74,8 +74,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             var     stdOut  = process?.StandardOutput.ReadToEnd();
             stdErr = process?.StandardError.ReadToEnd();
             process?.WaitForExit();
-            
-            Console.WriteLine($"Standard Output: {stdOut}");
             Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
         }
         catch (Exception)
