@@ -70,10 +70,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                                   CreateNoWindow = true,
                               };
             
-            var     process = Process.Start(processInfo);
-            var     stdOut  = process?.StandardOutput.ReadToEnd();
-            stdErr = process?.StandardError.ReadToEnd();
-            process?.WaitForExit();
+            using (var process = Process.Start(processInfo))
+            {
+                var stdOut = process?.StandardOutput.ReadToEnd();
+                stdErr = process?.StandardError.ReadToEnd();
+                process?.WaitForExit();
+            }
+            
             Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
         }
         catch (Exception)
