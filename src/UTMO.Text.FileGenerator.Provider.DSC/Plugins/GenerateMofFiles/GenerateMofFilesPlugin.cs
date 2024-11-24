@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
+using System.Diagnostics;
 using System.Management.Automation;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
@@ -56,19 +57,36 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
 
+        string? stdErr = null;
         try
         {
-            // launch a new instance of powershell and run the script
-            using var ps = PowerShell.Create();
-            var script = File.ReadAllText(scriptConfig);
-            Guard.StringNotNull(nameof(script), script);
-            ps.AddScript(script);
-            ps.AddParameter("OutputPath", mofOutputFile);
-            ps.Invoke();
+            var processInfo = new ProcessStartInfo
+                              {
+                                  FileName = "PowerShell.exe",
+                                  Arguments = $"-ExecutionPolicy Bypass -File {scriptConfig} -OutputPath {mofOutputFile}",
+                                  RedirectStandardOutput = true,
+                                  RedirectStandardError = true,
+                                  UseShellExecute = false,
+                                  CreateNoWindow = true,
+                              };
+            
+            var     process = Process.Start(processInfo);
+            var     stdOut  = process?.StandardOutput.ReadToEnd();
+            stdErr = process?.StandardError.ReadToEnd();
+            process?.WaitForExit();
+            
+            Console.WriteLine($"Standard Output: {stdOut}");
+            Console.WriteLine($"MOF file for {model.ResourceName} has been generated successfully");
         }
         catch (Exception)
         {
             Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
+
+            if (!string.IsNullOrWhiteSpace(stdErr))
+            {
+                Console.WriteLine($"Standard Error: {stdErr}");
+            }
+            
             throw;
         }
     }
