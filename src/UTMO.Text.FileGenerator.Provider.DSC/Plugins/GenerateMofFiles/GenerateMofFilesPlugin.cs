@@ -47,7 +47,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.Combine(this.Environment.OutputPath, $@"MOF\{fileType}\{fileName}");
+            mofOutputFile = Path.Combine(this.OutputPath, $@"MOF\{fileType}\{fileName}");
         }
         catch (Exception)
         {
