@@ -66,7 +66,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             using var pipeline = PowerShell.Create(RunspaceMode.NewRunspace);
             pipeline.Runspace = runspace;
             var sb = new StringBuilder();
-            sb.AppendLine($"$exp = \"{scriptConfig}\" -OutputPath {mofOutputFile}");
+            sb.AppendLine($"$exp = \"'{scriptConfig}' -OutputPath '{mofOutputFile}'\"");
             sb.AppendLine("Invoke-Expression $exp");
             var script = sb.ToString();
             pipeline.AddScript(script);
