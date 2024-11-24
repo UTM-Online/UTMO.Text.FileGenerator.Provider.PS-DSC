@@ -65,11 +65,10 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             runspace.Open();
             using var pipeline = PowerShell.Create(RunspaceMode.NewRunspace);
             pipeline.Runspace = runspace;
-            var sb = new StringBuilder();
-            sb.AppendLine($"$exp = \"'{scriptConfig}' -OutputPath '{mofOutputFile}'\"");
-            sb.AppendLine("Invoke-Expression $exp");
-            var script = sb.ToString();
+            var script = File.ReadAllText(scriptConfig);
+            Guard.StringNotNull(nameof(script), script);
             pipeline.AddScript(script);
+            pipeline.AddParameter("OutputPath", mofOutputFile);
             pipeline.Invoke();
         }
         catch (Exception e)
