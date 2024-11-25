@@ -5,15 +5,17 @@ using System.Management.Automation;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
+using UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, TimeSpan? overrideMaxRuntime = null)
+    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, IGeneratorLogger logger, TimeSpan? overrideMaxRuntime = null)
     {
         this.Writer = writer;
         this.OutputPath = outputPath;
         this.EnhancedLogging = enhancedLogging;
         this.MaxRuntime = overrideMaxRuntime ?? TimeSpan.FromSeconds(45);
+        this.Logger = logger;
     }
 
     public void HandleTemplate(ITemplateModel model)
@@ -22,11 +24,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
-            Console.WriteLine($"Skipping {model.ResourceName} as it is not a DSC Configuration or LCM Configuration");
+            this.Logger.Warning(LogMessages.SkippingNonDscResource, model.ResourceName);
             return;
         }
 
-        Console.WriteLine($"Beginning generate MOF file for {model.ResourceName}");
+        this.Logger.Information(LogMessages.StartingMofFileGeneration, model.ResourceName);
 
         string scriptConfig;
 
@@ -36,16 +38,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
         catch (Exception)
         {
-            Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
+            this.Logger.Error(LogMessages.ErrorGeneratingOutputPath, model.ResourceName);
             throw;
         }
 
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
-
-        if (this.EnhancedLogging)
-        {
-            Console.WriteLine($"Script Config Path: {scriptConfig}");
-        }
+        
+        this.Logger.Verbose(LogMessages.ScriptConfigPath, scriptConfig);
 
         var fileName = model.ResourceName;
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
@@ -58,16 +57,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
         catch (Exception)
         {
-            Console.WriteLine($"Encountered an error while trying to produce the output path for {model.ResourceName}");
+            this.Logger.Error(LogMessages.ErrorGeneratingMofOutputPath, model.ResourceName);
             throw;
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
         
-        if (this.EnhancedLogging)
-        {
-            Console.WriteLine($"MOF Output Path: {mofOutputFile}");
-        }
+        this.Logger.Verbose(LogMessages.MofOutputPath, mofOutputFile);
 
         string? stdErr = null;
         try
@@ -90,33 +86,22 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 stdErr = process?.StandardError.ReadToEnd();
                 process?.WaitForExit();
             }
-
-            if (this.EnhancedLogging)
-            {
-                Console.WriteLine($"Standard Output: {stdOut ?? "None"}");
-                Console.WriteLine();
-                Console.WriteLine($"Standard Error: {stdErr ?? "None"}");
-            }
+            
+            this.Logger.Verbose(LogMessages.MofGenerationStdOut, stdOut ?? "None");
             
             if (!string.IsNullOrWhiteSpace(stdErr))
             {
-                Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
-                Console.WriteLine($"Standard Error: {stdErr}");
+                this.Logger.Error(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
+                stdErr = null;
             }
             else
             {
-                Console.WriteLine($"Successfully generated the MOF file for {model.ResourceName}");
+                this.Logger.Information(LogMessages.MofGenerationSucceeded, model.ResourceName);
             }
         }
         catch (Exception)
         {
-            Console.WriteLine($"Encountered an error while trying to generate the MOF file for {model.ResourceName}");
-
-            if (!string.IsNullOrWhiteSpace(stdErr))
-            {
-                Console.WriteLine($"Standard Error: {stdErr}");
-            }
-            
+            this.Logger.Error(LogMessages.MofGenerationFailed, model.ResourceName, stdErr ?? "None");
             throw;
         }
     }
@@ -130,4 +115,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     private bool EnhancedLogging { get; init; }
 
     public TimeSpan MaxRuntime { get; }
+    
+    private IGeneratorLogger Logger { get; init; }
 }

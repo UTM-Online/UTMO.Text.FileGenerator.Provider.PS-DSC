@@ -3,11 +3,15 @@
 using System.Runtime.CompilerServices;
 using DotLiquid;
 using DotLiquid.Tags;
+using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
 
 public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
+
+    private IGeneratorLogger Logger => PluginManager.Instance.Resolve<IGeneratorLogger>();
     
     public void Set<T>(string key, T value)
     {
@@ -59,7 +63,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            throw new ArgumentNullException(nameof(key));
+            this.Logger.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
         }
         
         this._propertyBag[key] = string.Empty;
@@ -82,15 +86,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
         catch (NullReferenceException)
         {
-            throw new MandatoryParameterNullException(key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+            this.Logger.Fatal(LogMessages.MandatoryPropertyNullException, true, 22, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+            throw;
         }
         catch (InvalidCastException ice)
         {
-            throw new InvalidPropertyBagCastException(ice, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+            var ex = new InvalidPropertyBagCastException(ice, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+            this.Logger.Fatal(ex.Message, true, 23);
+            throw;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            this.Logger.Fatal(e.Message, true, 24);
             throw;
         }
     }

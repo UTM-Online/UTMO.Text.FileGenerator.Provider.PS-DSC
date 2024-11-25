@@ -9,8 +9,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.25" />
-      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.25" />
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.28" />
+      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.28" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Messaging\LogMessages.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Messaging\LogMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LogMessages.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

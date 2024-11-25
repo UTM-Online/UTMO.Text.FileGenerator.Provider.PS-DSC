@@ -11,7 +11,7 @@ public static class GenerateMofFilesPluginHook
             return pluginManager;
         }
 
-        var plugin = new GenerateMofFilesPlugin(pm.Resolve<IGeneralFileWriter>(), outputPath, enableEnhancedLogging);
+        var plugin = new GenerateMofFilesPlugin(pm.Resolve<IGeneralFileWriter>(), outputPath, enableEnhancedLogging, pm.Resolve<IGeneratorLogger>());
         pluginManager.RegisterAfterRenderPlugin(plugin);
 
         return pluginManager;
