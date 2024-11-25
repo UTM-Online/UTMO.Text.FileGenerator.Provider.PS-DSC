@@ -2,8 +2,6 @@
 
 using System.Runtime.CompilerServices;
 using DotLiquid;
-using DotLiquid.Tags;
-using Serilog;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
