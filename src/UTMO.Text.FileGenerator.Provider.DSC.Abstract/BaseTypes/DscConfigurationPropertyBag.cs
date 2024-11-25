@@ -3,6 +3,7 @@
 using System.Runtime.CompilerServices;
 using DotLiquid;
 using DotLiquid.Tags;
+using Serilog;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
@@ -11,7 +12,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
 
-    private IGeneratorLogger Logger => PluginManager.Instance.Resolve<IGeneratorLogger>();
+    private IGeneratorLogger Logger => PluginManager.Instance.ResolveLogger();
     
     public void Set<T>(string key, T value)
     {
@@ -49,7 +50,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            throw new ArgumentNullException(nameof(key));
+            this.Logger.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
         }
 
         this._propertyBag[key] = typeof(T) switch
