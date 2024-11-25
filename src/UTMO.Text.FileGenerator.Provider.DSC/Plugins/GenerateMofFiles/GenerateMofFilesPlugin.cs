@@ -9,13 +9,13 @@ using UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages;
 
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, IGeneratorLogger logger, TimeSpan? overrideMaxRuntime = null)
+    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, TimeSpan? overrideMaxRuntime = null)
     {
         this.Writer = writer;
         this.OutputPath = outputPath;
         this.EnhancedLogging = enhancedLogging;
         this.MaxRuntime = overrideMaxRuntime ?? TimeSpan.FromSeconds(45);
-        this.Logger = logger;
+        this.Logger = PluginManager.Instance.Resolve<IGeneratorLogger>();
     }
 
     public void HandleTemplate(ITemplateModel model)
