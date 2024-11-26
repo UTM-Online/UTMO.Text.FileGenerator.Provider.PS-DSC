@@ -64,7 +64,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public override void Validate()
         {
-            this.Logger.Information(ValidationMessages.BeginningValidation, this.ResourceName, this.ResourceTypeName);
+            this.Logger.Information(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
             var validationErrors = new List<string>();
 
             this.ValidateResourceTypeAndNameUnique(this.ConfigurationItems, validationErrors);
@@ -101,7 +101,8 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
                 foreach (var dn in duplicateNames)
                 {
-                    validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, group.Key, dn.Key));
+                    var message = $"[Validation] More then one resource of type {group.Key} with the name {dn.Key} was detected during validation. All resource for a type must have a unique name.";
+                    validationErrors.Add(message);
                 }
             }
         }
