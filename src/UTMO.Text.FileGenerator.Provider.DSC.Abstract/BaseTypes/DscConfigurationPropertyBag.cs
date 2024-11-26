@@ -147,10 +147,10 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     continue;
                 }
-                case List<string> list:
+                case IEnumerable<string> list:
                 {
                     liquidObject[prop.Key] = $"@({string.Join(", ", list.Select(a => $"'{a}'"))})";
-                        break;
+                    break;
                 }
                 default:
                 {
