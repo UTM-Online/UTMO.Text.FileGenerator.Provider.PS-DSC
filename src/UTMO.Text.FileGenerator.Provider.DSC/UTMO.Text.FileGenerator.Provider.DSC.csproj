@@ -47,5 +47,10 @@
         <DependentUpon>LogMessages.resx</DependentUpon>
       </Compile>
     </ItemGroup>
+    
+    <ItemGroup>
+        <None Remove="ref\**" />
+        <None Remove="runtimes\**" />
+    </ItemGroup>
 
 </Project>

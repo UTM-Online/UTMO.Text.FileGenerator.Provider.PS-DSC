@@ -14,9 +14,11 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using UTMO.Text.FileGenerator.Abstract;
     using UTMO.Text.FileGenerator.Attributes;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
 
     public abstract class DscConfiguration : DscResourceBase
     {
@@ -52,10 +54,56 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         public sealed override string OutputExtension => "ps1";
 
         public sealed override bool GenerateManifest => false;
+        
+        protected IGeneratorLogger Logger { get; } = PluginManager.Instance.Resolve<IGeneratorLogger>();
 
         public sealed override object? ToManifest()
         {
             return null;
+        }
+
+        public override void Validate()
+        {
+            this.Logger.Information(ValidationMessages.BeginningValidation, this.ResourceName, this.ResourceTypeName);
+            var validationErrors = new List<string>();
+
+            this.ValidateResourceTypeAndNameUnique(this.ConfigurationItems, validationErrors);
+
+            if (validationErrors.Any())
+            {
+                foreach (var error in validationErrors)
+                {
+                    this.Logger.Error(error);
+                }
+                
+                this.Logger.Fatal(ValidationMessages.ValidationFailed, true, 99, this.ResourceName, this.ResourceTypeName);
+            }
+            else
+            {
+                this.Logger.Information(ValidationMessages.ValidationSucceded, this.ResourceName, this.ResourceTypeName);
+            }
+        }
+
+        public override Dictionary<string, object> ToTemplateContext()
+        {
+            this.Validate();
+            return base.ToTemplateContext();
+        }
+
+        private void ValidateResourceTypeAndNameUnique(IEnumerable<DscConfigurationItem> configurationItems, List<string> validationErrors)
+        {
+            var resourceGroupings = configurationItems.GroupBy(x => x.ResourceTypeName).ToList();
+
+            foreach (var group in resourceGroupings)
+            {
+                // Ensure that the Name property is unique for each resource type
+                var duplicateNames = group.GroupBy(x => x.ResourceName).Where(x => x.Count() > 1).ToList();
+
+                foreach (var dn in duplicateNames)
+                {
+                    validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, group.Key, dn.Key));
+                }
+            }
         }
     }
 }
