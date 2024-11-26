@@ -64,7 +64,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public override void Validate()
         {
-            this.Logger.Information(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
+            this.Logger.Verbose(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
             var validationErrors = new List<string>();
 
             this.ValidateResourceTypeAndNameUnique(this.ConfigurationItems, validationErrors);
@@ -80,7 +80,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             }
             else
             {
-                this.Logger.Information(ValidationMessages.ValidationSucceded, this.ResourceTypeName, this.ResourceName);
+                this.Logger.Verbose(ValidationMessages.ValidationSucceded, this.ResourceTypeName, this.ResourceName);
             }
         }
 
