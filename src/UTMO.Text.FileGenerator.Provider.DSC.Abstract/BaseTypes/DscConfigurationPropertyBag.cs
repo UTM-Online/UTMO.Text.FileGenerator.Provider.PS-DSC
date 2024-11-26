@@ -132,20 +132,29 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 case bool b:
                 {
                     liquidObject[prop.Key] = b ? "$true" : "$false";
-                    continue;
+                    break;
                 }
                 case string s when !string.IsNullOrWhiteSpace(s):
                 {
                     liquidObject[prop.Key] = $"'{s}'";
-                    continue;
+                    break;
                 }
                 case string:
                 {
                     continue;
                 }
+                default:
+                {
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                    if (prop.Value is null)
+                    {
+                        continue;
+                    }
+                    
+                    liquidObject[prop.Key] = prop.Value;
+                    break;
+                }
             }
-
-            liquidObject[prop.Key] = prop.Value;
         }
         
         return liquidObject;
