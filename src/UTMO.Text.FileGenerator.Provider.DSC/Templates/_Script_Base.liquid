@@ -2,5 +2,8 @@ param(
 [string]$OutputPath
 )
 
+$host.UI.RawUI.BufferSize = New-Object Management.Automation.Host.Size(512, 50)
+$host.UI.RawUI.WindowSize = New-Object Management.Automation.Host.Size(512, 50)
+
 {% block script %}
 {% endblock %}
