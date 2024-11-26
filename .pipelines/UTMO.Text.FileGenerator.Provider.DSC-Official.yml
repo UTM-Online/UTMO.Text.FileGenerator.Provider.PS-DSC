@@ -18,8 +18,8 @@ trigger:
   batch: true
   branches:
     include:
-      - main
       - release/v2
+      - main
   paths:
     include:
       - src/UTMO.Text.FileGenerator.Provider.DSC/*
