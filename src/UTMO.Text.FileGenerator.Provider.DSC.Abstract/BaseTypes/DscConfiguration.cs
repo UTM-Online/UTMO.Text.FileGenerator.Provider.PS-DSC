@@ -96,11 +96,21 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
             foreach (var group in resourceGroupings)
             {
+                if (group.Key.Equals("NaN"))
+                {
+                    continue;
+                }
+                
                 // Ensure that the Name property is unique for each resource type
                 var duplicateNames = group.GroupBy(x => x.ResourceName).Where(x => x.Count() > 1).ToList();
 
                 foreach (var dn in duplicateNames)
                 {
+                    if (dn.Key.Equals("NaN"))
+                    {
+                        continue;
+                    }
+                    
                     var message = $"[Validation] More then one resource of type {group.Key} with the name {dn.Key} was detected during validation. All resource for a type must have a unique name.";
                     validationErrors.Add(message);
                 }
