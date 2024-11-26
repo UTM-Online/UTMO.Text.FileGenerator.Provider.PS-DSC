@@ -92,7 +92,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         private void ValidateResourceTypeAndNameUnique(IEnumerable<DscConfigurationItem> configurationItems, List<string> validationErrors)
         {
-            var resourceGroupings = configurationItems.GroupBy(x => x.ResourceTypeName).ToList();
+            var resourceGroupings = configurationItems.GroupBy(x => x.ResourceId).ToList();
 
             foreach (var group in resourceGroupings)
             {
@@ -102,13 +102,13 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                 }
                 
                 // Ensure that the Name property is unique for each resource type
-                var duplicateNames = group.GroupBy(x => x.Name).Where(x => x.Count() > 1).Select(a => a.Key).ToList();
+                var duplicateNames = group.GroupBy(x => x.Name).Where(x => x.Count() > 1).SelectMany(a => a).ToList();
                 
                 if (duplicateNames.Any())
                 {
-                    foreach (var name in duplicateNames)
+                    foreach (var cfg in duplicateNames)
                     {
-                        validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, group.Key, name));
+                        validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, cfg.ResourceId, cfg.ResourceName));
                     }
                 }
             }
