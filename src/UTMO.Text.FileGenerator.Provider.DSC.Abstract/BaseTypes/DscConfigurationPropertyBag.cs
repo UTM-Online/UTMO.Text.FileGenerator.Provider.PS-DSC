@@ -143,14 +143,17 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     continue;
                 }
+                case null:
+                {
+                    continue;
+                }
+                case List<string> list:
+                {
+                    liquidObject[prop.Key] = $"@({string.Join(", ", list.Select(a => $"'{a}'"))})";
+                        break;
+                }
                 default:
                 {
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                    if (prop.Value is null)
-                    {
-                        continue;
-                    }
-                    
                     liquidObject[prop.Key] = prop.Value;
                     break;
                 }
