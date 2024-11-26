@@ -13,9 +13,9 @@ public class ChocoPackageSourceResource : cChocoBase, IChocoPackageSourceResourc
 
     public string SourceName
     {
-        get => this.PropertyBag.Get(Constants.Parameters.Source);
+        get => this.PropertyBag.Get(Constants.Parameters.Name);
         
-        set => this.PropertyBag.Set(Constants.Parameters.Source, value);
+        set => this.PropertyBag.Set(Constants.Parameters.Name, value);
     }
     
     public string SourceUri
