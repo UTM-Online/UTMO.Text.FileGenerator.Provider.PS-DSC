@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="DuplicateResourceNameError" xml:space="preserve">
-        <value>[Validation] More then one resource of type {ResourceTypeName} with the name {ResourceName} was detected during validation. All resource for a type must have a unique name.</value>
+        <value>[Validation] More then one resource of type {0} with the name {1} was detected during validation. All resource for a type must have a unique name.</value>
     </data>
     <data name="BeginningValidation" xml:space="preserve">
         <value>[Validation] Beginning Validation of resource {ResourceTypeName}/{ResourceName}</value>

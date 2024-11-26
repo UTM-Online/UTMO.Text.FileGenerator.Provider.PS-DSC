@@ -69,7 +69,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Validation] More then one resource of type {ResourceTypeName} with the name {ResourceName} was detected during validation. All resource for a type must have a unique name..
+        ///   Looks up a localized string similar to [Validation] More then one resource of type {0} with the name {1} was detected during validation. All resource for a type must have a unique name..
         /// </summary>
         internal static string DuplicateResourceNameError {
             get {

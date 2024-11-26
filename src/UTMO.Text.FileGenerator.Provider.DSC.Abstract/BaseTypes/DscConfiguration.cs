@@ -80,7 +80,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             }
             else
             {
-                this.Logger.Information(ValidationMessages.ValidationSucceded, this.ResourceName, this.ResourceTypeName);
+                this.Logger.Information(ValidationMessages.ValidationSucceded, this.ResourceTypeName, this.ResourceName);
             }
         }
 
@@ -111,7 +111,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                         continue;
                     }
                     
-                    var message = $"[Validation] More then one resource of type {group.Key} with the name {dn.Key} was detected during validation. All resource for a type must have a unique name.";
+                    var message = string.Format(ValidationMessages.ValidationFailed, group.Key, dn.Key);
                     validationErrors.Add(message);
                 }
             }
