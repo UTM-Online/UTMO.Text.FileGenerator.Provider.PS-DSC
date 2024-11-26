@@ -102,17 +102,14 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                 }
                 
                 // Ensure that the Name property is unique for each resource type
-                var duplicateNames = group.GroupBy(x => x.ResourceName).Where(x => x.Count() > 1).ToList();
-
-                foreach (var dn in duplicateNames)
+                var duplicateNames = group.GroupBy(x => x.Name).Where(x => x.Count() > 1).Select(a => a.Key).ToList();
+                
+                if (duplicateNames.Any())
                 {
-                    if (dn.Key.Equals("NaN"))
+                    foreach (var name in duplicateNames)
                     {
-                        continue;
+                        validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, group.Key, name));
                     }
-                    
-                    var message = string.Format(ValidationMessages.ValidationFailed, group.Key, dn.Key);
-                    validationErrors.Add(message);
                 }
             }
         }
