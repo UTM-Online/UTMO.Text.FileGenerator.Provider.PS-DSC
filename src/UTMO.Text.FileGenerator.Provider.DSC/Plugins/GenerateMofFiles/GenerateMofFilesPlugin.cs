@@ -71,7 +71,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             var processInfo = new ProcessStartInfo
                               {
                                   FileName = "PowerShell.exe",
-                                  Arguments = $"-ExecutionPolicy Bypass -File {scriptConfig} -OutputPath {mofOutputFile}",
+                                  Arguments = $"-ExecutionPolicy Bypass -NoProfile -File {scriptConfig} -OutputPath {mofOutputFile}",
                                   RedirectStandardOutput = true,
                                   RedirectStandardError = true,
                                   UseShellExecute = false,
