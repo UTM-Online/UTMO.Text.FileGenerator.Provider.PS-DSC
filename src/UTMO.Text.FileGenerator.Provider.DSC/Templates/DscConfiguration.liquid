@@ -22,4 +22,5 @@ Configuration {{ FullName }}
 }
 
 {{ FullName }} -OutputPath $OutputPath
+Rename-Item -Path $(Join-Path -Path $OutputPath -ChildPath "localhost.mof") -NewName "{{ FullName }}.mof"
 {% endblock %}
