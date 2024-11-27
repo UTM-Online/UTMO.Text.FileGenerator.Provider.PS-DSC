@@ -152,6 +152,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"@({string.Join(", ", list.Select(a => $"'{a}'"))})";
                     break;
                 }
+                case TimeSpan span:
+                {
+                    liquidObject[prop.Key] = $"'{span}'";
+                    break;
+                }
                 default:
                 {
                     liquidObject[prop.Key] = prop.Value;
