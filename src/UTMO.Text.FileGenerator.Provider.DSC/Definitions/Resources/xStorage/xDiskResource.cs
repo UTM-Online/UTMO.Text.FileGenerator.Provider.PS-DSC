@@ -47,4 +47,6 @@ public class xDiskResource : xStorageBase, IxDiskResource
     }
 
     public override string ResourceId => Constants.ResourceId;
+
+    public sealed override bool HasEnsure => false;
 }

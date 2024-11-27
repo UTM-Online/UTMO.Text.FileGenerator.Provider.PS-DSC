@@ -11,6 +11,4 @@ public abstract class xStorageBase : DscConfigurationItem
     }
 
     public sealed override RequiredModule SourceModule => Modules.xStorage.Instance;
-    
-    public sealed override bool HasEnsure => true;
 }
