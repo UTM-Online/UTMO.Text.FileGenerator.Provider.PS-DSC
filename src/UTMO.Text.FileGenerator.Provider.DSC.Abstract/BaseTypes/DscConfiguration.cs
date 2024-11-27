@@ -76,7 +76,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                     this.Logger.Error(error);
                 }
                 
-                this.Logger.Fatal(ValidationMessages.ValidationFailed, true, 99, this.ResourceName, this.ResourceTypeName);
+                this.Logger.Fatal(ValidationMessages.ValidationFailed, true, 99, this.ResourceTypeName, this.ResourceName);
             }
             else
             {
