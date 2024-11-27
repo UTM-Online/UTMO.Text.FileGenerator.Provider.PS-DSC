@@ -128,6 +128,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
 
         foreach (var prop in this._propertyBag)
         {
+            // If prop.Value is an array of enums of the same type, parse it to a list of strings
+            if (prop.Value is IEnumerable enumerable && enumerable.GetEnumerator().MoveNext())
+            {
+                var enumerator = enumerable.GetEnumerator();
+                enumerator.MoveNext();
+                if (enumerator.Current is Enum)
+                {
+                    liquidObject[prop.Key] = $"@({string.Join(", ", enumerable.Cast<Enum>().Select(e => $"'{e}'"))})";
+                    continue;
+                }
+            }
+            
             switch (prop.Value)
             {
                 case bool b:
@@ -165,12 +177,6 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
                 default:
                 {
-                    if (prop.Value is IEnumerable<Enum> enumArray)
-                    {
-                        liquidObject[prop.Key] = $"@({string.Join(", ", enumArray.Select(a => $"'{a}'"))})";
-                        break;
-                    }
-                    
                     liquidObject[prop.Key] = prop.Value;
                     break;
                 }
