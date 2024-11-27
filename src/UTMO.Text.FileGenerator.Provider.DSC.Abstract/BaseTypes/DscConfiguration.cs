@@ -92,24 +92,23 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         private void ValidateResourceTypeAndNameUnique(IEnumerable<DscConfigurationItem> configurationItems, List<string> validationErrors)
         {
-            var resourceGroupings = configurationItems.GroupBy(x => x.ResourceId).ToList();
+            var seenNames = new Dictionary<string, HashSet<string>>();
 
-            foreach (var group in resourceGroupings)
+            foreach (var item in configurationItems)
             {
-                if (group.Key.Equals("NaN"))
+                if (item.ResourceId.Equals("NaN"))
                 {
                     continue;
                 }
-                
-                // Ensure that the Name property is unique for each resource type
-                var duplicateNames = group.GroupBy(x => x.Name).Where(x => x.Count() > 1).SelectMany(a => a).ToList();
-                
-                if (duplicateNames.Any())
+
+                if (!seenNames.ContainsKey(item.ResourceId))
                 {
-                    foreach (var cfg in duplicateNames)
-                    {
-                        validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, cfg.ResourceId, cfg.ResourceName));
-                    }
+                    seenNames[item.ResourceId] = new HashSet<string>();
+                }
+
+                if (!seenNames[item.ResourceId].Add(item.Name))
+                {
+                    validationErrors.Add(string.Format(ValidationMessages.DuplicateResourceNameError, item.ResourceId, item.Name));
                 }
             }
         }
