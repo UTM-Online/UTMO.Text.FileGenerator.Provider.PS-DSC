@@ -26,8 +26,8 @@ Configuration LocalConfigApplication
         {
             Description = '{{ cfg.Description }}'
             RefreshMode = '{{ cfg.Mode }}'{%- if cfg.Mode == 'Pull' %}
-            ResourceModuleSource = '{{ cfg.module_source }}'
-            ConfigurationSource = '{{ cfg.config_source }}'{%- endif %}
+            ResourceModuleSource = '[ResourceRepositoryWeb]{{ cfg.module_source }}'
+            ConfigurationSource = '[ConfigurationRepositoryWeb]{{ cfg.config_source }}'{%- endif %}
         }{% if forloop.last == false %}
 {% endif %}{% endfor %}
     }
