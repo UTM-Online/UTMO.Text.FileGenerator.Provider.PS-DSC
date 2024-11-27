@@ -157,6 +157,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"'{span}'";
                     break;
                 }
+                case char ch:
+                {
+                    liquidObject[prop.Key] = $"'{ch}'";
+                    break;
+                }
                 default:
                 {
                     liquidObject[prop.Key] = prop.Value;
