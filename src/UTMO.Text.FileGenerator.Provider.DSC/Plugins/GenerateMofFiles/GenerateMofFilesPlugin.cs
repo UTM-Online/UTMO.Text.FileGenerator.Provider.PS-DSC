@@ -46,7 +46,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         
         this.Logger.Verbose(LogMessages.ScriptConfigPath, scriptConfig);
 
-        var fileName = model.ResourceName;
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
 
         string mofOutputFile;
