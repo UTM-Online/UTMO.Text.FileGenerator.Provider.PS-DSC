@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
+using System.Collections;
 using System.Runtime.CompilerServices;
 using DotLiquid;
 using UTMO.Text.FileGenerator.Abstract;
@@ -160,6 +161,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 case char ch:
                 {
                     liquidObject[prop.Key] = $"'{ch}'";
+                    break;
+                }
+                case IEnumerable<Enum> en:
+                {
+                    liquidObject[prop.Key] = $"@({string.Join(", ", en.Select(a => $"'{a}'"))})";
                     break;
                 }
                 default:
