@@ -163,14 +163,14 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"'{ch}'";
                     break;
                 }
-                case IEnumerable<Enum> en:
-                {
-                    var enumList = en.Cast<Enum>().ToList();
-                    liquidObject[prop.Key] = $"@({string.Join(", ", enumList.Select(a => $"'{a}'"))})";
-                    break;
-                }
                 default:
                 {
+                    if (prop.Value is IEnumerable<Enum> enumArray)
+                    {
+                        liquidObject[prop.Key] = $"@({string.Join(", ", enumArray.Select(a => $"'{a}'"))})";
+                        break;
+                    }
+                    
                     liquidObject[prop.Key] = prop.Value;
                     break;
                 }
