@@ -18,7 +18,7 @@
       <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.6" />
       <PackageReference Include="System.Management.Automation" Version="6.2.7" />
       <PackageReference Include="UTMO.Common.Guards" Version="1.0.7" />
-      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.35" />
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.42" />
     </ItemGroup>
 
     <ItemGroup>

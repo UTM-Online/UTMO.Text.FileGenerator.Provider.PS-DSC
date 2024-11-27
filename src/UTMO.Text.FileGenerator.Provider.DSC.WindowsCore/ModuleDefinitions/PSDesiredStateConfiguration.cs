@@ -12,4 +12,6 @@ public class PSDesiredStateConfiguration : RequiredModule
     public override string ModuleVersion => string.Empty;
     
     public static RequiredModule Instance { get; } = new PSDesiredStateConfiguration();
+
+    public override bool GenerateManifest => false;
 }
