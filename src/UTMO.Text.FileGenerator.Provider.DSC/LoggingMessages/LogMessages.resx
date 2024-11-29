@@ -49,4 +49,19 @@ Error Stream: {StandardError}</value>
     <data name="DscPropertyBagUnhandledException" xml:space="preserve">
         <value>Encountered Unhandled Exception Fetching a property from the property bag. Exception Message: {ExceptionMessage}</value>
     </data>
+    <data name="StartingRestoreRequiredModules" xml:space="preserve">
+        <value>Beginning Restore Required Modules Plugin.</value>
+    </data>
+    <data name="WritingRestoreRequiredModules" xml:space="preserve">
+        <value>Writing the Restore Required Modules to DIsk</value>
+    </data>
+    <data name="RestoreModulesStdOut" xml:space="preserve">
+        <value>[RestoreModules] STD Out: {stdOut}</value>
+    </data>
+    <data name="RestoreRequiredModulesFailed" xml:space="preserve">
+        <value>Encountered an error restoring required modules. Std Err:  {stdErr}</value>
+    </data>
+    <data name="RestoredRequiredModulesSucceeded" xml:space="preserve">
+        <value>Successfully restore required modules.</value>
+    </data>
 </root>

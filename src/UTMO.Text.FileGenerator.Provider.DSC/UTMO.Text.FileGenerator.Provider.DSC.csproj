@@ -18,12 +18,13 @@
       <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.6" />
       <PackageReference Include="System.Management.Automation" Version="6.2.7" />
       <PackageReference Include="UTMO.Common.Guards" Version="1.0.7" />
-      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.42" />
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.44" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
         <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
+        <None Include="Scripts\**\*.*" PackagePath="Scripts" Pack="true"/>
         <None Remove="UTMO.Text.FileGenerator.Provider.DSC.csproj.DotSettings" />
     </ItemGroup>
 
@@ -46,11 +47,6 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>LogMessages.resx</DependentUpon>
       </Compile>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <None Remove="ref\**" />
-        <None Remove="runtimes\**" />
     </ItemGroup>
 
 </Project>

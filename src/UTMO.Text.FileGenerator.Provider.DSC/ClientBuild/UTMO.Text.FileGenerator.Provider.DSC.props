@@ -9,6 +9,12 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Visible>true</Visible>
         </None>
+        
+        <None Include="$(MSBuildThisFileDirectory)\..\Scripts\**\*.*">
+            <Link>Scripts\%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Visible>true</Visible>
+        </None>
 
         <_TemplateFiles Include="$(MSBuildThisFileDirectory)\..\Templates\**\*.liquid" />
 

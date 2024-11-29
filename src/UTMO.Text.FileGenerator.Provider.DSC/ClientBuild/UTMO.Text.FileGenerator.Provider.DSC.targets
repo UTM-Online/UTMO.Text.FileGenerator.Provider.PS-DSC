@@ -65,5 +65,13 @@
         <Copy SourceFiles="@(_TemplateFiles)" DestinationFolder="$(OutputPath)\Templates" SkipUnchangedFiles="true" />
         <Copy SourceFiles="@(_CustomTemplateFiles)" DestinationFolder="$(OutputPath)\Templates" SkipUnchangedFiles="true" />
     </Target>
+    
+    <Target Name="CopyScriptsToOutputDirectory" AfterTargets="CopyTemplatesToOutputDirectory" >
+        <ItemGroup>
+            <_CustomScriptFiles Include="$(MSBuildProjectDirectory)\Scripts\**\*.*" />
+        </ItemGroup>
+        <Message Text="Copying Scripts to Output Directory via &quot;CopyScriptsToOutputDirectory&quot; target." Importance="high" />
+        <Copy SourceFiles="@(_CustomScriptFiles)" DestinationFolder="$(OutputPath)\Scripts" SkipUnchangedFiles="true" />
+    </Target>
 
 </Project>

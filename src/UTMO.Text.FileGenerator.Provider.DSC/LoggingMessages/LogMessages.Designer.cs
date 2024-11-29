@@ -124,6 +124,33 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully restore required modules..
+        /// </summary>
+        internal static string RestoredRequiredModulesSucceeded {
+            get {
+                return ResourceManager.GetString("RestoredRequiredModulesSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [RestoreModules] STD Out: {stdOut}.
+        /// </summary>
+        internal static string RestoreModulesStdOut {
+            get {
+                return ResourceManager.GetString("RestoreModulesStdOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered an error restoring required modules. Std Err:  {stdErr}.
+        /// </summary>
+        internal static string RestoreRequiredModulesFailed {
+            get {
+                return ResourceManager.GetString("RestoreRequiredModulesFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Script Config Path: {scriptConfig}.
         /// </summary>
         internal static string ScriptConfigPath {
@@ -147,6 +174,24 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
         internal static string StartingMofFileGeneration {
             get {
                 return ResourceManager.GetString("StartingMofFileGeneration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Beginning Restore Required Modules Plugin..
+        /// </summary>
+        internal static string StartingRestoreRequiredModules {
+            get {
+                return ResourceManager.GetString("StartingRestoreRequiredModules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Writing the Restore Required Modules to DIsk.
+        /// </summary>
+        internal static string WritingRestoreRequiredModules {
+            get {
+                return ResourceManager.GetString("WritingRestoreRequiredModules", resourceCulture);
             }
         }
     }
