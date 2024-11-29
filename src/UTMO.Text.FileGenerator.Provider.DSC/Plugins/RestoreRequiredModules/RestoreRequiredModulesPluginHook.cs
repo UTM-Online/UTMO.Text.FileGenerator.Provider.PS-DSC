@@ -4,9 +4,14 @@ using UTMO.Text.FileGenerator.Abstract;
 
 public static class RestoreRequiredModulesPluginHook
 {
-    public static PluginManager UseRestoreRequiredModulesPlugin(this PluginManager pluginManager, TimeSpan? maxRuntime = null)
+    public static IRegisterPluginManager UseRestoreRequiredModulesPlugin(this IRegisterPluginManager pluginManager, TimeSpan? maxRuntime = null)
     {
-        var plugin = new RestoreRequiredModulesPlugin(pluginManager.Resolve<IGeneralFileWriter>(), maxRuntime ?? TimeSpan.FromMinutes(15));
+        if (pluginManager is not PluginManager pm)
+        {
+            return pluginManager;
+        }
+        
+        var plugin = new RestoreRequiredModulesPlugin(pm.Resolve<IGeneralFileWriter>(), maxRuntime ?? TimeSpan.FromMinutes(15));
         pluginManager.RegisterBeforePipelinePlugin(plugin);
 
         return pluginManager;
