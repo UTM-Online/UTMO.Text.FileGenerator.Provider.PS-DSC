@@ -9,15 +9,16 @@ parameters:
       - Debug
   - name: MajorVersion
     type: string
-    default: 1
+    default: 2
   - name: MinorVersion
     type: string
-    default: 0
+    default: 1
 
 trigger:
   batch: true
   branches:
     include:
+      - release/v2
       - main
   paths:
     include:
@@ -30,16 +31,10 @@ resources:
       name: OneBuild\OneBuild.Pipelines.v2
       ref: refs/heads/main
       endpoint: UTMO
-      
-variables:
-  - name: Projects
-    value: $(RepoRoot)/src/UTMO.Text.FileGenerator.Provider.DSC/UTMO.Text.FileGenerator.Provider.DSC.csproj
 
 extends:
   template: v2/Pipelines/UserTemplates/Build/Build.NugetPkg.Template.yml@Templates
   parameters:
     BuildPool: Public
     NugetConfigPath: $(RepoRoot)/src/nuget.config
-    ProjectsToBuild: $(Projects)
-    ProjectsToRestore: $(Projects)
     

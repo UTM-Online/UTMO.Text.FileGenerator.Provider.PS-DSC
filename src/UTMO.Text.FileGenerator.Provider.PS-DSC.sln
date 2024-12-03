@@ -8,6 +8,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".pipelines", ".pipelines", 
 		..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Release.yml = ..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Release.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Definitions", "Definitions", "{28E30D2C-91AA-4DE6-BC65-8802115E151A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.Abstract", "UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj", "{744CEBA3-3FD9-4852-BB89-4D7227664BCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.cChoco", "UTMO.Text.FileGenerator.Provider.DSC.cChoco\UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj", "{2D45FCA1-1503-4471-926B-27D6457988F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.WindowsCore", "UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj", "{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +26,21 @@ Global
 		{3E277A05-8409-4FEF-8480-B6A0AABFF73E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E277A05-8409-4FEF-8480-B6A0AABFF73E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E277A05-8409-4FEF-8480-B6A0AABFF73E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744CEBA3-3FD9-4852-BB89-4D7227664BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744CEBA3-3FD9-4852-BB89-4D7227664BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744CEBA3-3FD9-4852-BB89-4D7227664BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744CEBA3-3FD9-4852-BB89-4D7227664BCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D45FCA1-1503-4471-926B-27D6457988F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D45FCA1-1503-4471-926B-27D6457988F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D45FCA1-1503-4471-926B-27D6457988F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D45FCA1-1503-4471-926B-27D6457988F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2D45FCA1-1503-4471-926B-27D6457988F3} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}
+		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}
 	EndGlobalSection
 EndGlobal

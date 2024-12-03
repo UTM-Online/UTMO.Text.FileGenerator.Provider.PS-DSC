@@ -15,13 +15,13 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC
 {
     using System.Reflection;
-    using Resources;
     using UTMO.Text.FileGenerator.Abstract;
-    
+    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
+
     public static class EnvironmentExtensions
     {
         public static ITemplateGenerationEnvironment AddComputer<T>(this ITemplateGenerationEnvironment env, T computer)
-            where T : DscComputer
+            where T : DscLcmConfiguration
         {
             env.AddResource(computer);
             return env;
@@ -35,7 +35,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
         }
         
         public static ITemplateGenerationEnvironment AddComputer<T>(this ITemplateGenerationEnvironment env)
-            where T : DscComputer, new()
+            where T : DscLcmConfiguration, new()
         {
             var computer = new T();
             env.AddResource(computer);
@@ -47,25 +47,6 @@ namespace UTMO.Text.FileGenerator.Provider.DSC
         {
             var configuration = new T();
             env.AddResource(configuration);
-            return env;
-        }
-
-        public static ITemplateGenerationEnvironment UseDiscovery(this ITemplateGenerationEnvironment env)
-        {
-            var discoveredTypes = Assembly.GetCallingAssembly()
-                .GetTypes()
-                .Where(t => t is { IsAbstract: false, IsInterface: false } && (t.IsSubclassOf(typeof(DscComputer)) || t.IsSubclassOf(typeof(DscConfiguration))));
-            
-            foreach (var type in discoveredTypes)
-            {
-                if (Activator.CreateInstance(type) is not ITemplateModel resource)
-                {
-                    continue;
-                }
-                
-                env.AddResource(resource);
-            }
-            
             return env;
         }
     }

@@ -7,6 +7,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <OutputPath>bin\$(Configuration)</OutputPath>
         <NoWarn>NU5110;NU5111</NoWarn>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -14,13 +15,38 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.12" />
-      <PackageReference Include="UTMO.Text.FileGenerator.Abstract" Version="1.0.12" />
+      <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.6" />
+      <PackageReference Include="System.Management.Automation" Version="6.2.7" />
+      <PackageReference Include="UTMO.Common.Guards" Version="1.0.7" />
+      <PackageReference Include="UTMO.Text.FileGenerator" Version="1.0.44" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
         <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
+        <None Include="Scripts\**\*.*" PackagePath="Scripts" Pack="true"/>
+        <None Remove="UTMO.Text.FileGenerator.Provider.DSC.csproj.DotSettings" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+      <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.cChoco\UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
+      <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="LoggingMessages\LogMessages.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="LoggingMessages\LogMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LogMessages.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

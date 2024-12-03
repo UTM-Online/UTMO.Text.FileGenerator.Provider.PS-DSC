@@ -1,52 +1,36 @@
-{% extends "script_base" %}
+{% extends 'script_base' %}
 {% block script %}
 [DscLocalConfigurationManager()]
 Configuration LocalConfigApplication
 {
-node {{ node_name }}
-{
-Settings
-{
-RefreshFrequencyMins            = 30;
-RefreshMode                     = "PULL";
-ConfigurationMode               = "ApplyAndAutoCorrect";
-AllowModuleOverwrite            = $true;
-RebootNodeIfNeeded              = $true;
-ConfigurationModeFrequencyMins  = 15;
-}
-
-ConfigurationRepositoryWeb PullSrvCfg
-{
-ServerURL = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-ConfigurationNames = @({% for cfg in partial_configs %}"{{ cfg.FullName }}"{% if partial_configs.last != cfg  %},{% endif %}{% endfor %})
-}
-
-ResourceRepositoryWeb PullSrvMod
-{
-ServerUrl       = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-}
-
-ReportServerWeb PullSrvRpt
-{
-ServerURL = "{{ server_url }}"
-RegistrationKey = "{{ registration_key }}"
-}
-
-{% for cfg in partial_configs %}
-    PartialConfiguration {{ cfg.FullName }}
+    node {{ node_name }}
     {
-    Description = "{{ cfg.Description }}"
-    RefreshMode = "{{ cfg.Mode }}"
-    {%- if cfg.Mode == "Pull" %}
-        ResourceModuleSource = "{{ module_source }}"
-        ConfigurationSource = "{{ config_source }}"
-    {%- endif %}
+        Settings
+        {
+            RefreshFrequencyMins = {{ lcm_settings.RefreshFrequencyMins }};
+            RefreshMode = '{{ lcm_settings.RefreshMode }}';
+            ConfigurationMode = '{{ lcm_settings.ConfigurationMode }}';
+            AllowModuleOverwrite = {{ lcm_settings.AllowModuleOverwrite }};
+            RebootNodeIfNeeded = {{ lcm_settings.RebootNodeIfNeeded }};
+            ConfigurationModeFrequencyMins = {{ lcm_settings.ConfigurationModeFrequencyMins }};
+        }
+{% for resource in web_resources %}
+        {{ resource.lcm_resource_type }} {{ resource.lcm_resource_name }}
+        {
+            ServerURL = '{{ resource.server_url }}'
+            RegistrationKey = '{{ registration_key }}'{% if resource.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in resource.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+        }
+{% endfor %}{% for cfg in partial_configs %}
+        PartialConfiguration {{ cfg.FullName }}
+        {
+            Description = '{{ cfg.Description }}'
+            RefreshMode = '{{ cfg.Mode }}'{%- if cfg.Mode == 'Pull' %}
+            ResourceModuleSource = '[ResourceRepositoryWeb]{{ cfg.module_source }}'
+            ConfigurationSource = '[ConfigurationRepositoryWeb]{{ cfg.config_source }}'{%- endif %}
+        }{% if forloop.last == false %}
+{% endif %}{% endfor %}
     }
-{% endfor %}
-}
 }
 
-LocalConfigApplication -OutputPath $OutputPath
-{% endblock %}
+LocalConfigApplication -OutputPath $OutputPath{% endblock %}
