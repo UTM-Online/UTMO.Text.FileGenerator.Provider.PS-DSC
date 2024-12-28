@@ -1,34 +1,40 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
+using Text.FileGenerator.Abstract.Contracts;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages;
 
+[SuppressMessage("ReSharper", "TemplateIsNotCompileTimeConstantProblem")]
+[SuppressMessage("Usage", "CA2254:Template should be a static expression")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
-    internal GenerateMofFilesPlugin(IGeneralFileWriter writer, string outputPath, bool enhancedLogging, TimeSpan? overrideMaxRuntime = null)
+    public GenerateMofFilesPlugin(IGeneralFileWriter writer, IGeneratorCliOptions options, ILogger<GenerateMofFilesPlugin> logger)
     {
         this.Writer = writer;
-        this.OutputPath = outputPath;
-        this.EnhancedLogging = enhancedLogging;
-        this.MaxRuntime = overrideMaxRuntime ?? TimeSpan.FromSeconds(45);
-        this.Logger = PluginManager.Instance.Resolve<IGeneratorLogger>();
+        this.OutputPath = options.OutputPath;
+        this.Logger = logger;
+        this.MaxRuntime = TimeSpan.FromSeconds(45);
     }
 
-    public void HandleTemplate(ITemplateModel model)
+    public async Task HandleTemplate(ITemplateModel model)
     {
         Guard.StringNotNull(nameof(model.ResourceTypeName), model.ResourceTypeName);
 
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
-            this.Logger.Warning(LogMessages.SkippingNonDscResource, model.ResourceName);
+            this.Logger.LogWarning(LogMessages.SkippingNonDscResource, model.ResourceName);
             return;
         }
 
-        this.Logger.Information(LogMessages.StartingMofFileGeneration, model.ResourceName);
+        this.Logger.LogDebug(LogMessages.StartingMofFileGeneration, model.ResourceName);
 
         string scriptConfig;
 
@@ -38,13 +44,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
         catch (Exception)
         {
-            this.Logger.Error(LogMessages.ErrorGeneratingOutputPath, model.ResourceName);
+            this.Logger.LogError(LogMessages.ErrorGeneratingOutputPath, model.ResourceName);
             throw;
         }
 
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
         
-        this.Logger.Verbose(LogMessages.ScriptConfigPath, scriptConfig);
+        this.Logger.LogTrace(LogMessages.ScriptConfigPath, scriptConfig);
 
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
 
@@ -56,13 +62,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
         catch (Exception)
         {
-            this.Logger.Error(LogMessages.ErrorGeneratingMofOutputPath, model.ResourceName);
+            this.Logger.LogError(LogMessages.ErrorGeneratingMofOutputPath, model.ResourceName);
             throw;
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
         
-        this.Logger.Verbose(LogMessages.MofOutputPath, mofOutputFile);
+        this.Logger.LogTrace(LogMessages.MofOutputPath, mofOutputFile);
 
         string? stdErr = null;
         try
@@ -81,26 +87,43 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             
             using (var process = Process.Start(processInfo))
             {
-                stdOut = process?.StandardOutput.ReadToEnd();
-                stdErr = process?.StandardError.ReadToEnd();
-                process?.WaitForExit();
+                stdOut = await process?.StandardOutput.ReadToEndAsync()!;
+                stdErr = await process?.StandardError.ReadToEndAsync()!;
+                await process?.WaitForExitAsync()!;
             }
             
-            this.Logger.Verbose(LogMessages.MofGenerationStdOut, stdOut ?? "None");
+            this.Logger.LogTrace(LogMessages.MofGenerationStdOut, stdOut ?? "None");
             
-            if (!string.IsNullOrWhiteSpace(stdErr))
+            if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
             {
-                this.Logger.Error(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
+                stdErr = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
+                
+                this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
                 stdErr = null;
+            }
+            else if (!string.IsNullOrWhiteSpace(stdErr))
+            {
+                this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
             }
             else
             {
-                this.Logger.Information(LogMessages.MofGenerationSucceeded, model.ResourceName);
+                this.Logger.LogTrace(LogMessages.MofGenerationSucceeded, model.ResourceName);
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            this.Logger.Error(LogMessages.MofGenerationFailed, model.ResourceName, stdErr ?? "None");
+            string parsedError;
+            
+            if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
+            {
+                parsedError = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
+            }
+            else
+            {
+                parsedError = stdErr ?? ex.Message;
+            }
+            
+            this.Logger.LogError(LogMessages.MofGenerationException, ex.GetType().Name, model.ResourceName, parsedError);
             throw;
         }
     }
@@ -109,11 +132,13 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     public ITemplateGenerationEnvironment Environment { get; init; } = null!;
 
+    public PluginPosition Position => PluginPosition.After;
+
     private string OutputPath { get; init; }
-    
-    private bool EnhancedLogging { get; init; }
 
     public TimeSpan MaxRuntime { get; }
     
-    private IGeneratorLogger Logger { get; init; }
+    private ILogger<GenerateMofFilesPlugin> Logger { get; }
+    
+    private readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
 }

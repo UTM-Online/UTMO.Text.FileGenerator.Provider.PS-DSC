@@ -14,10 +14,11 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using Models;
     using UTMO.Text.FileGenerator.Attributes;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
-    public abstract class ManagedServiceAccount : RelatedTemplateResourceBase
+    public abstract class ManagedServiceAccount : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => true;
         
@@ -40,15 +41,17 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return this;
         }
 
-        public override object? ToManifest()
+        public override Task<dynamic?> ToManifest()
         {
-            return new
+            var manifest = new
             {
                 Name = this.AccountName,
                 DscDisplayName = this.DscDisplayName,
                 Ensure = this.Ensure,
                 ManagingPrinciples = this._managingPrinciples.Select(x => $"{x.NodeName}$")
             };
+            
+            return Task.FromResult((dynamic)manifest);
         }
     }
 }

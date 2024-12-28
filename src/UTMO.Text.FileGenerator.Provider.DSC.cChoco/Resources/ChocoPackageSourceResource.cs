@@ -1,14 +1,14 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco.Resources;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoPackageSource;
 
 public class ChocoPackageSourceResource : cChocoBase, IChocoPackageSourceResource
 {
     private ChocoPackageSourceResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Parameters.Name);
-        this.PropertyBag.Init(Constants.Parameters.Source);
     }
 
     public string SourceName
@@ -39,6 +39,14 @@ public class ChocoPackageSourceResource : cChocoBase, IChocoPackageSourceResourc
         configure(resource);
         resourceRef = resource;
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+                             .ValidateStringNotNullOrEmpty(this.SourceName, nameof(this.SourceName)).errors;
+        
+        return Task.FromResult(errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

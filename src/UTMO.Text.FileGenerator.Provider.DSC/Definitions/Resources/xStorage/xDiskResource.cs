@@ -1,7 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xStorage;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xStorage.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xStorageConstants.xDisk;
 
 // ReSharper disable once InconsistentNaming
@@ -9,9 +11,6 @@ public class xDiskResource : xStorageBase, IxDiskResource
 {
     private xDiskResource(string name) : base(name)
     {
-        this.PropertyBag.Init<char>(Constants.Properties.DriveLetter);
-        this.PropertyBag.Init<int>(Constants.Properties.DiskId);
-        this.PropertyBag.Init(Constants.Properties.FSFormat);
     }
     
     public char DriveLetter
@@ -44,6 +43,15 @@ public class xDiskResource : xStorageBase, IxDiskResource
         resource = new xDiskResource(name);
         configure(resource);
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var validation = this.ValidationBuilder()
+                         .ValidateStringNotNullOrEmpty(this.DiskId.ToString(), nameof(this.DiskId))
+                         .ValidateStringNotNullOrEmpty(this.DriveLetter.ToString(), nameof(this.DriveLetter));
+        
+        return Task.FromResult(validation.errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

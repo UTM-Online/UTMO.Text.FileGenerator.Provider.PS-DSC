@@ -1,6 +1,7 @@
 param(
     [string]$ManifestPath,
-    [string]$OutputPath
+    [string]$OutputPath,
+    [switch]$NoArchive
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,20 +15,18 @@ if(-not (Test-Path -Path $ManifestPath))
 
 $g = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
 
-$tmpId = $(Get-Random)
-$tempFolder = Join-Path -Path $Env:TEMP -ChildPath $tmpId
-New-Item -Path $env:TEMP -Name $tmpId -ItemType Directory | Out-Null
-
-if($SkipCleanup)
+if (-not $NoArchive)
 {
-    Write-Host "Temporary Directory: $tempFolder"
+    $tmpId = $(Get-Random)
+    $tempFolder = Join-Path -Path $Env:TEMP -ChildPath $tmpId
+    New-Item -Path $env:TEMP -Name $tmpId -ItemType Directory | Out-Null
 }
 
 $OutPath = Join-Path -Path $OutputPath -ChildPath "Modules"
 
 if(-not (Test-Path -Path $OutPath))
 {
-    New-Item -Path $OutputPath -Name "Modules" -ItemType Directory | Out-Null
+    New-Item -Path $OutPath -ItemType Directory | Out-Null
 }
 
 try
@@ -37,12 +36,41 @@ try
         try
         {
             Write-Host "Processing Package: $($package.Name)"
-            Save-Module -Name $package.Name -RequiredVersion $package.Version -Path $tempFolder -Repository 'DSCResources' | Out-Null
+            
+            $params = @{
+                Name = $package.Name
+                RequiredVersion = $package.Version
+                Repository = 'DSCResources'
+            }
+            $gciParams = @{
+                Recurse = $true
+                Directory = $true
+                'Filter' = '.git'
+            }
+            
+            if($NoArchive)
+            {
+                $params.Add('Path', $OutPath)
+                $gciParams.Add('Path', $OutPath)
+                New-Item -Path $OutPath -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
+            }
+            else
+            {
+                $gciParams.Add('Path', $tempFolder)
+                $params.Add('Path', $tempFolder)
+            }
+            
+            Save-Module @params | Out-Null
+            Get-ChildItem @gciParams | Remove-Item -Recurse -Force -Confirm:$false | Out-Null
 
-            $packagePath = Join-Path -Path $tempFolder -ChildPath $(Join-Path -Path $package.Name -ChildPath $package.Version)
-            $packagePath += "\*"
-            $FileName = "$($package.Name)_$($package.Version).zip"
-            Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
+            if(-not $NoArchive)
+            {
+                $packagePath = Join-Path -Path $tempFolder -ChildPath $(Join-Path -Path $package.Name -ChildPath $package.Version)
+                $packagePath += "\*"
+
+                $FileName = "$($package.Name)_$($package.Version).zip"
+                Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
+            }
         }
         catch
         {
@@ -53,7 +81,7 @@ try
 }
 finally
 {
-    if($env:SkipCleanup -ne 1)
+    if($env:SkipCleanup -ne 1 -and -not $NoArchive)
     {
         Write-Host "Cleaning Up"
         Remove-Item -Path $tempFolder -Recurse -Force -Confirm:$false | Out-Null

@@ -53,7 +53,7 @@ Error Stream: {StandardError}</value>
         <value>Beginning Restore Required Modules Plugin.</value>
     </data>
     <data name="WritingRestoreRequiredModules" xml:space="preserve">
-        <value>Writing the Restore Required Modules to DIsk</value>
+        <value>Writing the Restore Required Modules to Disk</value>
     </data>
     <data name="RestoreModulesStdOut" xml:space="preserve">
         <value>[RestoreModules] STD Out: {stdOut}</value>
@@ -63,5 +63,9 @@ Error Stream: {StandardError}</value>
     </data>
     <data name="RestoredRequiredModulesSucceeded" xml:space="preserve">
         <value>Successfully restore required modules.</value>
+    </data>
+    <data name="MofGenerationException" xml:space="preserve">
+        <value>Encountered an exception of type {ExceptionType} while trying to generate the MOF file for {ResourceName}.
+Error Stream: {StandardError}</value>
     </data>
 </root>

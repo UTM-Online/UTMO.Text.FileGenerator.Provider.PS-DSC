@@ -1,19 +1,16 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.WmiNameSpaceSecurity;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.WmiNameSpaceSecurity.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.WmiNameSpaceSecurity.Enums;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.WmiNamespaceSecurityConstants.WmiNamespaceSecurity;
 
 public class WmiNamespaceSecurityResource : WmiNameSpaceSecurityBase, IWmiNamespaceSecurityResource
 {
     private WmiNamespaceSecurityResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.Path);
-        this.PropertyBag.Init(Constants.Properties.Principal);
-        this.PropertyBag.Init<NamespacePermissions[]>(Constants.Properties.Permission);
-        this.PropertyBag.Init(Constants.Properties.AccessType);
-        this.PropertyBag.Init<WmiSecurityAppliesTo>(Constants.Properties.AppliesTo);
     }
     
     public string Path
@@ -62,9 +59,17 @@ public class WmiNamespaceSecurityResource : WmiNameSpaceSecurityBase, IWmiNamesp
         configure(resource);
         return resource;
     }
-
-    public override string ResourceId
+    
+    public override Task<List<ValidationFailedException>> Validate()
     {
-        get => Constants.ResourceId;
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.Path, nameof(this.Path))
+            .ValidateStringNotNullOrEmpty(this.Principal, nameof(this.Principal))
+            .ValidateStringNotNullOrEmpty(this.AccessType, nameof(this.AccessType))
+            .errors;
+
+        return Task.FromResult(errors);
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

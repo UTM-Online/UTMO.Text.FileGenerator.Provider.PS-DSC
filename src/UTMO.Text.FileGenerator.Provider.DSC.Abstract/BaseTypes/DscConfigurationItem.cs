@@ -1,11 +1,12 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 using System.Diagnostics.CodeAnalysis;
+using Models;
 using UTMO.Text.FileGenerator.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 [SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "API Surface, must remain public for consumers")]
-public abstract class DscConfigurationItem : RelatedTemplateResourceBase
+public abstract class DscConfigurationItem : SubTemplateResourceBase
 {
     // ReSharper disable once PublicConstructorInAbstractClass
     public DscConfigurationItem(string name)

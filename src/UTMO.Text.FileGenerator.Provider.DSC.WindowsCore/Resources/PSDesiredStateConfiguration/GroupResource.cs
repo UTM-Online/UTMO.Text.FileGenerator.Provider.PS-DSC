@@ -1,15 +1,15 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.Group;
 
 public class GroupResource : PSDesiredStateConfigurationBase, IGroupResource
 {
     private GroupResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.GroupName);
-        this.PropertyBag.Init<string[]>(Constants.Properties.MembersToInclude);
     }
     
     public string GroupName
@@ -37,9 +37,15 @@ public class GroupResource : PSDesiredStateConfigurationBase, IGroupResource
         configure(resource);
         return resource;
     }
-
-    public override string ResourceId
+    
+    public override Task<List<ValidationFailedException>> Validate()
     {
-        get => Constants.ResourceId;
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.GroupName, nameof(this.GroupName))
+            .errors;
+
+        return Task.FromResult(errors);
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

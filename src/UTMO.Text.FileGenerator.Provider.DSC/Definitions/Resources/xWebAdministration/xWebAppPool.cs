@@ -1,7 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xWebAdministration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xWebAdministration.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xWebAdministrationConstants.xWebAppPool;
 
 // ReSharper disable once InconsistentNaming
@@ -9,8 +11,6 @@ public class xWebAppPool : xWebAdministrationBase, IxWebAppPool
 {
     private xWebAppPool(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.Name);
-        this.PropertyBag.Init(Constants.Properties.IdentityType);
     }
     
     public string AppPoolName
@@ -39,8 +39,13 @@ public class xWebAppPool : xWebAdministrationBase, IxWebAppPool
         return resource;
     }
 
-    public override string ResourceId
+    public override Task<List<ValidationFailedException>> Validate()
     {
-        get => Constants.ResourceId;
+        var validations = this.ValidationBuilder()
+                              .ValidateStringNotNullOrEmpty(this.AppPoolName, nameof(this.AppPoolName));
+        
+        return Task.FromResult(validations.errors);
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

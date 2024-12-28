@@ -1,7 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredStateConfigurationConstants.xDSCWebService;
 
 // ReSharper disable once InconsistentNaming
@@ -9,19 +11,6 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase, IxDscWeb
 {
     private xDscWebServiceResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.EndpointName);
-        this.PropertyBag.Init<int>(Constants.Properties.Port);
-        this.PropertyBag.Init(Constants.Properties.PhysicalPath);
-        this.PropertyBag.Init(Constants.Properties.CertificateThumbPrint);
-        this.PropertyBag.Init(Constants.Properties.ModulePath);
-        this.PropertyBag.Init(Constants.Properties.ConfigurationPath);
-        this.PropertyBag.Init(Constants.Properties.State);
-        this.PropertyBag.Init(Constants.Properties.RegistrationKeyPath);
-        this.PropertyBag.Init<bool>(Constants.Properties.SqlProvider);
-        this.PropertyBag.Init(Constants.Properties.SqlConnectionString);
-        this.PropertyBag.Init<bool>(Constants.Properties.AcceptSelfSignedCertificates);
-        this.PropertyBag.Init<bool>(Constants.Properties.UseSecurityBestPractices);
-        this.PropertyBag.Init(Constants.Properties.AppPoolName);
     }
     
     public string EndpointName
@@ -116,8 +105,13 @@ public class xDscWebServiceResource : xPSDesiredStateConfigurationBase, IxDscWeb
         return resource;
     }
 
-    public override string ResourceId
+    public override Task<List<ValidationFailedException>> Validate()
     {
-        get => Constants.ResourceId;
+        var validations = this.ValidationBuilder()
+                  .ValidateStringNotNullOrEmpty(this.EndpointName, nameof(this.EndpointName));
+        
+        return Task.FromResult(validations.errors);
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

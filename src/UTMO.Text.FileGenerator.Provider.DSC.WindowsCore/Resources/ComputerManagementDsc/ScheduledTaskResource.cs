@@ -1,20 +1,16 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.ComputerManagementDsc.Enums;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.ComputerManagementDscConstants.ScheduledTask;
 
 public class ScheduledTaskResource : ComputerManagementDscBase, IScheduledTaskResource
 {
     private ScheduledTaskResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.ActionArguments);
-        this.PropertyBag.Init(Constants.Properties.ActionExecutable);
-        this.PropertyBag.Init<ScheduleTaskScheduleType>(Constants.Properties.ScheduleType);
-        this.PropertyBag.Init(Constants.Properties.TaskName);
-        this.PropertyBag.Init(Constants.Properties.TaskPath);
-        this.PropertyBag.Init<bool>(Constants.Properties.Enable);
     }
 
     public string TaskDescription
@@ -121,6 +117,14 @@ public class ScheduledTaskResource : ComputerManagementDscBase, IScheduledTaskRe
         configure(resource);
         resourceRef = resource;
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+                         .ValidateStringNotNullOrEmpty(this.TaskName, nameof(this.TaskName)).errors;
+        
+        return Task.FromResult(errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

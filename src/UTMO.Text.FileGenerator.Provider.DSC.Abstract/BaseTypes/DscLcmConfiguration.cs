@@ -15,13 +15,12 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
     using System.Diagnostics.CodeAnalysis;
-    using Enums;
     using UTMO.Text.FileGenerator.Attributes;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public abstract class DscLcmConfiguration : DscResourceBase
+    public abstract partial class DscLcmConfiguration : DscResourceBase
     {
         public sealed override string ResourceTypeName => DscResourceTypeNames.DscLcmConfiguration;
 
@@ -40,27 +39,24 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         
         // ReSharper disable once MemberCanBePrivate.Global
         public List<string> RunAsAccounts { get; } = new();
-        
+
+        public override bool GenerateManifest => true;
+
         [MemberName("partial_configs")]
         // ReSharper disable once MemberCanBePrivate.Global
         public List<DscConfiguration> DscConfiguration { get; } = new();
         
         [MemberName("lcm_settings")]
         public virtual DscLcmSettings LcmSettings { get; } = new();
-
-        [IgnoreMember]
-        private Dictionary<DscWebResourceTypes, DscLcmWebResource> InternalWebResources { get; } = new();
         
-        [MemberName("web_resources")]
-        public List<DscLcmWebResource> WebResources => this.InternalWebResources.Values.ToList();
+        [MemberName("pull_server_web")]
+        protected abstract DscLcmWebResource PullServerWebResource { get; }
         
-        public DscLcmConfiguration AddWebResource(DscWebResourceTypes type, Action<DscLcmWebResource> resourceDefinition)
-        {
-            var resource = new DscLcmWebResource(type, this);
-            resourceDefinition(resource);
-            this.InternalWebResources.Add(type, resource);
-            return this;
-        }
+        [MemberName("resource_repository_web")]
+        protected abstract DscLcmWebResource ResourceRepositoryWebResource { get; }
+        
+        [MemberName("report_server_web")]
+        protected abstract DscLcmWebResource ReportServerWebResource { get; }
         
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
         {
@@ -69,9 +65,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return this;
         }
 
-        public sealed override dynamic ToManifest()
+        public sealed override Task<object?> ToManifest()
         {
-            return new
+            var manifest =  new
                        {
                            this.NodeName,
                            this.Enabled,
@@ -79,37 +75,8 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                            this.RunAsAccounts,
                            PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList(),
                        };
-        }
-        
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-        public class DscLcmSettings : RelatedTemplateResourceBase
-        {
-            public int RefreshFrequencyMins { get; set; } = 30;
             
-            public int ConfigurationModeFrequencyMins { get; set; } = 15;
-            
-            public DscLcmConfigurationMode ConfigurationMode { get; set; } = DscLcmConfigurationMode.ApplyAndAutoCorrect;
-            
-            public bool RebootNodeIfNeeded { get; set; } = true;
-            
-            public bool AllowModuleOverwrite { get; set; } = true;
-            
-            public DscMode RefreshMode { get; set; } = DscMode.Pull;
-
-            public sealed override bool GenerateManifest => false;
-
-            public override Dictionary<string, object> ToTemplateContext()
-            {
-                return new()
-                           {
-                               { "RefreshFrequencyMins", this.RefreshFrequencyMins },
-                               { "ConfigurationModeFrequencyMins", this.ConfigurationModeFrequencyMins },
-                               { "ConfigurationMode", this.ConfigurationMode },
-                               { "RebootNodeIfNeeded", $"${this.RebootNodeIfNeeded.ToString().ToLower()}" },
-                               { "AllowModuleOverwrite", $"${this.AllowModuleOverwrite.ToString().ToLower()}" },
-                               { "RefreshMode", this.RefreshMode },
-                           };
-            }
+            return Task.FromResult<object?>(manifest);
         }
     }
 }

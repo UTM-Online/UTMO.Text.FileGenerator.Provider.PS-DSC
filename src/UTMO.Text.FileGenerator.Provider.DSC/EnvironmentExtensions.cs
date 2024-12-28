@@ -15,6 +15,7 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC
 {
     using System.Reflection;
+    using Text.FileGenerator.Abstract.Contracts;
     using UTMO.Text.FileGenerator.Abstract;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 

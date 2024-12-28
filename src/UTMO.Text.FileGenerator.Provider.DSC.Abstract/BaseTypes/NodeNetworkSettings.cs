@@ -15,10 +15,11 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
     using System.Diagnostics.CodeAnalysis;
+    using Models;
     using UTMO.Text.FileGenerator.Attributes;
 
     [SuppressMessage("ReSharper", "CollectionNeverQueried.Local")]
-    public class NodeNetworkSettings : RelatedTemplateResourceBase
+    public class NodeNetworkSettings : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => false;
         

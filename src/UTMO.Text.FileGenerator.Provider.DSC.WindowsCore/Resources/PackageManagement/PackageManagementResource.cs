@@ -1,20 +1,17 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PackageManagement;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PackageManagement.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PackageManagementConstants.PackageManagement;
 
 public class PackageManagementResource : PackageManagementBase, IPackageManagementResource
 {
     private PackageManagementResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.Name);
-        this.PropertyBag.Init<PSPackageProviders>(Constants.Properties.ProviderName);
-        this.PropertyBag.Init(Constants.Properties.Source);
     }
-
-    public override string ResourceId => Constants.ResourceId;
 
     public string PackageName
     {
@@ -57,4 +54,15 @@ public class PackageManagementResource : PackageManagementBase, IPackageManageme
         configure(resource);
         return resource;
     }
+    
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.PackageName, nameof(this.PackageName))
+            .errors;
+
+        return Task.FromResult(errors);
+    }
+    
+    public override string ResourceId => Constants.ResourceId;
 }

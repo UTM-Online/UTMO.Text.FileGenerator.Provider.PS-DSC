@@ -1,17 +1,16 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Enums;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.Registry;
 
 public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResource
 {
     private RegistryResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.Key);
-        this.PropertyBag.Init(Constants.Properties.ValueName);
-        this.PropertyBag.Init(Constants.Properties.ValueData);
     }
     
     public string Key
@@ -55,6 +54,16 @@ public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResour
         configure(resource);
         return resource;
     }
-    
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.Key, nameof(this.Key))
+            .ValidateStringNotNullOrEmpty(this.ValueName, nameof(this.ValueName))
+            .errors;
+
+        return Task.FromResult(errors);
+    }
+
     public override string ResourceId => Constants.ResourceId;
 }
