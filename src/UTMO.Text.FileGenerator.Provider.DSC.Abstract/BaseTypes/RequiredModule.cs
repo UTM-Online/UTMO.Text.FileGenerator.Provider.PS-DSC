@@ -58,6 +58,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             {
                 Name = this.ModuleName,
                 Version = this.ModuleVersion,
+                AlternateVersion = this.RewriteModuleVersion,
                 IsPrivate = this.IsPrivate,
                 AllowClobber = this.AllowClobber,
                 UseAlternateFormat = this.UseAlternateFormat
