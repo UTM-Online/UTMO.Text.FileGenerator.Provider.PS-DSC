@@ -54,15 +54,19 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public override Task<object?> ToManifest()
         {
-            var manifest = new
+            dynamic manifest = new
             {
                 Name = this.ModuleName,
                 Version = this.ModuleVersion,
-                AlternateVersion = this.RewriteModuleVersion,
                 IsPrivate = this.IsPrivate,
                 AllowClobber = this.AllowClobber,
                 UseAlternateFormat = this.UseAlternateFormat
             };
+
+            if (this.UseAlternateFormat)
+            {
+                manifest.AlternateVersion = this.RewriteModuleVersion;
+            }
             
             return Task.FromResult((object?)manifest);
         }
