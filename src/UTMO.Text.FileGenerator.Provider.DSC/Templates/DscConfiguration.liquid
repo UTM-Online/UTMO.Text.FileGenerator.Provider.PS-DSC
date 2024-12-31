@@ -4,10 +4,8 @@ Configuration {{ FullName }}
 {
 {%- for module in RequiredModules %}
 {% if module.UseAlternateFormat == true -%}
-    Import-DscResource -ModuleName @{ModuleName = '{{ module.Name }}'; RequiredVersion = '{{ module.Version }}'}
-{% else -%}
-    Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}
-{% endif %}{% endfor %}
+    Import-DscResource -ModuleName @{ModuleName = '{{ module.Name }}'; RequiredVersion = '{{ module.Version }}'}{% else -%}
+    Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}{% endif -%}{% endfor %}
 
 {% for resource in ConfigurationResources -%}
     {{ resource.resource_id }} {{ resource.name }}
