@@ -25,8 +25,6 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Modules
         public override string ModuleName => "xPSDesiredStateConfiguration";
 
         public override string ModuleVersion => "9.1.0";
-
-        public override bool UseAlternateFormat => true;
         
         public static RequiredModule Instance { get; } = new xPSDesiredStateConfiguration();
     }
