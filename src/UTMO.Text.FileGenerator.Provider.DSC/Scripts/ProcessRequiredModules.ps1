@@ -71,12 +71,10 @@ try
                 if ($package.UseAlternateFormat)
                 {
                     $FileName = "$($package.Name)_$($package.AlternateVersion).zip"
-                    Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
                 }
                 else
                 {
                     $FileName = "$($package.Name)_$($package.Version)"
-                    Copy-Item -Path $packagePath -Destination $(Join-Path -Path $OutPath -ChildPath $FileName) -Recurse -Force | Out-Null
                 }
                 
                 Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
