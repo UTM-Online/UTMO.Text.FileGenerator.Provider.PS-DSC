@@ -26,7 +26,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Modules
         public override string ModuleVersion => "3.0.0";
         
         public override string? RewriteModuleVersion => "3.0.0.0";
-        
+
+        public override bool UseAlternateFormat => true;
+
         public static RequiredModule Instance { get; } = new xWebAdministration();
     }
 }
