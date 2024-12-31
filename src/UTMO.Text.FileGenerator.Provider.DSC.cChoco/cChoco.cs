@@ -26,7 +26,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco
         public override string ModuleVersion => "2.5.0";
 
         public override string RewriteModuleVersion => "2.5.0.0";
-        
+
+        public override bool UseAlternateFormat => true;
+
         public static RequiredModule Instance { get; } = new cChoco();
     }
 }
