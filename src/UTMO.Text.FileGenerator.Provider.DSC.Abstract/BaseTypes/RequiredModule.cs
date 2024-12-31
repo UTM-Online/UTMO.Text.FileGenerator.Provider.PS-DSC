@@ -14,9 +14,10 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using Models;
     using UTMO.Text.FileGenerator.Attributes;
 
-    public abstract partial class RequiredModule : RelatedTemplateResourceBase
+    public abstract partial class RequiredModule : SubTemplateResourceBase
     {
         public override bool GenerateManifest => true;
         
@@ -39,9 +40,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public override string ResourceName => this.ModuleName;
 
-        public override Dictionary<string, object> ToTemplateContext()
+        public override async Task<Dictionary<string, object>> ToTemplateContext()
         {
-            var ctx = base.ToTemplateContext();
+            var ctx = await base.ToTemplateContext();
 
             if (this.RewriteModuleVersion != null)
             {
@@ -51,9 +52,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return ctx;
         }
 
-        public override dynamic ToManifest()
+        public override Task<object?> ToManifest()
         {
-            return new
+            var manifest = new
             {
                 Name = this.ModuleName,
                 Version = this.ModuleVersion,
@@ -61,6 +62,8 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                 AllowClobber = this.AllowClobber,
                 UseAlternateFormat = this.UseAlternateFormat
             };
+            
+            return Task.FromResult((object?)manifest);
         }
     }
 }

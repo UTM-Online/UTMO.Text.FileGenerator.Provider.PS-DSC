@@ -14,14 +14,29 @@ Configuration LocalConfigApplication
             RebootNodeIfNeeded = {{ lcm_settings.RebootNodeIfNeeded }};
             ConfigurationModeFrequencyMins = {{ lcm_settings.ConfigurationModeFrequencyMins }};
         }
-{% for resource in web_resources %}
-        {{ resource.lcm_resource_type }} {{ resource.lcm_resource_name }}
+
+        {{ resource_repository_web.lcm_resource_type }} {{ resource_repository_web.lcm_resource_name }}
         {
-            ServerURL = '{{ resource.server_url }}'
-            RegistrationKey = '{{ registration_key }}'{% if resource.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in resource.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+            ServerURL = '{{ resource_repository_web.server_url }}'
+            RegistrationKey = '{{ registration_key }}'{% if resource_repository_web.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in resource_repository_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
         }
-{% endfor %}{% for cfg in partial_configs %}
+
+        {{ report_server_web.lcm_resource_type }} {{ report_server_web.lcm_resource_name }}
+        {
+            ServerURL = '{{ report_server_web.server_url }}'
+            RegistrationKey = '{{ registration_key }}'{% if report_server_web.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in report_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+        }
+
+        {{ pull_server_web.lcm_resource_type }} {{ pull_server_web.lcm_resource_name }}
+        {
+            ServerURL = '{{ pull_server_web.server_url }}'
+            RegistrationKey = '{{ registration_key }}'{% if pull_server_web.configuration_names != empty %}
+            ConfigurationNames = @({% for cfg in pull_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+        }
+
+{% for cfg in partial_configs %}
         PartialConfiguration {{ cfg.FullName }}
         {
             Description = '{{ cfg.Description }}'

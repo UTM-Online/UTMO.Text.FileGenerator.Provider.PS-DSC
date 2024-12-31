@@ -1,15 +1,15 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.NetworkingDscConstants.Firewall;
 
 public class PredefinedFirewallRuleResource : NetworkingDscBase, IPredefinedFirewallRuleResource
 {
     private PredefinedFirewallRuleResource(string name) : base(name)
     {
-        this.PropertyBag.Init<bool>(Constants.Parameters.Enabled);
-        this.PropertyBag.Init(Constants.Parameters.Name);
     }
     
     public bool EnableRule
@@ -39,6 +39,15 @@ public class PredefinedFirewallRuleResource : NetworkingDscBase, IPredefinedFire
         configure(resource);
         resourceRef = resource;
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.RuleName, nameof(this.RuleName))
+            .errors;
+
+        return Task.FromResult(errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

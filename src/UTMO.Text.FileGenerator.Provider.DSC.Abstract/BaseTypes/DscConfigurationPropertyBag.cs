@@ -1,8 +1,11 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using DotLiquid;
+using Microsoft.Extensions.Logging;
+using Utils;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
@@ -11,7 +14,12 @@ public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
 
-    private IGeneratorLogger Logger => PluginManager.Instance.ResolveLogger();
+    private ILogger<DscConfigurationPropertyBag>? Logger { get; set; }
+    
+    internal void SetLogger(ILogger<DscConfigurationPropertyBag> logger)
+    {
+        this.Logger = logger;
+    }
     
     public void Set<T>(string key, T value)
     {
@@ -49,7 +57,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            this.Logger.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
+            this.Logger?.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
         }
 
         this._propertyBag[key] = typeof(T) switch
@@ -63,7 +71,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            this.Logger.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
+            this.Logger?.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
         }
         
         this._propertyBag[key] = string.Empty;
@@ -86,18 +94,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
         catch (NullReferenceException)
         {
-            this.Logger.Fatal(LogMessages.MandatoryPropertyNullException, true, 22, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
+            this.Logger?.Fatal(LogMessages.MandatoryPropertyNullException, true, 22, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
             throw;
         }
         catch (InvalidCastException ice)
         {
             var ex = new InvalidPropertyBagCastException(ice, key, caller.Split('\\').Last().TrimEnd(".cs".ToCharArray()));
-            this.Logger.Fatal(ex.Message, true, 23);
+            this.Logger?.Fatal(ex.Message, true, 23);
             throw;
         }
         catch (Exception e)
         {
-            this.Logger.Fatal(e.Message, true, 24);
+            this.Logger?.Fatal(e.Message, true, 24);
             throw;
         }
     }
@@ -122,6 +130,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
         return this.Get<string>(key, caller);
     }
 
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public object ToLiquid()
     {
         var liquidObject = new Dictionary<string, object>();
@@ -129,14 +138,16 @@ public class DscConfigurationPropertyBag : ILiquidizable
         foreach (var prop in this._propertyBag)
         {
             // If prop.Value is an array of enums of the same type, parse it to a list of strings
-            if (prop.Value is IEnumerable enumerable && enumerable.GetEnumerator().MoveNext())
+            if (prop.Value is IEnumerable enumerable)
             {
                 var enumerator = enumerable.GetEnumerator();
-                enumerator.MoveNext();
-                if (enumerator.Current is Enum)
+                using (enumerator as IDisposable)
                 {
-                    liquidObject[prop.Key] = $"@({string.Join(", ", enumerable.Cast<Enum>().Select(e => $"'{e}'"))})";
-                    continue;
+                    if (enumerator.MoveNext() && enumerator.Current is Enum)
+                    {
+                        liquidObject[prop.Key] = $"@({string.Join(", ", enumerable.Cast<Enum>().Select(e => $"'{e}'"))})";
+                        continue;
+                    }
                 }
             }
             

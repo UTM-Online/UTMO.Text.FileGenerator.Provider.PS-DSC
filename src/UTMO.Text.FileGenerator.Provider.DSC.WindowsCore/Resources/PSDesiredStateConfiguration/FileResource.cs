@@ -1,15 +1,15 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.File;
 
 public class FileResource : PSDesiredStateConfigurationBase, IFileResource
 {
     private FileResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Properties.DestinationPath);
-        this.PropertyBag.Init(Constants.Properties.Contents);
         this.PropertyBag.Set(Constants.Properties.Type, "File");
     }
 
@@ -38,9 +38,15 @@ public class FileResource : PSDesiredStateConfigurationBase, IFileResource
         configure(resource);
         return resource;
     }
-
-    public override string ResourceId
+    
+    public override Task<List<ValidationFailedException>> Validate()
     {
-        get => Constants.ResourceId;
+        var errors = this.ValidationBuilder()
+            .ValidateStringNotNullOrEmpty(this.DestinationPath, nameof(this.DestinationPath))
+            .errors;
+
+        return Task.FromResult(errors);
     }
+
+    public override string ResourceId => Constants.ResourceId;
 }

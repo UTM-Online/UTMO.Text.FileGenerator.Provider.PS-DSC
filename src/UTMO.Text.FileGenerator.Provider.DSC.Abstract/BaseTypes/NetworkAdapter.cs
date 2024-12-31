@@ -14,9 +14,10 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using Models;
     using UTMO.Text.FileGenerator.Attributes;
 
-    public class NetworkAdapter : RelatedTemplateResourceBase
+    public class NetworkAdapter : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => false;
         

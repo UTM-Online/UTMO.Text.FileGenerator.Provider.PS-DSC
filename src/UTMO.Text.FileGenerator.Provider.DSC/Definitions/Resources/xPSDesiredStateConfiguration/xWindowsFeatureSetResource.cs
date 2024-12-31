@@ -1,7 +1,9 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.xPSDesiredStateConfiguration.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.xPSDesiredStateConfigurationConstants.xWindowsFeatureSet;
 
 // ReSharper disable once InconsistentNaming
@@ -9,10 +11,6 @@ public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase, IxWi
 {
     private xWindowsFeatureSetResource(string name) : base(name)
     {
-        this.PropertyBag.Init<string[]>(Constants.Properties.Name);
-        this.PropertyBag.Init(Constants.Properties.Source);
-        this.PropertyBag.Init<bool>(Constants.Properties.IncludeAllSubFeature);
-        this.PropertyBag.Init(Constants.Properties.LogPath);
     }
     
     public string[] FeatureName
@@ -51,6 +49,14 @@ public class xWindowsFeatureSetResource : xPSDesiredStateConfigurationBase, IxWi
         resource = new xWindowsFeatureSetResource(name);
         configure(resource);
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var validators = this.ValidationBuilder()
+                             .ValidateStringNotNullOrEmpty(this.Name, nameof(this.Name));
+        
+        return Task.FromResult(validators.errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

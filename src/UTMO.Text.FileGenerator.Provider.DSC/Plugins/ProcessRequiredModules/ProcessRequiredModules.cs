@@ -1,32 +1,25 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.ProcessRequiredModules;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using Text.FileGenerator.Abstract.Contracts;
-using Utils;
 using UTMO.Text.FileGenerator.Abstract;
+using UTMO.Text.FileGenerator.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Constants;
-using UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages;
+using UTMO.Text.FileGenerator.Provider.DSC.Models;
 
-[SuppressMessage("ReSharper", "TemplateIsNotCompileTimeConstantProblem")]
-[SuppressMessage("Usage", "CA2254:Template should be a static expression")]
-public class RestoreRequiredModulesPlugin : IPipelinePlugin
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "API Surface, must remain public for consumers")]
+public class ProcessRequiredModules : IPipelinePlugin
 {
-    public RestoreRequiredModulesPlugin(IGeneralFileWriter writer, ILogger<RestoreRequiredModulesPlugin> logger, IGeneratorCliOptions options)
+    public ProcessRequiredModules(IGeneralFileWriter writer, ILogger<ProcessRequiredModules> logger, IGeneratorCliOptions options)
     {
         this.Writer = writer;
-        this.MaxRuntime = TimeSpan.FromMinutes(10);
         this.Logger = logger;
         this.Options = options;
     }
 
-    private ILogger<RestoreRequiredModulesPlugin> Logger { get; }
-    
-    private IGeneratorCliOptions Options { get; }
-
-    public TimeSpan MaxRuntime { get; }
+    public TimeSpan MaxRuntime => TimeSpan.FromMinutes(10);
 
     public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
@@ -38,18 +31,25 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             return;
         }
         
-        this.Logger.LogInformation(LogMessages.StartingRestoreRequiredModules);
+        this.Logger.LogInformation("Starting Process Required Modules Plugin");
         var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var scriptPath = Path.Join(rootPath, "Scripts", ScriptConstants.RestoreRequiredModules);
+        var scriptPath = Path.Join(rootPath, "Scripts", ScriptConstants.ProcessRequiredModules);
         
         string? stdErr = null;
+        
+        var scriptArgs = $"-ExecutionPolicy Bypass -NoProfile -File {scriptPath} -ManifestPath \"{manifestPath}\" -OutputPath \"{this.Options.OutputPath}\"";
 
+        if (this.Options is DscCliOptions {IsCiCd: false})
+        {
+            scriptArgs += " -NoArchive";
+        }
+        
         try
         {
             var processInfo = new ProcessStartInfo
                               {
                                   FileName = "PowerShell.exe",
-                                  Arguments = $"-ExecutionPolicy Bypass -NoProfile -File {scriptPath} -moduleManifestPath \"{manifestPath}\"",
+                                  Arguments = scriptArgs,
                                   RedirectStandardOutput = true,
                                   RedirectStandardError = true,
                                   UseShellExecute = false,
@@ -65,26 +65,28 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
                 await process?.WaitForExitAsync()!;
             }
         
-            this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut ?? "None");
-        
             if (!string.IsNullOrWhiteSpace(stdErr))
             {
-                this.Logger.Fatal(LogMessages.RestoreRequiredModulesFailed, true, 25, stdErr);
+                this.Logger.LogError("Error occurred while processing required modules:\r\n{Error}", stdErr);
             }
             else
             {
-                this.Logger.LogInformation(LogMessages.RestoredRequiredModulesSucceeded);
+                this.Logger.LogInformation("Required modules processed successfully:\r\n{Output}", stdOut);
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            this.Logger.Fatal(LogMessages.RestoreRequiredModulesFailed, true, 25, stdErr ?? "None");
+            this.Logger.LogError(ex, "Error occurred while processing required modules");
         }
     }
 
+    private ILogger<ProcessRequiredModules> Logger { get; }
+    
+    private IGeneratorCliOptions Options { get; }
+    
     public IGeneralFileWriter Writer { get; init; }
 
     public ITemplateGenerationEnvironment Environment { get; init; } = null!;
 
-    public PluginPosition Position => PluginPosition.Before;
+    public PluginPosition Position => PluginPosition.After;
 }

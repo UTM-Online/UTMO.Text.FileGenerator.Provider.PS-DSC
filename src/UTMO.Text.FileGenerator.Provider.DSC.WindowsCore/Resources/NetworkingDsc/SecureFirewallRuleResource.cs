@@ -1,25 +1,16 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.NetworkingDsc.Enums;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.NetworkingDscConstants.Firewall;
 
 public class SecureFirewallRuleResource : NetworkingDscBase, ISecureFirewallRuleResource
 {
     private SecureFirewallRuleResource(string name) : base(name)
     {
-        this.PropertyBag.Init<bool>(Constants.Parameters.Enabled);
-        this.PropertyBag.Init(Constants.Parameters.Name);
-        this.PropertyBag.Init(Constants.Parameters.Group);
-        this.PropertyBag.Init(Constants.Parameters.DisplayName);
-        this.PropertyBag.Init<FirewallRuleActions>(Constants.Parameters.Action);
-        this.PropertyBag.Init<FirewallRuleDirection>(Constants.Parameters.Direction);
-        this.PropertyBag.Init<FirewallRuleProtocols>(Constants.Parameters.Protocol);
-        this.PropertyBag.Init(Constants.Parameters.RemoteMachine);
-        this.PropertyBag.Init<FirewallRuleAuthentication>(Constants.Parameters.Authentication);
-        this.PropertyBag.Init<FirewallRuleEncryption>(Constants.Parameters.Encryption);
-        this.PropertyBag.Init<int[]>(Constants.Parameters.LocalPort);
     }
     
     public bool Enabled
@@ -111,6 +102,15 @@ public class SecureFirewallRuleResource : NetworkingDscBase, ISecureFirewallRule
         resource = new SecureFirewallRuleResource(name);
         configure(resource);
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+                         .ValidateStringNotNullOrEmpty(this.RuleName, Constants.Parameters.Name)
+                         .errors;
+
+        return Task.FromResult(errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

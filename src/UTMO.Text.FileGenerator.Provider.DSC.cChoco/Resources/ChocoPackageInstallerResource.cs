@@ -1,14 +1,14 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco.Resources;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoPackageInstaller;
 
 public class ChocoPackageInstallerResource : cChocoBase, IChocoPackageInstallerResource
 {
     private ChocoPackageInstallerResource(string name) : base(name)
     {
-        this.PropertyBag.Init(Constants.Parameters.PackageName);
-        this.PropertyBag.Init(Constants.Parameters.PackageSource);
     }
     
     public string PackageName
@@ -53,6 +53,14 @@ public class ChocoPackageInstallerResource : cChocoBase, IChocoPackageInstallerR
         configure(resource);
         resourceRef = resource;
         return resource;
+    }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var validators = this.ValidationBuilder()
+                             .ValidateStringNotNullOrEmpty(this.PackageName, nameof(this.PackageName));
+        
+        return Task.FromResult(validators.errors);
     }
 
     public override string ResourceId => Constants.ResourceId;

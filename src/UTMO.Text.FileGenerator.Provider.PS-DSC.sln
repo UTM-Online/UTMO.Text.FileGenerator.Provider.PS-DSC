@@ -4,8 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Pro
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".pipelines", ".pipelines", "{013E840A-CF9D-47E2-BB97-139DD815A322}"
 	ProjectSection(SolutionItems) = preProject
-		..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Official.yml = ..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Official.yml
-		..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Release.yml = ..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Release.yml
+		..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Unified.yml = ..\.pipelines\UTMO.Text.FileGenerator.Provider.DSC-Unified.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Definitions", "Definitions", "{28E30D2C-91AA-4DE6-BC65-8802115E151A}"
@@ -15,6 +14,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.cChoco", "UTMO.Text.FileGenerator.Provider.DSC.cChoco\UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj", "{2D45FCA1-1503-4471-926B-27D6457988F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.WindowsCore", "UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj", "{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{57173640-460A-4A5B-932F-3C91CB0D900A}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

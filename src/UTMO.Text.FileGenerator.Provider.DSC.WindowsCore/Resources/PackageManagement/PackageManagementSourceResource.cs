@@ -1,21 +1,17 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PackageManagement;
 
+using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PackageManagement.Contracts;
+using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PackageManagementConstants.PackageManagementSource;
 
 public class PackageManagementSourceResource : PackageManagementBase, IPackageManagementSourceResource
 {
     public PackageManagementSourceResource(string name) : base(name)
     {
-        this.PropertyBag.Set(Constants.Properties.Name, string.Empty);
-        this.PropertyBag.Set(Constants.Properties.ProviderName, string.Empty);
-        this.PropertyBag.Set(Constants.Properties.SourceLocation, string.Empty);
-        this.PropertyBag.Set(Constants.Properties.InstallationPolicy, string.Empty);
     }
-
-    public override string ResourceId => Constants.ResourceId;
 
     public string RepositoryName
     {
@@ -58,4 +54,15 @@ public class PackageManagementSourceResource : PackageManagementBase, IPackageMa
         configure(resource);
         return resource;
     }
+
+    public override Task<List<ValidationFailedException>> Validate()
+    {
+        var errors = this.ValidationBuilder()
+                         .ValidateStringNotNullOrEmpty(this.RepositoryName, nameof(this.RepositoryName))
+                         .ValidateStringNotNullOrEmpty(this.SourceLocation, nameof(this.SourceLocation)).errors;
+
+        return Task.FromResult(errors);
+    }
+
+    public override string ResourceId => Constants.ResourceId;
 }

@@ -87,6 +87,16 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Encountered an exception of type {ExceptionType} while trying to generate the MOF file for {ResourceName}.
+        ///Error Stream: {StandardError}.
+        /// </summary>
+        internal static string MofGenerationException {
+            get {
+                return ResourceManager.GetString("MofGenerationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Encountered an error while trying to generate the MOF file for {ResourceName}.
         ///Error Stream: {StandardError}.
         /// </summary>
@@ -187,7 +197,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Writing the Restore Required Modules to DIsk.
+        ///   Looks up a localized string similar to Writing the Restore Required Modules to Disk.
         /// </summary>
         internal static string WritingRestoreRequiredModules {
             get {

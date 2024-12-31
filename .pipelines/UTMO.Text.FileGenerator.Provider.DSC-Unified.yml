@@ -9,7 +9,7 @@ parameters:
       - Debug
   - name: MajorVersion
     type: string
-    default: 2
+    default: 3
   - name: MinorVersion
     type: string
     default: 1
@@ -18,7 +18,7 @@ trigger:
   batch: true
   branches:
     include:
-      - release/v2
+      - release/v3
       - main
   paths:
     include:
@@ -32,9 +32,23 @@ resources:
       ref: refs/heads/main
       endpoint: UTMO
 
+variables:
+  - name: ProjectRoot
+    value: $(Build.SourcesDirectory)/src
+  - name: Projects
+    value: '$(ProjectRoot)/**/*.sln'
+
 extends:
-  template: v2/Pipelines/UserTemplates/Build/Build.NugetPkg.Template.yml@Templates
+  template: v2/Pipelines/UserTemplates/Unified/BuildDeploy.NugetPkg.Template.yml@Templates
   parameters:
     BuildPool: Public
     NugetConfigPath: $(RepoRoot)/src/nuget.config
-    
+    ProjectsToBuild: $(Projects)
+    ProjectsToRestore: $(Projects)
+    DotNetVersion: '9.0.x'
+    DeploymentName: DSCGenerator
+    ReleaseDisplayName: 'Publish DSC Generator Packages'
+    UseWildcardMatch: true
+    FeedSettings:
+      'ConfigGen': 'internal'
+      'UTMO Packages': 'external'

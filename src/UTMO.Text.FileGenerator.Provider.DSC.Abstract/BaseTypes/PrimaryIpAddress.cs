@@ -14,7 +14,9 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
-    public class PrimaryIpAddress : RelatedTemplateResourceBase
+    using Models;
+
+    public class PrimaryIpAddress : SubTemplateResourceBase
     {
         public override bool GenerateManifest => false;
         

@@ -14,12 +14,10 @@
 
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
+    using Models;
+
     public abstract class DscResourceBase : TemplateResourceBase
     {
         public override string OutputExtension => ".ps1";
-        
-        public virtual void Validate()
-        {
-        }
     }
 }
