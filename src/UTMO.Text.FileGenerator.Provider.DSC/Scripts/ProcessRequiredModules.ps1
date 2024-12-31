@@ -74,7 +74,7 @@ try
                 }
                 else
                 {
-                    $FileName = "$($package.Name)_$($package.Version)"
+                    $FileName = "$($package.Name)_$($package.Version).zip"
                 }
                 
                 Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
