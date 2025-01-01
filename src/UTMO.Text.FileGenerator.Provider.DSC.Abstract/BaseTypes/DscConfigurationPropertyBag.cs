@@ -145,7 +145,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     if (enumerator.MoveNext() && enumerator.Current is Enum)
                     {
-                        liquidObject[prop.Key] = $"@({string.Join(", ", enumerable.Cast<Enum>().Select(e => $"'{e}'"))})";
+                        liquidObject[prop.Key] = $"@({string.Join(", ", enumerable.Cast<Enum>().Select(e => $"\"{e}\""))})";
                         continue;
                     }
                 }
@@ -160,7 +160,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
                 case string s when !string.IsNullOrWhiteSpace(s):
                 {
-                    liquidObject[prop.Key] = $"'{s}'";
+                    liquidObject[prop.Key] = $"\"{s}\"";
                     break;
                 }
                 case string:
@@ -173,17 +173,17 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
                 case IEnumerable<string> list:
                 {
-                    liquidObject[prop.Key] = $"@({string.Join(", ", list.Select(a => $"'{a}'"))})";
+                    liquidObject[prop.Key] = $"@({string.Join(", ", list.Select(a => $"\"{a}\""))})";
                     break;
                 }
                 case TimeSpan span:
                 {
-                    liquidObject[prop.Key] = $"'{span}'";
+                    liquidObject[prop.Key] = $"\"{span}\"";
                     break;
                 }
                 case char ch:
                 {
-                    liquidObject[prop.Key] = $"'{ch}'";
+                    liquidObject[prop.Key] = $"\"{ch}\"";
                     break;
                 }
                 default:
