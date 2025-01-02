@@ -12,11 +12,7 @@ public sealed class FileResource : PSDesiredStateConfigurationBase, IFileResourc
     private FileResource(string name) : base(name)
     {
         this.PropertyBag.Set(Constants.Properties.Type, "File");
-        this.PropertyBag.Init(Constants.Properties.Contents);
-        this.PropertyBag.Init(Constants.Properties.DestinationPath);
     }
-
-    public override DscConfigurationPropertyBag PropertyBag => new(true);
 
     public string DestinationPath
     {

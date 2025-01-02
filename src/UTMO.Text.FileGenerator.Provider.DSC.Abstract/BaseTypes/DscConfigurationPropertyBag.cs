@@ -7,21 +7,15 @@ using DotLiquid;
 using Microsoft.Extensions.Logging;
 using Utils;
 using UTMO.Text.FileGenerator.Abstract;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
 
 public class DscConfigurationPropertyBag : ILiquidizable
 {
-    public DscConfigurationPropertyBag(bool allowEmptyString = false)
-    {
-        this.AllowEmptyString = allowEmptyString;
-    }
-    
     private readonly Dictionary<string,object> _propertyBag = new();
 
     private ILogger<DscConfigurationPropertyBag>? Logger { get; set; }
-    
-    private bool AllowEmptyString { get; }
     
     internal void SetLogger(ILogger<DscConfigurationPropertyBag> logger)
     {
@@ -167,11 +161,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
                 case string s:
                 {
-                    if (!string.IsNullOrWhiteSpace(s))
+                    if (!string.IsNullOrWhiteSpace(s) && !s.Equals(PropertyBagValues.NoValue))
                     {
                         liquidObject[prop.Key] = $"\"{s}\"";
                     }
-                    else if (this.AllowEmptyString)
+                    else if (s.Equals(PropertyBagValues.NoValue))
                     {
                         liquidObject[prop.Key] = "\"\"";
                     }
