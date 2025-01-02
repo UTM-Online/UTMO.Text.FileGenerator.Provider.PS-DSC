@@ -12,9 +12,16 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
 
 public class DscConfigurationPropertyBag : ILiquidizable
 {
+    public DscConfigurationPropertyBag(bool allowEmptyString = false)
+    {
+        this.AllowEmptyString = allowEmptyString;
+    }
+    
     private readonly Dictionary<string,object> _propertyBag = new();
 
     private ILogger<DscConfigurationPropertyBag>? Logger { get; set; }
+    
+    private bool AllowEmptyString { get; }
     
     internal void SetLogger(ILogger<DscConfigurationPropertyBag> logger)
     {
@@ -158,7 +165,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = b ? "$true" : "$false";
                     break;
                 }
-                case string s when !string.IsNullOrWhiteSpace(s):
+                case string s when !string.IsNullOrWhiteSpace(s) || this.AllowEmptyString:
                 {
                     liquidObject[prop.Key] = $"\"{s}\"";
                     break;

@@ -1,6 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using UTMO.Text.FileGenerator.Validators;
@@ -12,6 +13,8 @@ public class FileResource : PSDesiredStateConfigurationBase, IFileResource
     {
         this.PropertyBag.Set(Constants.Properties.Type, "File");
     }
+
+    public override DscConfigurationPropertyBag PropertyBag => new DscConfigurationPropertyBag(true);
 
     public string DestinationPath
     {

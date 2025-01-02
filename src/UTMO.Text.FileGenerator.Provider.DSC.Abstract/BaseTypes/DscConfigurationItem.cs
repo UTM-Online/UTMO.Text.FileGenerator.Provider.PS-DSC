@@ -32,7 +32,7 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
     public List<string> DependsOn { get; set; } = new();
 
     [MemberName("property_bag")]
-    public DscConfigurationPropertyBag PropertyBag { get; } = new();
+    public virtual DscConfigurationPropertyBag PropertyBag { get; } = new();
     
     [MemberName("has_ensure")]
     public abstract bool HasEnsure { get; }
