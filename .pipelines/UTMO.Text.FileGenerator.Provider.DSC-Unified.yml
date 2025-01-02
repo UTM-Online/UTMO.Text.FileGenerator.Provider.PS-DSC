@@ -18,7 +18,6 @@ trigger:
   batch: true
   branches:
     include:
-      - release/v3
       - main
   paths:
     include:
