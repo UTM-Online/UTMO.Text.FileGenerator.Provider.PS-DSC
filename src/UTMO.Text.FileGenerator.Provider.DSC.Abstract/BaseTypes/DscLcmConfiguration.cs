@@ -67,7 +67,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public sealed override Task<object?> ToManifest()
         {
-            var manifest =  new
+            object? manifest =  new
                        {
                            this.NodeName,
                            this.Enabled,

@@ -80,7 +80,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                            };
             }
             
-            return Task.FromResult((object?)manifest);
+            return Task.FromResult(manifest)!;
         }
     }
 }
