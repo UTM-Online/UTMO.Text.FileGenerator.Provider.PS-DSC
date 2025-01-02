@@ -7,14 +7,16 @@ using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStat
 using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants.File;
 
-public class FileResource : PSDesiredStateConfigurationBase, IFileResource
+public sealed class FileResource : PSDesiredStateConfigurationBase, IFileResource
 {
     private FileResource(string name) : base(name)
     {
         this.PropertyBag.Set(Constants.Properties.Type, "File");
+        this.PropertyBag.Init(Constants.Properties.Contents);
+        this.PropertyBag.Init(Constants.Properties.DestinationPath);
     }
 
-    public override DscConfigurationPropertyBag PropertyBag => new DscConfigurationPropertyBag(true);
+    public override DscConfigurationPropertyBag PropertyBag => new(true);
 
     public string DestinationPath
     {
