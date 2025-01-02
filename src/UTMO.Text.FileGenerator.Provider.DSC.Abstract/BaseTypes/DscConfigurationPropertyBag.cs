@@ -170,7 +170,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"\"{s}\"";
                     break;
                 }
-                case string s when this.AllowEmptyString && string.IsNullOrWhiteSpace(s):
+                case string s when this.AllowEmptyString:
                 {
                     liquidObject[prop.Key] = "''";
                     break;
