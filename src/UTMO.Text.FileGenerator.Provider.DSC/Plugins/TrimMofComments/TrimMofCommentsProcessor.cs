@@ -1,6 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.TrimMofComments;
 
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using UTMO.Common.Guards;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Abstract.Contracts;
@@ -8,9 +9,10 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
 public class TrimMofCommentsProcessor : IPipelinePlugin
 {
-    public TrimMofCommentsProcessor(IGeneralFileWriter writer, IGeneratorCliOptions options)
+    public TrimMofCommentsProcessor(IGeneralFileWriter writer, IGeneratorCliOptions options, ILogger<TrimMofCommentsProcessor> logger)
     {
         this.Writer = writer;
+        this.Logger = logger;
         this.OutputPath = options.OutputPath;
     }
 
@@ -18,6 +20,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
 
     public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
+        this.Logger.LogInformation("Starting plugin: trim comments from MOF files");
         foreach (var resource in environment.Resources)
         {
             var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
@@ -45,6 +48,8 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
                 await File.WriteAllTextAsync(mofOutputFile, this.HeaderMatcher.Match(fileText).Groups["Body"].Value);
             }
         }
+        
+        this.Logger.LogInformation("Finished plugin: trim comments from MOF files");
     }
 
     public IGeneralFileWriter Writer { get; init; }
@@ -56,4 +61,6 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
     private Regex HeaderMatcher = new Regex(@"(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
     
     private string OutputPath { get; }
+    
+    private ILogger<TrimMofCommentsProcessor> Logger { get; }
 }
