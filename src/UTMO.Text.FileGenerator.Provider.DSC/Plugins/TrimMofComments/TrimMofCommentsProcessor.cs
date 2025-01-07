@@ -1,0 +1,59 @@
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.TrimMofComments;
+
+using System.Text.RegularExpressions;
+using UTMO.Common.Guards;
+using UTMO.Text.FileGenerator.Abstract;
+using UTMO.Text.FileGenerator.Abstract.Contracts;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
+
+public class TrimMofCommentsProcessor : IPipelinePlugin
+{
+    public TrimMofCommentsProcessor(IGeneralFileWriter writer, IGeneratorCliOptions options)
+    {
+        this.Writer = writer;
+        this.OutputPath = options.OutputPath;
+    }
+
+    public TimeSpan MaxRuntime => TimeSpan.FromMinutes(2);
+
+    public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
+    {
+        foreach (var resource in environment.Resources)
+        {
+            var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+            var mofOutputFile = Path.Combine(this.OutputPath, $@"MOF\{resourceType}");
+
+            switch (resourceType)
+            {
+                case "Computers":
+                {
+                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.meta.mof");
+                    break;
+                }
+                case "Configurations":
+                {
+                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.mof");
+                    break;
+                }
+            }
+            
+            Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
+            var fileText = await File.ReadAllTextAsync(mofOutputFile);
+
+            if (this.HeaderMatcher.IsMatch(fileText))
+            {
+                await File.WriteAllTextAsync(mofOutputFile, this.HeaderMatcher.Match(fileText).Groups["Body"].Value);
+            }
+        }
+    }
+
+    public IGeneralFileWriter Writer { get; init; }
+
+    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+
+    public PluginPosition Position => PluginPosition.After;
+    
+    private Regex HeaderMatcher = new Regex(@"(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
+    
+    private string OutputPath { get; }
+}

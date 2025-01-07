@@ -9,6 +9,7 @@ using UTMO.Text.FileGenerator.Provider.DSC.Models;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.ProcessRequiredModules;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
+using UTMO.Text.FileGenerator.Provider.DSC.Plugins.TrimMofComments;
 using UTMO.Text.FileGenerator.Utils;
 
 public class DscGenerator
@@ -38,7 +39,8 @@ public class DscGenerator
                  .RegisterRendererPlugin<GenerateMofFilesPlugin>()
                  .RegisterPipelinePlugin<ProcessRequiredModules>()
                  .UseEnvironment<DscGenerationEnvironment>()
-                 .RegisterCustomCliOptions<DscCliOptions>();
+                 .RegisterCustomCliOptions<DscCliOptions>()
+                 .RegisterPipelinePlugin<TrimMofCommentsProcessor>();
 
         Logger.Information(@"Scanning for DSC Configurations");
         var configurations = Assembly.GetCallingAssembly().GetTypes()
