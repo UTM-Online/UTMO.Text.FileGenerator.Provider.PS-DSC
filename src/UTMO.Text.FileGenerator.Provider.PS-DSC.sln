@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC.WinCA", "UTMO.Text.FileGenerator.Provider.DSC.WinCA\UTMO.Text.FileGenerator.Provider.DSC.WinCA.csproj", "{CEB02ADA-9D3F-4AB6-97A0-F98776722477}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,9 +44,14 @@ Global
 		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEB02ADA-9D3F-4AB6-97A0-F98776722477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEB02ADA-9D3F-4AB6-97A0-F98776722477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEB02ADA-9D3F-4AB6-97A0-F98776722477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEB02ADA-9D3F-4AB6-97A0-F98776722477}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2D45FCA1-1503-4471-926B-27D6457988F3} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}
 		{4C6F0AA2-A1F1-49A6-A2C8-A8D33D36F2DB} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}
+		{CEB02ADA-9D3F-4AB6-97A0-F98776722477} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}
 	EndGlobalSection
 EndGlobal
