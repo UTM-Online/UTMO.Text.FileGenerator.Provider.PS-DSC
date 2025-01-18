@@ -30,6 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+      <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.AD-DSC\UTMO.Text.FileGenerator.Provider.DSC.AD-DSC.csproj" />
       <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.cChoco\UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
       <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
     </ItemGroup>
