@@ -5,6 +5,7 @@
         <RootNamespace>UTMO.Text.FileGenerator.Provider.DSC.AD_DSC</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
