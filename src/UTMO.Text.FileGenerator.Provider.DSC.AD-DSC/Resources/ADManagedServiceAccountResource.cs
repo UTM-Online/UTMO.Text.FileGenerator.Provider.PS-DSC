@@ -1,5 +1,6 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.AD_DSC.Resources;
 
+using System.Runtime.CompilerServices;
 using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
@@ -80,7 +81,7 @@ public class ADManagedServiceAccountResource  : ActiveDirectoryDscBase, IADManag
         var principle = new T();
         var principles = this.ManagedPasswordPrincipals?.ToList() ?? [];
         
-        principles.Add(principle.NodeName);
+        principles.Add($"{principle.NodeName}$");
         this.ManagedPasswordPrincipals = principles.ToArray();
         
         return this;
@@ -107,6 +108,11 @@ public class ADManagedServiceAccountResource  : ActiveDirectoryDscBase, IADManag
         if (string.IsNullOrWhiteSpace(this.AccountName))
         {
             exceptions.Add(new ValidationFailedException(Constants.Parameters.ServiceAccountName, nameof(this.AccountName), ValidationFailureType.RequiredPropertyMissing, "Service Account Name is required"));
+        }
+
+        if (this.AccountName.Length > 15)
+        {
+            exceptions.Add(new ValidationFailedException(Constants.Parameters.ServiceAccountName, nameof(this.AccountName), ValidationFailureType.InvalidConfiguration, "Service Account Name must be 15 characters or less."));
         }
         
         return Task.FromResult(exceptions);

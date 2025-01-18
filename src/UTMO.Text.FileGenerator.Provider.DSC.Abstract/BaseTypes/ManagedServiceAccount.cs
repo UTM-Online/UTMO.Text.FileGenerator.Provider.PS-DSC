@@ -18,6 +18,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     using UTMO.Text.FileGenerator.Attributes;
     using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
+    [Obsolete]
     public abstract class ManagedServiceAccount : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => true;
