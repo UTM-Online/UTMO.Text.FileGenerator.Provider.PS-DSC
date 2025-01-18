@@ -37,7 +37,7 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
     [MemberName("has_ensure")]
     public abstract bool HasEnsure { get; }
     
-    public sealed override bool GenerateManifest => false;
+    public override bool GenerateManifest => false;
 
     public string DependencyName => $"[{this.ResourceId}]{this.Name}";
 
