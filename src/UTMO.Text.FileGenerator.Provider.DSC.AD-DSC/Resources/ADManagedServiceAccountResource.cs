@@ -9,7 +9,7 @@ using Constants = UTMO.Text.FileGenerator.Provider.DSC.AD_DSC.ActiveDirectoryDsc
 
 public class ADManagedServiceAccountResource  : ActiveDirectoryDscBase, IADManagedServiceAccountResource
 {
-    private ADManagedServiceAccountResource(string name) : base(name)
+    private ADManagedServiceAccountResource(string name) : base($"\"{name}\"")
     {
     }
 
