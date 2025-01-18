@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>UTMO.Text.FileGenerator.Provider.DSC.AD_DSC</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="UTMO.Text.FileGenerator.Provider.DSC.AD-DSC.csproj.DotSettings" />
+    </ItemGroup>
+
+</Project>
