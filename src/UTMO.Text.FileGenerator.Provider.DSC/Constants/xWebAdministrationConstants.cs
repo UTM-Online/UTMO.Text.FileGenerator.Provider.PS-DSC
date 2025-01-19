@@ -16,4 +16,20 @@ public static class xWebAdministrationConstants
             public const string IdentityType = "IdentityType";
         }
     }
+
+    public static class xWebConfigProperty
+    {
+        public const string ResourceId = "xWebConfigProperty";
+        
+        public static class Properties
+        {
+            public const string WebsitePath = "WebsitePath";
+            
+            public const string Filter = "Filter";
+            
+            public const string PropertyName = "PropertyName";
+            
+            public const string Value = "Value";
+        }
+    }
 }

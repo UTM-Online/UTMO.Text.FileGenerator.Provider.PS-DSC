@@ -123,4 +123,17 @@ public class ADManagedServiceAccountResource  : ActiveDirectoryDscBase, IADManag
     public override bool HasEnsure => true;
 
     public override bool GenerateManifest => true;
+
+    public override Task<object?> ToManifest()
+    {
+        var manifest = new
+                       {
+                           this.AccountName,
+                           this.DisplayName,
+                           this.Ensure,
+                           ManagingPrinciples = this.ManagedPasswordPrincipals.Select(a => $"{a}$"),
+                       };
+        
+        return Task.FromResult<object?>(manifest);
+    }
 }
