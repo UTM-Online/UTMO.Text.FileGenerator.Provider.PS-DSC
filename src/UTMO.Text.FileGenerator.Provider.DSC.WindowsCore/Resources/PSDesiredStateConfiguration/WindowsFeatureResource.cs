@@ -18,6 +18,12 @@ public class WindowsFeatureResource : PSDesiredStateConfigurationBase, IWindowsF
         set => this.PropertyBag.Set(Constants.Properties.Name, value);
     }
     
+    public string Source
+    {
+        get => this.PropertyBag.Get(Constants.Properties.Source);
+        set => this.PropertyBag.Set(Constants.Properties.Source, value);
+    }
+    
     public static WindowsFeatureResource Create(string name, Action<IWindowsFeatureResource> configure)
     {
         var resource = new WindowsFeatureResource(name);

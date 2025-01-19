@@ -34,6 +34,7 @@ public static class PSDesiredStateConfigurationConstants
         public static class Properties
         {
             public const string Name = "Name";
+            public const string Source = "Source";
         }
     }
 
