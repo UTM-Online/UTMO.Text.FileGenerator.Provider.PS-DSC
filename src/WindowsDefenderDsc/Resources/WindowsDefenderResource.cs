@@ -120,14 +120,14 @@ public sealed class WindowsDefenderResource : WindowsDefenderBase, IWindowsDefen
         set => this.PropertyBag.Set(Constants.Parameters.RandomizeScheduleTaskTimes, value);
     }
     
-    public static WindowsDefenderResource Create(string name, Action<WindowsDefenderResource> setValues)
+    public static WindowsDefenderResource Create(string name, Action<IWindowsDefenderResource> setValues)
     {
         var instance = new WindowsDefenderResource(name);
         setValues(instance);
         return instance;
     }
     
-    public static WindowsDefenderResource Create(string name, Action<WindowsDefenderResource> setValues, out WindowsDefenderResource instance)
+    public static WindowsDefenderResource Create(string name, Action<IWindowsDefenderResource> setValues, out WindowsDefenderResource instance)
     {
         instance = new WindowsDefenderResource(name);
         setValues(instance);
