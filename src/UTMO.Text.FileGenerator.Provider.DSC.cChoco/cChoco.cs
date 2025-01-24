@@ -12,23 +12,22 @@
 // // <summary></summary>
 // // ***********************************************************************
 
-namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco
+namespace UTMO.Text.FileGenerator.Provider.DSC.cChoco;
+
+using Abstract.BaseTypes;
+
+public class cChoco : RequiredModule
 {
-    using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
-
-    public class cChoco : RequiredModule
+    private cChoco()
     {
-        private cChoco()
-        {
-        }
-        
-        public override string ModuleName => "cChoco";
-        public override string ModuleVersion => "2.5.0";
-
-        public override string RewriteModuleVersion => "2.5.0.0";
-
-        public override bool UseAlternateFormat => true;
-
-        public static RequiredModule Instance { get; } = new cChoco();
     }
+        
+    public override string ModuleName => "cChoco";
+    public override string ModuleVersion => "2.5.0";
+
+    public override string RewriteModuleVersion => "2.5.0.0";
+
+    public override bool UseAlternateFormat => true;
+
+    public static RequiredModule Instance { get; } = new cChoco();
 }
