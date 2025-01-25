@@ -1,5 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.SecurityPolicyDsc;
 
+using System.Text.RegularExpressions;
+using Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.SecurityPolicyDsc.Contracts;
@@ -50,9 +52,16 @@ public class UserRightsAssignmentResource : SecurityPolicyDscBase, IUserRightsAs
             .ValidateStringNotNullOrEmpty(this.Policy, nameof(this.Policy))
             .ValidateArrayNotNullOrEmpty(this.Identity, nameof(this.Identity))
             .errors;
+        
+        if (this.Identity.Any(a => this.UnescapedTokenMatcher.IsMatch(a)))
+        {
+            errors.Add(new ValidationFailedException(this.Name, nameof(UserRightsAssignmentResource), ValidationFailureType.InvalidConfiguration, "The $ character must be escaped  with the ` character in the Identity property."));
+        }
 
         return Task.FromResult(errors);
     }
 
     public override string ResourceId => Constants.ResourceId;
+
+    private Regex UnescapedTokenMatcher => new(@"^(?:.+?)(?:[^`])\$(?:.+?)", RegexOptions.Compiled);
 }
