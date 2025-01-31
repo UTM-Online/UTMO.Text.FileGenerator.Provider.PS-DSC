@@ -58,6 +58,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [MemberName("report_server_web")]
         protected abstract DscLcmWebResource ReportServerWebResource { get; }
         
+        [IgnoreMember]
+        public virtual List<DscConfigurationItem> NodeConfigurations { get; } = new();
+        
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
         {
             var resource = new T();

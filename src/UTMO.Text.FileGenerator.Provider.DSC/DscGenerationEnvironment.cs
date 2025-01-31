@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Text.FileGenerator.Abstract.Contracts;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.Models;
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -31,7 +32,15 @@ public sealed class DscGenerationEnvironment : GenerationEnvironmentBase
             this.Logger.LogError("Invalid CLI Options provided for DSC Generation Environment");
         }
         
-        Parallel.ForEach(this.LocalResources.Select(resource => (ITemplateModel) Activator.CreateInstance(resource)!), model => this.AddResource(model));
+        Parallel.ForEach(this.LocalResources.Select(resource => (ITemplateModel) Activator.CreateInstance(resource)!), model =>
+                                                                                                                       {
+                                                                                                                           this.AddResource(model);
+                                                                                                                           
+                                                                                                                           if (model is DscLcmConfiguration {Enabled: true} lcmConfiguration && lcmConfiguration.NodeConfigurations.Count != 0)
+                                                                                                                           {
+                                                                                                                               this.AddResource((DscComputerConfiguration)lcmConfiguration);
+                                                                                                                           }
+                                                                                                                       });
         
         this.Logger.LogTrace("DSC Generation Environment Initialized");
     }
