@@ -19,6 +19,6 @@ Configuration {{ node_name }}
 {% endif %}{% endfor %}
 }
 
-{{ FullName }} -OutputPath $OutputPath
+{{ node_name }} -OutputPath $OutputPath
 Rename-Item -Path $(Join-Path -Path $OutputPath -ChildPath "localhost.mof") -NewName "{{ node_name }}.mof"
 {% endblock %}
