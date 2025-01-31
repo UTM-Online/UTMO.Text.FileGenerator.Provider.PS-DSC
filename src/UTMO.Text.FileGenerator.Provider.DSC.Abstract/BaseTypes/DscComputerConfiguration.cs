@@ -11,6 +11,8 @@ public class DscComputerConfiguration : DscResourceBase
 
     public override string ResourceName => this.NodeName;
     
+    public override bool GenerateManifest => false;
+    
     [MemberName("node_name")]
     public string NodeName { get; init; }
     
