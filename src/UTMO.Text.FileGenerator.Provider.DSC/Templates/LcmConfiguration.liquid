@@ -19,7 +19,7 @@ Configuration LocalConfigApplication
         {
             ServerURL = '{{ resource_repository_web.server_url }}'
             RegistrationKey = '{{ registration_key }}'{% if resource_repository_web.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in resource_repository_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+            ConfigurationNames = @({% for cfg in resource_repository_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}{% if has_local_configuration %},'{{ node_name }}'{% endif %}){% endif %}
         }
 
         {{ report_server_web.lcm_resource_type }} {{ report_server_web.lcm_resource_name }}
@@ -44,7 +44,15 @@ Configuration LocalConfigApplication
             ResourceModuleSource = '[ResourceRepositoryWeb]{{ cfg.module_source }}'
             ConfigurationSource = '[ConfigurationRepositoryWeb]{{ cfg.config_source }}'{%- endif %}
         }{% if forloop.last == false %}
-{% endif %}{% endfor %}
+{% endif %}{% endfor %}{% if has_local_configuration %}
+    
+        PartialConfiguration {{ node_name }}
+        {
+            Description = 'Per-node configuration'
+            RefreshMode = 'Pull'
+            ResourceModuleSource = '[ResourceRepositoryWeb]{{ resource_repository_web.lcm_resource_name }}'
+            ConfigurationSource = '[ConfigurationRepositoryWeb]{{ pull_server_web.lcm_resource_name }}'
+        }{% endif %}
     }
 }
 

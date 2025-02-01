@@ -61,6 +61,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [IgnoreMember]
         public virtual List<DscConfigurationItem> NodeConfigurations { get; } = new();
         
+        [MemberName("has_local_configuration")]
+        public bool HasLocalConfiguration => this.NodeConfigurations.Count != 0;
+        
         protected DscLcmConfiguration AddConfiguration<T>() where T : DscConfiguration, new()
         {
             var resource = new T();
