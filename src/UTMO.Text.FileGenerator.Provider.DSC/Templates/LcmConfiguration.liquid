@@ -26,14 +26,14 @@ Configuration LocalConfigApplication
         {
             ServerURL = '{{ report_server_web.server_url }}'
             RegistrationKey = '{{ registration_key }}'{% if report_server_web.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in report_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+            ConfigurationNames = @({% for cfg in report_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}{% if has_local_configuration %},'{{ node_name }}'{% endif %}){% endif %}
         }
 
         {{ pull_server_web.lcm_resource_type }} {{ pull_server_web.lcm_resource_name }}
         {
             ServerURL = '{{ pull_server_web.server_url }}'
             RegistrationKey = '{{ registration_key }}'{% if pull_server_web.configuration_names != empty %}
-            ConfigurationNames = @({% for cfg in pull_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}){% endif %}
+            ConfigurationNames = @({% for cfg in pull_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}{% if has_local_configuration %},'{{ node_name }}'{% endif %}){% endif %}
         }
 
 {% for cfg in partial_configs %}
