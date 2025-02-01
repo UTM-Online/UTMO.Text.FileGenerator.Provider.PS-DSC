@@ -46,7 +46,7 @@ Configuration LocalConfigApplication
         }{% if forloop.last == false %}
 {% endif %}{% endfor %}{% if has_local_configuration %}
     
-        PartialConfiguration {{ node_name }}
+        PartialConfiguration '{{ node_name }}'
         {
             Description = 'Per-node configuration'
             RefreshMode = 'Pull'

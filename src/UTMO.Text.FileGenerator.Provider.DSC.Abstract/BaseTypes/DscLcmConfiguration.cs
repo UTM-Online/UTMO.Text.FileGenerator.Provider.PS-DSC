@@ -73,15 +73,31 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public sealed override Task<object?> ToManifest()
         {
-            object? manifest =  new
-                       {
-                           this.NodeName,
-                           this.Enabled,
-                           this.IsClientNode,
-                           this.RunAsAccounts,
-                           PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList(),
-                       };
-            
+            object? manifest;
+
+            if (!this.HasLocalConfiguration)
+            {
+                manifest = new
+                           {
+                               this.NodeName,
+                               this.Enabled,
+                               this.IsClientNode,
+                               this.RunAsAccounts,
+                               PartialConfigs = this.DscConfiguration.Select(x => x.FullName).ToList(),
+                           };
+            }
+            else
+            {
+                manifest = new
+                           {
+                               this.NodeName,
+                               this.Enabled,
+                               this.IsClientNode,
+                               this.RunAsAccounts,
+                               PartialConfigs = this.DscConfiguration.Select(x => x.FullName).Concat([this.NodeName]).ToList(),
+                           };
+            }
+
             return Task.FromResult<object?>(manifest);
         }
     }
