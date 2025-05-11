@@ -23,7 +23,11 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.ModuleDefinitions
         }
         
         public override string ModuleName => "ComputerManagementDsc";
-        public override string ModuleVersion => "8.4.0";
+        public override string ModuleVersion => "10.0";
+
+        public override string RewriteModuleVersion => "10.0.0";
+        
+        public override bool UseAlternateFormat => true;
         
         public static RequiredModule Instance { get; } = new ComputerManagementDsc();
     }

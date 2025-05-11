@@ -23,7 +23,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.ModuleDefinitions
         }
         
         public override string ModuleName => "PackageManagement";
-        public override string ModuleVersion => "1.4.7";
+        public override string ModuleVersion => "1.4.8.1";
 
         public override bool AllowClobber => true;
         

@@ -23,7 +23,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.ModuleDefinitions
         }
         
         public override string ModuleName => "NetworkingDsc";
-        public override string ModuleVersion => "9.0.0";
+        public override string ModuleVersion => "9.1.0";
         
         public static RequiredModule Instance { get; } = new NetworkingDsc();
     }
