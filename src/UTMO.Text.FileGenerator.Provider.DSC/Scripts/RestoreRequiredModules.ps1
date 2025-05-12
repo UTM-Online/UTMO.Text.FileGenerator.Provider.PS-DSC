@@ -38,6 +38,7 @@
     }
 
     Write-Output "Validate and install required modules"
+    $loopExceptions = @()
 
     foreach($module in $moduleManifest)
     {
@@ -73,6 +74,7 @@
                 catch
                 {
                     $loopCount++
+                    $loopExceptions += $_
                     Write-Host "Failed To Install $Name"
                     Write-Host "ErrorType: $($_.Exception.GetType().Name)"
                     Write-Host "Error Message: $($_.Exception.Message)"
@@ -91,4 +93,15 @@
         Unregister-PSRepository -Name "DSCResources"
     }
 
-    Write-Output "Finished Installing Modules"
+    if($loopExceptions.Count -gt 0)
+    {
+        $aggEx = [AggregateException]::new($loopExceptions)
+
+        throw $aggEx
+
+        [Environment]::ExitCode(1)
+    }
+    else
+    {
+        Write-Output "Finished Installing Modules"
+    }
