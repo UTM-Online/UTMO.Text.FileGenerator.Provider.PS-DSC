@@ -62,7 +62,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             {
                 stdOut = await process?.StandardOutput.ReadToEndAsync()!;
                 stdErr = await process?.StandardError.ReadToEndAsync()!;
-                await process?.WaitForExitAsync()!;
+                await process?.WaitForExitAsync(new CancellationTokenSource(this.MaxRuntime).Token)!;
             }
         
             this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut ?? "None");
