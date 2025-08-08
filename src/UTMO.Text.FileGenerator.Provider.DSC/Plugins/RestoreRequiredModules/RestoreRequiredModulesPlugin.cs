@@ -58,10 +58,19 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
             string? stdOut;
         
+            this.Logger.LogDebug("Starting PowerShell process");
+            
             using (var process = Process.Start(processInfo))
             {
-                stdOut = await process?.StandardOutput.ReadToEndAsync()!;
-                stdErr = await process?.StandardError.ReadToEndAsync()!;
+                
+                if (process == null)
+                {
+                    this.Logger.Fatal(LogMessages.RestoreRequiredModulesFailed, true, 25, "Process could not be started.");
+                    return;
+                }
+                
+                stdOut = await process.StandardOutput.ReadToEndAsync()!;
+                stdErr = await process.StandardError.ReadToEndAsync()!;
                 await process?.WaitForExitAsync(new CancellationTokenSource(this.MaxRuntime).Token)!;
             }
         
