@@ -25,7 +25,7 @@ public class DscGenerator
 
     private static ILogger Logger => Log.ForContext<DscGenerator>();
 
-    public static DscGenerator Create(string[] args,  LogLevel logLevel = LogLevel.Information)
+    public static DscGenerator Create(string[] args,  LogEventLevel logLevel = LogEventLevel.Information)
     {
         Logger.Debug(@"Creating DSC Generator");
         var generator = new DscGenerator
