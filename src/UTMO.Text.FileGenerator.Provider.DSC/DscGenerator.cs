@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Serilog.Events;
+
 namespace UTMO.Text.FileGenerator.Provider.DSC;
 
 using System.Reflection;
@@ -22,15 +25,12 @@ public class DscGenerator
 
     private static ILogger Logger => Log.ForContext<DscGenerator>();
 
-    public static DscGenerator Create(string[] args, bool enableDebugLogging = false)
+    public static DscGenerator Create(string[] args,  LogLevel logLevel = LogLevel.Information)
     {
-        if (enableDebugLogging)
-        {
-            Console.WriteLine(@"Creating DSC Generator");
-        }
+        Logger.Debug(@"Creating DSC Generator");
         var generator = new DscGenerator
                         {
-                            FileGenerator = FileGenerator.Create(args, enableDebugLogging),
+                            FileGenerator = FileGenerator.Create(args, logLevel),
                         };
 
         Logger.Information(@"Configuring DSC Generator");
