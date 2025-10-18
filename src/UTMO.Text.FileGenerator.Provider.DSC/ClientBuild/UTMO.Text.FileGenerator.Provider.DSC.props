@@ -10,7 +10,7 @@
             <Visible>true</Visible>
         </None>
         
-        <None Include="$(MSBuildThisFileDirectory)\..\Scripts\**\*.*">
+        <None Include="$(MSBuildThisFileDirectory)\..\Scripts\**\*.ps1">
             <Link>Scripts\%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Visible>true</Visible>
