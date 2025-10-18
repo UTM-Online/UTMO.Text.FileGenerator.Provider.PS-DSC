@@ -1,107 +1,120 @@
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$moduleManifestPath
-    )
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$moduleManifestPath
+)
 
-    $ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Stop'
 
-    Write-Output "Loading Module Manifest File"
+Write-Output "Loading Module Manifest File"
 
-    $moduleManifest = Get-Content $moduleManifestPath | ConvertFrom-Json
+$moduleManifest = Get-Content $moduleManifestPath | ConvertFrom-Json
 
-    $ModulesToInstall = @()
+$MaxRetryCount = 5
 
-    $MaxRetryCount = 5
+Write-Output "Validate and Configure DSC Module Repository"
 
-    Write-Output "Validate and Configure DSC Module Repository"
-
-    switch($Env:COMPUTERNAME)
+switch($Env:COMPUTERNAME)
+{
+    "JOIRWILT2007"
     {
-        "JOIRWILT2007"
-        {
-            $Repository = "UTMO-DSCResources"
-            break
-        }
-
-        default
-        {
-            $Repository = "DSCResources"
-        }
+        $Repository = "UTMO-DSCResources"
+        break
     }
 
-    $repoExsists = Get-PSRepository -Name $Repository -ErrorAction SilentlyContinue
-
-    if(-not $repoExsists)
+    default
     {
-        Register-PSRepository -Name "DSCResources" -SourceLocation "https://packages.public.utmonline.net/nuget/DSCResources/" -InstallationPolicy Trusted
+        $Repository = "DSCResources"
     }
+}
 
-    Write-Output "Validate and install required modules"
-    $loopExceptions = @()
+$repoExists = Get-PSRepository -Name $Repository -ErrorAction SilentlyContinue
 
-    foreach($module in $moduleManifest)
+if(-not $repoExists)
+{
+    Register-PSRepository -Name "DSCResources" -SourceLocation "https://packages.public.utmonline.net/nuget/DSCResources/" -InstallationPolicy Trusted
+}
+
+Write-Output "Validate and install required modules"
+$moduleErrors = @()
+
+$totalModules = $moduleManifest.Count
+$currentModule = 0
+
+foreach($module in $moduleManifest)
+{
+    $currentModule++
+    $Name = $module.Name
+    $Version = $module.Version
+
+    Write-Progress -Activity "Installing Required Modules" -Status "Processing $Name v$Version" -PercentComplete (($currentModule / $totalModules) * 100)
+
+    $fullyQualifiedName = @{ModuleName=$Name;ModuleVersion=$Version}
+
+    $installedModule = Get-InstalledModule -Name $Name -RequiredVersion $Version -ErrorAction SilentlyContinue
+
+    if(-not $installedModule)
     {
-        $Name = $module.Name
-        $Version = $module.Version
+        Write-Information "Installing Module $Name" -InformationAction Continue
+        $loopCount = 0
 
-        $fullyQualifiedName = @{ModuleName=$Name;ModuleVersion=$Version}
-
-        $installCount = Get-Module -FullyQualifiedName $fullyQualifiedName -ListAvailable | Measure-Object | Select-Object -ExpandProperty Count
-
-        if($installCount -eq 0)
+        do
         {
-            Write-Host "Installing Module $Name"
-            $loopCount = 0
-            $installFinished = $false
-
-            do
+            try
             {
-                try
-                {
-                    Write-Host "Attempt #$loopCount" -ForegroundColor Cyan
-                    $parameters = @{Name = $Name; RequiredVersion = $Version; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
+                Write-Verbose "Attempt #$loopCount for module $Name" -Verbose
+                $parameters = @{Name = $Name; RequiredVersion = $Version; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
 
-                    if($module.AllowClobber)
-                    {
-                        $parameters.Add("AllowClobber",$true)
-                    }
-
-                    Install-Module @parameters
-                    $loopCount = $MaxRetryCount + 1
-                    Write-Host "Finished installing $Name" -ForegroundColor Green
-                }
-                catch
+                if($module.AllowClobber)
                 {
-                    $loopCount++
-                    $loopExceptions += $_
-                    Write-Host "Failed To Install $Name"
-                    Write-Host "ErrorType: $($_.Exception.GetType().Name)"
-                    Write-Host "Error Message: $($_.Exception.Message)"
+                    $parameters.Add("AllowClobber",$true)
                 }
+
+                Install-Module @parameters
+                $loopCount = $MaxRetryCount + 1
+                Write-Information "Finished installing $Name" -InformationAction Continue
             }
-            while($loopCount -le $MaxRetryCount)
+            catch
+            {
+                $loopCount++
+                $errorDetails = @{
+                    ModuleName = $Name
+                    ModuleVersion = $Version
+                    Attempt = $loopCount
+                    Exception = $_
+                    ErrorType = $_.Exception.GetType().Name
+                    ErrorMessage = $_.Exception.Message
+                }
+                $moduleErrors += $errorDetails
+                Write-Warning "Failed To Install $Name (Attempt $loopCount)"
+                Write-Warning "ErrorType: $($_.Exception.GetType().Name)"
+                Write-Warning "Error Message: $($_.Exception.Message)"
+            }
         }
-        else
-        {
-            Write-Host "$Name already installed" -ForegroundColor Green
-        }
-    }
-
-    if(-not $repoExsists)
-    {
-        Unregister-PSRepository -Name "DSCResources"
-    }
-
-    if($loopExceptions.Count -gt 0)
-    {
-        $aggEx = [AggregateException]::new($loopExceptions)
-
-        throw $aggEx
-
-        [Environment]::ExitCode(1)
+        while($loopCount -le $MaxRetryCount)
     }
     else
     {
-        Write-Output "Finished Installing Modules"
+        Write-Information "$Name already installed" -InformationAction Continue
     }
+}
+
+Write-Progress -Activity "Installing Required Modules" -Completed
+
+if(-not $repoExists)
+{
+    Unregister-PSRepository -Name "DSCResources"
+}
+
+if($moduleErrors.Count -gt 0)
+{
+    $errorSummary = $moduleErrors | ForEach-Object { "Module: $($_.ModuleName) v$($_.ModuleVersion) - Attempt $($_.Attempt): $($_.ErrorMessage)" }
+    $combinedMessage = "Failed to install modules:`n" + ($errorSummary -join "`n")
+    $aggEx = [System.Exception]::new($combinedMessage)
+    [Environment]::ExitCode = 1
+    throw $aggEx
+}
+else
+{
+    Write-Output "Finished Installing Modules"
+}
