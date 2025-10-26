@@ -6,6 +6,21 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Ensure PowerShell module paths are correctly set for current user
+$userModulesPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell\Modules"
+if (-not (Test-Path $userModulesPath)) {
+    New-Item -Path $userModulesPath -ItemType Directory -Force | Out-Null
+}
+
+$currentPSModulePath = $env:PSModulePath
+if (-not $currentPSModulePath.Contains($userModulesPath)) {
+    $env:PSModulePath = "$userModulesPath;$currentPSModulePath"
+    Write-Output "Updated PSModulePath to include user modules directory: $userModulesPath"
+}
+
+Write-Output "Current PSModulePath: $($env:PSModulePath)"
+Write-Output "User modules directory: $userModulesPath"
+
 Write-Output "Loading Module Manifest File"
 
 $moduleManifest = Get-Content $moduleManifestPath | ConvertFrom-Json
@@ -106,6 +121,39 @@ if(-not $repoExists)
     Unregister-PSRepository -Name "DSCResources"
 }
 
+Write-Output "Verifying module installations..."
+
+# Verify all modules are properly installed and accessible
+$verificationErrors = @()
+foreach($module in $moduleManifest)
+{
+    $Name = $module.Name
+    $Version = $module.Version
+    
+    # Check if module is installed
+    $installedModule = Get-InstalledModule -Name $Name -RequiredVersion $Version -ErrorAction SilentlyContinue
+    if(-not $installedModule)
+    {
+        $verificationErrors += "Module $Name v$Version was not found after installation"
+        continue
+    }
+    
+    # Try to import the module to verify it's accessible
+    try
+    {
+        Import-Module -Name $Name -RequiredVersion $Version -Force -ErrorAction Stop
+        Write-Information "Successfully verified module $Name v$Version" -InformationAction Continue
+    }
+    catch
+    {
+        $verificationErrors += "Module $Name v$Version could not be imported: $($_.Exception.Message)"
+    }
+}
+
+Write-Output "Module installation verification complete"
+Write-Output "PSModulePath: $($env:PSModulePath)"
+Write-Output "Current user modules path: $($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
+
 if($moduleErrors.Count -gt 0)
 {
     $errorSummary = $moduleErrors | ForEach-Object { "Module: $($_.ModuleName) v$($_.ModuleVersion) - Attempt $($_.Attempt): $($_.ErrorMessage)" }
@@ -114,7 +162,14 @@ if($moduleErrors.Count -gt 0)
     [Environment]::ExitCode = 1
     throw $aggEx
 }
-else
+
+if($verificationErrors.Count -gt 0)
 {
-    Write-Output "Finished Installing Modules"
+    $combinedMessage = "Module verification failed:`n" + ($verificationErrors -join "`n")
+    $aggEx = [System.Exception]::new($combinedMessage)
+    [Environment]::ExitCode = 1
+    throw $aggEx
 }
+
+Write-Output "Finished Installing and Verifying Modules"
+

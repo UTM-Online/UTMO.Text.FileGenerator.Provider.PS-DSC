@@ -48,13 +48,30 @@ public class ProcessRequiredModules : IPipelinePlugin
         {
             var processInfo = new ProcessStartInfo
                               {
-                                  FileName = "PowerShell.exe",
+                                  FileName = "powershell.exe", // Use Windows PowerShell explicitly
                                   Arguments = scriptArgs,
                                   RedirectStandardOutput = true,
                                   RedirectStandardError = true,
                                   UseShellExecute = false,
                                   CreateNoWindow = true,
+                                  WorkingDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), // Set working directory to user profile
                               };
+
+            // Ensure PowerShell module path includes the current user's modules directory
+            var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
+            var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
+            
+            if (!currentPSModulePath.Contains(userModulePath))
+            {
+                processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
+            }
+            
+            // Ensure the process runs with the current user's environment
+            processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
+            processInfo.EnvironmentVariables["HOMEDRIVE"] = System.Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:";
+            processInfo.EnvironmentVariables["HOMEPATH"] = System.Environment.GetEnvironmentVariable("HOMEPATH") ?? "\\";
+            processInfo.EnvironmentVariables["APPDATA"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+            processInfo.EnvironmentVariables["LOCALAPPDATA"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
 
             string? stdOut;
         

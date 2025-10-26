@@ -6,6 +6,23 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Ensure PowerShell module paths are correctly set for current user
+$userModulesPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell\Modules"
+if (-not (Test-Path $userModulesPath)) {
+    New-Item -Path $userModulesPath -ItemType Directory -Force | Out-Null
+}
+
+$currentPSModulePath = $env:PSModulePath
+if (-not $currentPSModulePath.Contains($userModulesPath)) {
+    $env:PSModulePath = "$userModulesPath;$currentPSModulePath"
+    Write-Host "Updated PSModulePath to include user modules directory: $userModulesPath"
+}
+
+Write-Host "ProcessRequiredModules Script Starting"
+Write-Host "PSModulePath: $($env:PSModulePath)"
+Write-Host "Current user modules path: $($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
+Write-Host "Working Directory: $(Get-Location)"
+
 $loopExceptions = @()
 
 if(-not (Test-Path -Path $ManifestPath))
@@ -14,6 +31,21 @@ if(-not (Test-Path -Path $ManifestPath))
 }
 
 $g = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
+
+Write-Host "Verifying required modules are available..."
+foreach($package in $g)
+{
+    $installedModule = Get-InstalledModule -Name $package.Name -RequiredVersion $package.Version -ErrorAction SilentlyContinue
+    if(-not $installedModule)
+    {
+        Write-Warning "Module $($package.Name) v$($package.Version) is not installed. This may cause Save-Module to fail."
+        Write-Host "Available versions of $($package.Name): $(Get-InstalledModule -Name $package.Name -AllVersions -ErrorAction SilentlyContinue | ForEach-Object {$_.Version} | Join-String ', ')"
+    }
+    else
+    {
+        Write-Host "✓ Module $($package.Name) v$($package.Version) is available"
+    }
+}
 
 if (-not $NoArchive)
 {
