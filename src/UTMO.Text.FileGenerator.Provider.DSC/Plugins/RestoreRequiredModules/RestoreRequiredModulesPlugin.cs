@@ -51,7 +51,14 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
         try
         {
+            // Create a minimal initial session state to avoid snap-in loading issues
+            var initialSessionState = InitialSessionState.CreateDefault2();
+            
+            using var runspace = RunspaceFactory.CreateRunspace(initialSessionState);
+            runspace.Open();
+            
             using var powerShell = PowerShell.Create();
+            powerShell.Runspace = runspace;
             
             // Configure PowerShell streams for better monitoring
             this.ConfigurePowerShellStreams(powerShell);
@@ -143,7 +150,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
     private void ProcessPowerShellOutput(PowerShell powerShell, Collection<PSObject> results)
     {
         // Log the main output
-        if (results.Any())
+        if (results.Count != 0)
         {
             var output = string.Join(System.Environment.NewLine, results.Select(r => r.ToString()).Where(s => !string.IsNullOrEmpty(s)));
             if (!string.IsNullOrWhiteSpace(output))
