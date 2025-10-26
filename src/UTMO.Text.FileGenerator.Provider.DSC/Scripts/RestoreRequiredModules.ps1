@@ -60,7 +60,17 @@ foreach($module in $moduleManifest)
 {
     $currentModule++
     $Name = $module.Name
-    $Version = $module.Version
+
+    # Determine which version to use based on UseAlternateFormat property
+    if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion)
+    {
+        $Version = $module.AlternateVersion
+        Write-Information "Using alternate version for $Name`: $Version" -InformationAction Continue
+    }
+    else
+    {
+        $Version = $module.Version
+    }
 
     Write-Progress -Activity "Installing Required Modules" -Status "Processing $Name v$Version" -PercentComplete (($currentModule / $totalModules) * 100)
 
@@ -78,7 +88,21 @@ foreach($module in $moduleManifest)
             try
             {
                 Write-Verbose "Attempt #$loopCount for module $Name" -Verbose
-                $parameters = @{Name = $Name; RequiredVersion = $Version; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
+
+                # Determine version to use - append .0 if this is the second attempt and version is 3-digit format
+                $versionToUse = $Version
+                if($loopCount -eq 1)
+                {
+                    # Count the number of dots to determine if it's a 3-digit version (2 dots) vs 4-digit version (3 dots)
+                    $dotCount = ($Version.ToCharArray() | Where-Object { $_ -eq '.' }).Count
+                    if($dotCount -eq 2)
+                    {
+                        $versionToUse = "$Version.0"
+                        Write-Information "Attempting with modified version: $versionToUse" -InformationAction Continue
+                    }
+                }
+
+                $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
 
                 if($module.AllowClobber)
                 {
@@ -128,16 +152,66 @@ $verificationErrors = @()
 foreach($module in $moduleManifest)
 {
     $Name = $module.Name
-    $Version = $module.Version
-    
+
+    # Determine which version to use based on UseAlternateFormat property
+    if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion)
+    {
+        $Version = $module.AlternateVersion
+    }
+    else
+    {
+        $Version = $module.Version
+    }
+
     # Check if module is installed
     $installedModule = Get-InstalledModule -Name $Name -RequiredVersion $Version -ErrorAction SilentlyContinue
     if(-not $installedModule)
     {
-        $verificationErrors += "Module $Name v$Version was not found after installation"
-        continue
+        # Try different version formats to handle installation/directory naming mismatches
+        $versionsToTry = @()
+
+        # If module not found with alternate version, try with standard version
+        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.AlternateVersion)
+        {
+            Write-Information "Module $Name v$Version not found, trying standard version $($module.Version)" -InformationAction Continue
+            $versionsToTry += $module.Version
+        }
+
+        # Try truncated version (remove trailing .0) to handle directory naming differences
+        if($Version -match '\.0$')
+        {
+            $truncatedVersion = $Version -replace '\.0$', ''
+            Write-Information "Module $Name v$Version not found, trying truncated version $truncatedVersion" -InformationAction Continue
+            $versionsToTry += $truncatedVersion
+        }
+
+        # Try extended version (add .0) in case the manifest has shorter version
+        if(($Version.Split('.').Count -eq 3) -and ($Version -notmatch '\.0$'))
+        {
+            $extendedVersion = "$Version.0"
+            Write-Information "Module $Name v$Version not found, trying extended version $extendedVersion" -InformationAction Continue
+            $versionsToTry += $extendedVersion
+        }
+
+        # Try each version format
+        foreach($versionToTry in $versionsToTry)
+        {
+            $installedModule = Get-InstalledModule -Name $Name -RequiredVersion $versionToTry -ErrorAction SilentlyContinue
+            if($installedModule)
+            {
+                Write-Information "Found module $Name with version $versionToTry" -InformationAction Continue
+                $Version = $versionToTry
+                break
+            }
+        }
+
+        if(-not $installedModule)
+        {
+            $verificationErrors += "Module $Name v$Version was not found after installation (also tried versions: $($versionsToTry -join ', '))"
+            continue
+        }
     }
-    
+
     # Try to import the module to verify it's accessible
     try
     {
@@ -146,7 +220,61 @@ foreach($module in $moduleManifest)
     }
     catch
     {
-        $verificationErrors += "Module $Name v$Version could not be imported: $($_.Exception.Message)"
+        $importSuccess = $false
+        $versionsAttempted = @($Version)
+
+        # Build list of version formats to try
+        $importVersionsToTry = @()
+
+        # If using alternate version, try standard version
+        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.AlternateVersion)
+        {
+            $importVersionsToTry += $module.Version
+        }
+        elseif($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.Version)
+        {
+            $importVersionsToTry += $module.AlternateVersion
+        }
+
+        # Try truncated version (remove trailing .0)
+        if($Version -match '\.0$')
+        {
+            $truncatedVersion = $Version -replace '\.0$', ''
+            $importVersionsToTry += $truncatedVersion
+        }
+
+        # Try extended version (add .0)
+        if(($Version.Split('.').Count -eq 3) -and ($Version -notmatch '\.0$'))
+        {
+            $extendedVersion = "$Version.0"
+            $importVersionsToTry += $extendedVersion
+        }
+
+        # Remove duplicates and try each version
+        $importVersionsToTry = $importVersionsToTry | Select-Object -Unique
+
+        foreach($versionToImport in $importVersionsToTry)
+        {
+            try
+            {
+                Write-Information "Import failed for $Name v$Version, trying version $versionToImport" -InformationAction Continue
+                Import-Module -Name $Name -RequiredVersion $versionToImport -Force -ErrorAction Stop
+                Write-Information "Successfully verified module $Name v$versionToImport" -InformationAction Continue
+                $importSuccess = $true
+                $versionsAttempted += $versionToImport
+                break
+            }
+            catch
+            {
+                $versionsAttempted += $versionToImport
+                # Continue to next version
+            }
+        }
+
+        if(-not $importSuccess)
+        {
+            $verificationErrors += "Module $Name could not be imported with any version formats tried: $($versionsAttempted -join ', '). Last error: $($_.Exception.Message)"
+        }
     }
 }
 
