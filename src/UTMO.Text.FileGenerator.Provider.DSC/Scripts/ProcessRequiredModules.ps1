@@ -20,14 +20,14 @@ if (-not $currentPSModulePath.Contains($userModulesPath)) {
 
 Write-Host "ProcessRequiredModules Script Starting"
 Write-Host "PSModulePath: $($env:PSModulePath)"
-Write-Host "Current user modules path: $($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
+Write-Host "Current user modules path: $($env:USERPROFILE)\\Documents\\WindowsPowerShell\\Modules"
 Write-Host "Working Directory: $(Get-Location)"
 
 $loopExceptions = @()
 
 if(-not (Test-Path -Path $ManifestPath))
 {
-    throw "Manifest not found at location $ManifestPath"
+    Write-Error "Manifest not found at location $ManifestPath"
 }
 
 $g = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
@@ -68,7 +68,7 @@ try
         try
         {
             Write-Host "Processing Package: $($package.Name)"
-            
+
             $params = @{
                 Name = $package.Name
                 RequiredVersion = $package.Version
@@ -79,7 +79,7 @@ try
                 Directory = $true
                 'Filter' = '.git'
             }
-            
+
             if($NoArchive)
             {
                 $params.Add('Path', $OutPath)
@@ -91,7 +91,7 @@ try
                 $gciParams.Add('Path', $tempFolder)
                 $params.Add('Path', $tempFolder)
             }
-            
+
             Save-Module @params | Out-Null
             Get-ChildItem @gciParams | Remove-Item -Recurse -Force -Confirm:$false | Out-Null
 
@@ -108,7 +108,7 @@ try
                 {
                     $FileName = "$($package.Name)_$($package.Version).zip"
                 }
-                
+
                 Compress-Archive -Path $packagePath -DestinationPath $(Join-Path -Path $OutPath -ChildPath $FileName) -Force | Out-Null
             }
         }
@@ -123,12 +123,12 @@ finally
 {
     if($env:SkipCleanup -ne 1 -and -not $NoArchive)
     {
-        Write-Host "Cleaning Up"
+        Write-Host 'Cleaning Up'
         Remove-Item -Path $tempFolder -Recurse -Force -Confirm:$false | Out-Null
     }
     else
     {
-        Write-Host "Skipping Cleanup"
+        Write-Host 'Skipping Cleanup'
     }
 }
 

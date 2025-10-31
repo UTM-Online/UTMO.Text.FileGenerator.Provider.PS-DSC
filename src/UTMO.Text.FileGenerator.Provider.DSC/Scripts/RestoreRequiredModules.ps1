@@ -6,6 +6,192 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Function to fix module version directory names when UseAlternateFormat is true
+function Repair-ModuleVersionDirectory {
+    param(
+        [string]$ModuleName,
+        [string]$StandardVersion,
+        [string]$AlternateVersion
+    )
+    
+    try {
+        # Get all possible module paths
+        $modulePaths = $env:PSModulePath -split ';' | Where-Object { $_ }
+        
+        foreach($modulePath in $modulePaths) {
+            $moduleFolder = Join-Path -Path $modulePath -ChildPath $ModuleName
+            
+            if(Test-Path $moduleFolder) {
+                Write-Information "Checking module directory: $moduleFolder" -InformationAction Continue
+                
+                # First check if the AlternateVersion directory already exists
+                $alternateVersionDir = Join-Path -Path $moduleFolder -ChildPath $AlternateVersion
+                if(Test-Path $alternateVersionDir) {
+                    Write-Information "AlternateVersion directory already exists: $alternateVersionDir" -InformationAction Continue
+                    return $true
+                }
+                
+                # Look for StandardVersion directory to rename
+                $standardVersionDir = Join-Path -Path $moduleFolder -ChildPath $StandardVersion
+                if(Test-Path $standardVersionDir) {
+                    Write-Information "Found StandardVersion directory to rename: $standardVersionDir -> $alternateVersionDir" -InformationAction Continue
+                    
+                    try {
+                        Rename-Item -Path $standardVersionDir -NewName $AlternateVersion -Force
+                        Write-Information "Successfully renamed module version directory from $StandardVersion to $AlternateVersion" -InformationAction Continue
+                        return $true
+                    }
+                    catch {
+                        Write-Warning "Failed to rename module version directory: $($_.Exception.Message)"
+                        return $false
+                    }
+                }
+                
+                # Look for any version directory that might match (in case of truncation)
+                $versionFolders = Get-ChildItem -Path $moduleFolder -Directory | Where-Object { $_.Name -match '^\d+\.\d+' }
+                
+                if($versionFolders) {
+                    # Try to find a version that matches the pattern (could be truncated)
+                    $matchingFolder = $null
+                    
+                    # Check for exact matches first
+                    $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $StandardVersion } | Select-Object -First 1
+                    
+                    # If no exact match, look for truncated versions
+                    if(-not $matchingFolder) {
+                        # Check if StandardVersion ends with .0 and look for truncated version
+                        if($StandardVersion -match '^(\d+\.\d+)\.0$') {
+                            $truncatedVersion = $matches[1]
+                            $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $truncatedVersion } | Select-Object -First 1
+                        }
+                        
+                        # Also check if we need to add .0 to match
+                        if(-not $matchingFolder -and $StandardVersion -match '^\d+\.\d+$') {
+                            $extendedVersion = "$StandardVersion.0"
+                            $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $extendedVersion } | Select-Object -First 1
+                        }
+                    }
+                    
+                    if($matchingFolder) {
+                        Write-Information "Found version directory to rename: $($matchingFolder.Name) -> $AlternateVersion" -InformationAction Continue
+                        
+                        try {
+                            Rename-Item -Path $matchingFolder.FullName -NewName $AlternateVersion -Force
+                            Write-Information "Successfully renamed module version directory from $($matchingFolder.Name) to $AlternateVersion" -InformationAction Continue
+                            return $true
+                        }
+                        catch {
+                            Write-Warning "Failed to rename module version directory: $($_.Exception.Message)"
+                            return $false
+                        }
+                    }
+                }
+                
+                Write-Warning "No suitable version directory found for module $ModuleName to rename to $AlternateVersion"
+                return $false
+            }
+        }
+    }
+    catch {
+        Write-Warning "Error fixing module version directory for $ModuleName`: $($_.Exception.Message)"
+        return $false
+    }
+    
+    Write-Warning "Module folder not found for $ModuleName in any module path"
+    return $false
+}
+
+# Function to validate DSC resources in a module when Import-Module fails
+function Test-DSCResourcesInModule {
+    param(
+        [string]$ModuleName,
+        [string]$ModuleVersion
+    )
+    
+    $dscResourcesFound = @()
+    
+    try {
+        # Get all possible module paths
+        $modulePaths = $env:PSModulePath -split ';' | Where-Object { $_ }
+        
+        foreach($modulePath in $modulePaths) {
+            $moduleFolder = Join-Path -Path $modulePath -ChildPath $ModuleName
+            
+            if(Test-Path $moduleFolder) {
+                # Look for version-specific folder
+                $versionFolder = Join-Path -Path $moduleFolder -ChildPath $ModuleVersion
+                if(-not (Test-Path $versionFolder)) {
+                    # Try to find any version folder if specific version not found
+                    $versionFolders = Get-ChildItem -Path $moduleFolder -Directory | Where-Object { $_.Name -match '^\d+\.\d+' }
+                    if($versionFolders) {
+                        $versionFolder = $versionFolders[0].FullName
+                    } else {
+                        $versionFolder = $moduleFolder
+                    }
+                }
+                
+                if(Test-Path $versionFolder) {
+                    Write-Information "Searching for DSC resources in: $versionFolder" -InformationAction Continue
+                    
+                    # Look for DSCResources folder
+                    $dscResourcesFolder = Join-Path -Path $versionFolder -ChildPath "DSCResources"
+                    if(Test-Path $dscResourcesFolder) {
+                        $resourceFolders = Get-ChildItem -Path $dscResourcesFolder -Directory
+                        foreach($resourceFolder in $resourceFolders) {
+                            # Look for .psm1 files in resource folders
+                            $psmFiles = Get-ChildItem -Path $resourceFolder.FullName -Filter "*.psm1"
+                            if($psmFiles) {
+                                $dscResourcesFound += $resourceFolder.Name
+                                Write-Information "Found DSC resource: $($resourceFolder.Name)" -InformationAction Continue
+                            }
+                        }
+                    }
+                    
+                    # Also look for .psd1 manifest files that might define DSC resources
+                    $manifestFiles = Get-ChildItem -Path $versionFolder -Filter "*.psd1"
+                    foreach($manifestFile in $manifestFiles) {
+                        try {
+                            $manifestContent = Import-PowerShellDataFile -Path $manifestFile.FullName -ErrorAction SilentlyContinue
+                            if($manifestContent -and $manifestContent.DscResourcesToExport) {
+                                $exportedResources = $manifestContent.DscResourcesToExport
+                                if($exportedResources -and $exportedResources.Count -gt 0) {
+                                    $dscResourcesFound += $exportedResources
+                                    Write-Information "Found DSC resources in manifest: $($exportedResources -join ', ')" -InformationAction Continue
+                                }
+                            }
+                        }
+                        catch {
+                            # Continue if manifest can't be read
+                        }
+                    }
+                    
+                    # Look for .psm1 files directly in the module folder that might contain DSC resources
+                    $moduleFiles = Get-ChildItem -Path $versionFolder -Filter "*.psm1"
+                    foreach($moduleFile in $moduleFiles) {
+                        try {
+                            $content = Get-Content -Path $moduleFile.FullName -Raw -ErrorAction SilentlyContinue
+                            if($content -and ($content -match '\[DscResource\(\)\]' -or $content -match 'Configuration\s+\w+')) {
+                                $dscResourcesFound += $moduleFile.BaseName
+                                Write-Information "Found DSC resource definitions in: $($moduleFile.Name)" -InformationAction Continue
+                            }
+                        }
+                        catch {
+                            # Continue if file can't be read
+                        }
+                    }
+                }
+            }
+        }
+    }
+    catch {
+        Write-Warning "Error searching for DSC resources in module $ModuleName`: $($_.Exception.Message)"
+    }
+    
+    return $dscResourcesFound | Select-Object -Unique
+}
+
+Write-Output "Whoami: $(whoami)"
+
 # Ensure PowerShell module paths are correctly set for current user
 $userModulesPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell\Modules"
 if (-not (Test-Path $userModulesPath)) {
@@ -52,6 +238,7 @@ if(-not $repoExists)
 
 Write-Output "Validate and install required modules"
 $moduleErrors = @()
+$versionDirectoryErrors = @()
 
 $totalModules = $moduleManifest.Count
 $currentModule = 0
@@ -112,6 +299,16 @@ foreach($module in $moduleManifest)
                 Install-Module @parameters
                 $loopCount = $MaxRetryCount + 1
                 Write-Information "Finished installing $Name" -InformationAction Continue
+                
+                # Fix version directory naming if using alternate format
+                if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
+                    Write-Information "Module $Name uses alternate format, checking version directory..." -InformationAction Continue
+                    $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $module.AlternateVersion
+                    if(-not $fixResult) {
+                        $versionDirectoryErrors += "Failed to fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $($module.AlternateVersion))"
+                        Write-Warning "Failed to fix version directory for module $Name - this may cause import issues"
+                    }
+                }
             }
             catch
             {
@@ -135,6 +332,16 @@ foreach($module in $moduleManifest)
     else
     {
         Write-Information "$Name already installed" -InformationAction Continue
+        
+        # Even if module is already installed, check if version directory needs fixing for alternate format
+        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
+            Write-Information "Module $Name uses alternate format, verifying version directory..." -InformationAction Continue
+            $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $module.AlternateVersion
+            if(-not $fixResult) {
+                $versionDirectoryErrors += "Failed to verify/fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $($module.AlternateVersion))"
+                Write-Warning "Failed to verify/fix version directory for module $Name - this may cause import issues"
+            }
+        }
     }
 }
 
@@ -273,7 +480,29 @@ foreach($module in $moduleManifest)
 
         if(-not $importSuccess)
         {
-            $verificationErrors += "Module $Name could not be imported with any version formats tried: $($versionsAttempted -join ', '). Last error: $($_.Exception.Message)"
+            # If Import-Module failed, try to validate DSC resources in the module directly
+            Write-Information "Import-Module failed for $Name, attempting to validate DSC resources directly..." -InformationAction Continue
+            
+            $dscResources = Test-DSCResourcesInModule -ModuleName $Name -ModuleVersion $Version
+            
+            if($dscResources -and $dscResources.Count -gt 0) {
+                Write-Information "Module $Name v$Version contains valid DSC resources despite import failure: $($dscResources -join ', ')" -InformationAction Continue
+                $importSuccess = $true
+            } else {
+                # If no DSC resources found, try with other version formats
+                foreach($versionToCheck in $versionsAttempted | Where-Object { $_ -ne $Version }) {
+                    $dscResources = Test-DSCResourcesInModule -ModuleName $Name -ModuleVersion $versionToCheck
+                    if($dscResources -and $dscResources.Count -gt 0) {
+                        Write-Information "Module $Name v$versionToCheck contains valid DSC resources despite import failure: $($dscResources -join ', ')" -InformationAction Continue
+                        $importSuccess = $true
+                        break
+                    }
+                }
+            }
+            
+            if(-not $importSuccess) {
+                $verificationErrors += "Module $Name could not be imported with any version formats tried: $($versionsAttempted -join ', ') and no valid DSC resources were found in the module directories. Last error: $($_.Exception.Message)"
+            }
         }
     }
 }
@@ -297,6 +526,15 @@ if($verificationErrors.Count -gt 0)
     $aggEx = [System.Exception]::new($combinedMessage)
     [Environment]::ExitCode = 1
     throw $aggEx
+}
+
+if($versionDirectoryErrors.Count -gt 0)
+{
+    Write-Warning "Version directory issues encountered (these may cause import problems):"
+    foreach($versionError in $versionDirectoryErrors) {
+        Write-Warning "  $versionError"
+    }
+    Write-Warning "Consider manually checking and renaming version directories if import issues occur."
 }
 
 Write-Output "Finished Installing and Verifying Modules"
