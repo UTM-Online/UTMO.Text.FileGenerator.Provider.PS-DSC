@@ -4,5 +4,5 @@ public class ScriptConstants
 {
     public const string RestoreRequiredModules = "RestoreRequiredModules.ps1";
     
-    public const string ProcessRequiredModules = "ProcessRequiredModules.ps1";
+    public const string ProcessRequiredModules = "ProcessRequiredModules_v2.ps1";
 }
