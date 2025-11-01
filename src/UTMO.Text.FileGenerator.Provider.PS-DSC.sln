@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11123.170 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Provider.DSC", "UTMO.Text.FileGenerator.Provider.DSC\UTMO.Text.FileGenerator.Provider.DSC.csproj", "{3E277A05-8409-4FEF-8480-B6A0AABFF73E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".pipelines", ".pipelines", "{013E840A-CF9D-47E2-BB97-139DD815A322}"
@@ -17,6 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTMO.Text.FileGenerator.Pro
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{57173640-460A-4A5B-932F-3C91CB0D900A}"
 	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
@@ -54,6 +58,9 @@ Global
 		{6E435ACC-39D5-4B60-B05B-B23B825AB84F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E435ACC-39D5-4B60-B05B-B23B825AB84F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E435ACC-39D5-4B60-B05B-B23B825AB84F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2D45FCA1-1503-4471-926B-27D6457988F3} = {28E30D2C-91AA-4DE6-BC65-8802115E151A}

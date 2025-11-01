@@ -19,7 +19,7 @@ function Write-ScriptLog {
         [string]$Message,
      
         [ValidateSet('Information', 'Warning', 'Error')]
-    [string]$Level = 'Information'
+        [string]$Level = 'Information'
     )
     
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
@@ -27,8 +27,8 @@ function Write-ScriptLog {
     
     switch ($Level) {
         'Information' { Write-Host $logMessage }
-      'Warning' { Write-Warning $logMessage }
-        'Error' { Write-Error $logMessage }
+        'Warning' { Write-Host $logMessage -ForegroundColor Yellow }
+        'Error' { Write-Host $logMessage -ForegroundColor Red }
     }
 }
 
@@ -42,12 +42,12 @@ function Initialize-UserModulePath {
     
     if (-not (Test-Path -Path $userModulesPath)) {
         Write-ScriptLog -Message "Creating user modules directory: $userModulesPath"
-   New-Item -Path $userModulesPath -ItemType Directory -Force | Out-Null
+        New-Item -Path $userModulesPath -ItemType Directory -Force | Out-Null
     }
     
     $currentPSModulePath = $env:PSModulePath
     if (-not $currentPSModulePath.Contains($userModulesPath)) {
-   $env:PSModulePath = "$userModulesPath;$currentPSModulePath"
+        $env:PSModulePath = "$userModulesPath;$currentPSModulePath"
         Write-ScriptLog -Message "Updated PSModulePath to include: $userModulesPath"
     }
     
@@ -70,36 +70,36 @@ function Test-ManifestFile {
         return $json
     }
     catch {
- throw "Failed to read or parse manifest file: $_"
+        throw "Failed to read or parse manifest file: $_"
     }
 }
 
 function Test-RequiredModules {
     param(
         [Parameter(Mandatory = $true)]
-   [array]$Packages
+        [array]$Packages
     )
     
     Write-ScriptLog -Message 'Verifying required modules are available...'
     
     foreach ($package in $Packages) {
         $moduleName = $package.Name
-    $moduleVersion = $package.Version
+        $moduleVersion = $package.Version
         
         $installedModule = Get-InstalledModule -Name $moduleName -RequiredVersion $moduleVersion -ErrorAction SilentlyContinue
       
         if (-not $installedModule) {
-       Write-ScriptLog -Message "Module $moduleName v$moduleVersion is not installed. This may cause Save-Module to fail." -Level Warning
+            Write-ScriptLog -Message "Module $moduleName v$moduleVersion is not installed. This may cause Save-Module to fail." -Level Warning
     
             $allVersions = Get-InstalledModule -Name $moduleName -AllVersions -ErrorAction SilentlyContinue
-       if ($allVersions) {
-     $versionList = ($allVersions | ForEach-Object { $_.Version.ToString() }) -join ', '
-        Write-ScriptLog -Message "Available versions of $moduleName : $versionList"
+            if ($allVersions) {
+                $versionList = ($allVersions | ForEach-Object { $_.Version.ToString() }) -join ', '
+                Write-ScriptLog -Message "Available versions of $moduleName : $versionList"
             }
         }
         else {
             Write-ScriptLog -Message "Module $moduleName v$moduleVersion is available"
- }
+        }
     }
 }
 
@@ -134,13 +134,13 @@ function Remove-GitDirectories {
 
 function Save-PackageModule {
     param(
-    [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [psobject]$Package,
    
-      [Parameter(Mandatory = $true)]
-      [string]$DestinationPath,
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationPath,
         
-[Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [string]$OutputPath,
         
         [switch]$NoArchive
@@ -153,9 +153,9 @@ function Save-PackageModule {
     
     # Save module to destination path
     $saveParams = @{
-        Name    = $moduleName
+        Name            = $moduleName
         RequiredVersion = $moduleVersion
-        Repository= 'DSCResources'
+        Repository      = 'DSCResources'
         Path            = $DestinationPath
     }
     
@@ -168,20 +168,20 @@ function Save-PackageModule {
     if (-not $NoArchive) {
         # Create archive
         $modulePath = Join-Path -Path $DestinationPath -ChildPath $moduleName
-     $versionPath = Join-Path -Path $modulePath -ChildPath $moduleVersion
+        $versionPath = Join-Path -Path $modulePath -ChildPath $moduleVersion
         $sourcePattern = Join-Path -Path $versionPath -ChildPath '*'
         
-      # Determine archive filename
+        # Determine archive filename
         if ($Package.UseAlternateFormat -and $Package.AlternateVersion) {
-    $archiveFileName = "$moduleName`_$($Package.AlternateVersion).zip"
+            $archiveFileName = "$moduleName`_$($Package.AlternateVersion).zip"
         }
         else {
             $archiveFileName = "$moduleName`_$moduleVersion.zip"
-   }
+        }
         
         $archivePath = Join-Path -Path $OutputPath -ChildPath $archiveFileName
         
-  Write-ScriptLog -Message "Creating archive: $archiveFileName"
+        Write-ScriptLog -Message "Creating archive: $archiveFileName"
         Compress-Archive -Path $sourcePattern -DestinationPath $archivePath -Force | Out-Null
         Write-ScriptLog -Message "Archive created successfully: $archivePath"
     }
@@ -192,7 +192,7 @@ function Save-PackageModule {
 #region Main Script
 
 try {
-Write-ScriptLog -Message '========================================='
+    Write-ScriptLog -Message '========================================='
     Write-ScriptLog -Message 'ProcessRequiredModules Script Starting'
     Write-ScriptLog -Message '========================================='
     
@@ -216,15 +216,15 @@ Write-ScriptLog -Message '========================================='
     Test-RequiredModules -Packages $packages
     
     # Create output directory
-  $modulesOutputPath = Join-Path -Path $OutputPath -ChildPath 'Modules'
+    $modulesOutputPath = Join-Path -Path $OutputPath -ChildPath 'Modules'
     if (-not (Test-Path -Path $modulesOutputPath)) {
-  Write-ScriptLog -Message "Creating output directory: $modulesOutputPath"
+        Write-ScriptLog -Message "Creating output directory: $modulesOutputPath"
         New-Item -Path $modulesOutputPath -ItemType Directory -Force | Out-Null
     }
     
     # Determine working path
     if ($NoArchive) {
-      $workingPath = $modulesOutputPath
+        $workingPath = $modulesOutputPath
         Write-ScriptLog -Message 'NoArchive mode: Saving modules directly to output path'
     }
     else {
@@ -237,19 +237,19 @@ Write-ScriptLog -Message '========================================='
     $successCount = 0
     
     foreach ($package in $packages) {
-     try {
-    Save-PackageModule -Package $package -DestinationPath $workingPath -OutputPath $modulesOutputPath -NoArchive:$NoArchive
+        try {
+            Save-PackageModule -Package $package -DestinationPath $workingPath -OutputPath $modulesOutputPath -NoArchive:$NoArchive
             $successCount++
         }
-   catch {
-    $errorInfo = @{
-      Package   = $package.Name
-    Version   = $package.Version
-            Exception = $_
- }
-    $failedPackages += $errorInfo
+        catch {
+            $errorInfo = @{
+                Package   = $package.Name
+                Version   = $package.Version
+                Exception = $_
+            }
+            $failedPackages += $errorInfo
             
-          Write-ScriptLog -Message "Failed to process module $($package.Name): $($_.Exception.Message)" -Level Warning
+            Write-ScriptLog -Message "Failed to process module $($package.Name): $($_.Exception.Message)" -Level Warning
         }
     }
     
@@ -259,10 +259,10 @@ Write-ScriptLog -Message '========================================='
     Write-ScriptLog -Message "Successfully processed: $successCount/$($packages.Count) packages"
     
     if ($failedPackages.Count -gt 0) {
-   Write-ScriptLog -Message "Failed packages: $($failedPackages.Count)" -Level Warning
-     foreach ($failed in $failedPackages) {
+        Write-ScriptLog -Message "Failed packages: $($failedPackages.Count)" -Level Warning
+        foreach ($failed in $failedPackages) {
             Write-ScriptLog -Message "  - $($failed.Package) v$($failed.Version): $($failed.Exception.Message)" -Level Warning
-     }
+        }
     }
     
     Write-ScriptLog -Message '========================================='
@@ -271,20 +271,21 @@ Write-ScriptLog -Message '========================================='
     if ($env:SkipCleanup -ne '1' -and -not $NoArchive -and (Test-Path -Path $workingPath)) {
         Write-ScriptLog -Message 'Cleaning up temporary directory...'
         Remove-Item -Path $workingPath -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
-     Write-ScriptLog -Message 'Cleanup complete'
+        Write-ScriptLog -Message 'Cleanup complete'
     }
     elseif ($env:SkipCleanup -eq '1') {
-     Write-ScriptLog -Message "Skipping cleanup (SkipCleanup flag set). Temp directory: $workingPath"
-  }
+        Write-ScriptLog -Message "Skipping cleanup (SkipCleanup flag set). Temp directory: $workingPath"
+    }
     
     # Exit with error if any packages failed
     if ($failedPackages.Count -gt 0) {
         $errorMessage = "Failed to process $($failedPackages.Count) package(s)"
-   Write-ScriptLog -Message $errorMessage -Level Error
+        $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        Write-Host "[$timestamp] [Error] $errorMessage" -ForegroundColor Red
         
         # Create aggregate exception message
         $exceptionMessages = $failedPackages | ForEach-Object {
-      "$($_.Package) v$($_.Version): $($_.Exception.Message)"
+            "$($_.Package) v$($_.Version): $($_.Exception.Message)"
         }
         $aggregateMessage = $exceptionMessages -join "`n"
       
@@ -295,13 +296,15 @@ Write-ScriptLog -Message '========================================='
     exit 0
 }
 catch {
-    Write-ScriptLog -Message "Critical error: $($_.Exception.Message)" -Level Error
-    Write-ScriptLog -Message "Stack trace: $($_.ScriptStackTrace)" -Level Error
+    $errorMessage = "Critical error: $($_.Exception.Message)"
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    Write-Host "[$timestamp] [Error] $errorMessage" -ForegroundColor Red
+    Write-Host "[$timestamp] [Error] Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
     
-  # Attempt cleanup even on failure
+    # Attempt cleanup even on failure
     if ($workingPath -and (Test-Path -Path $workingPath) -and -not $NoArchive) {
         Write-ScriptLog -Message 'Attempting cleanup after error...'
-    Remove-Item -Path $workingPath -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+        Remove-Item -Path $workingPath -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
     
     exit 1
