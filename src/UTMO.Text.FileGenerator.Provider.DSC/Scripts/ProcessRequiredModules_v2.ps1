@@ -203,6 +203,13 @@ try {
     Write-ScriptLog -Message "Manifest Path: $ManifestPath"
     Write-ScriptLog -Message "Output Path: $OutputPath"
     Write-ScriptLog -Message "NoArchive Mode: $NoArchive"
+
+    $repoExists = Get-PSRepository -Name "DSCResources" -ErrorAction SilentlyContinue
+
+    if(-not $repoExists)
+    {
+        Register-PSRepository -Name "DSCResources" -SourceLocation "https://packages.public.utmonline.net/nuget/DSCResources/" -InstallationPolicy Trusted
+    }
     
     # Initialize user module path
     $userModulePath = Initialize-UserModulePath
@@ -293,7 +300,7 @@ try {
     }
     
     Write-ScriptLog -Message 'All packages processed successfully'
-    exit 0
+    exit -262
 }
 catch {
     $errorMessage = "Critical error: $($_.Exception.Message)"
@@ -307,7 +314,7 @@ catch {
         Remove-Item -Path $workingPath -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
     
-    exit 1
+    exit -263
 }
 
 #endregion
