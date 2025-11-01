@@ -15,16 +15,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" />
-      <PackageReference Include="UTMO.Common.Guards" />
-      <PackageReference Include="UTMO.Text.FileGenerator" />
-      <PackageReference Include="UTMO.Text.FileGenerator.Validators" />
+      <PackageReference Include="System.Management.Automation"/>
+      <PackageReference Include="UTMO.Common.Guards"/>
+      <PackageReference Include="UTMO.Text.FileGenerator"/>
+      <PackageReference Include="UTMO.Text.FileGenerator.Validators"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true" />
-        <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true" />
-        <None Include="Scripts\**\*.*" PackagePath="Scripts" Pack="true" />
+        <None Include="Templates\**\*.liquid" PackagePath="Templates" Pack="true"/>
+        <None Include="ClientBuild\**\*.*" PackagePath="Build" Pack="true"/>
+        <None Include="Scripts\**\*.*" PackagePath="Scripts" Pack="true"/>
         <None Remove="UTMO.Text.FileGenerator.Provider.DSC.csproj.DotSettings" />
     </ItemGroup>
 
