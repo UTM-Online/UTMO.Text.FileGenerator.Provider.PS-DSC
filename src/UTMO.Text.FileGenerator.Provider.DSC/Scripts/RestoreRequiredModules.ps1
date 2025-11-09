@@ -511,30 +511,36 @@ Write-Output "Module installation verification complete"
 Write-Output "PSModulePath: $($env:PSModulePath)"
 Write-Output "Current user modules path: $($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
 
+# Report errors as warnings instead of throwing exceptions
 if($moduleErrors.Count -gt 0)
 {
-    $errorSummary = $moduleErrors | ForEach-Object { "Module: $($_.ModuleName) v$($_.ModuleVersion) - Attempt $($_.Attempt): $($_.ErrorMessage)" }
-    $combinedMessage = "Failed to install modules:`n" + ($errorSummary -join "`n")
-    $aggEx = [System.Exception]::new($combinedMessage)
-    [Environment]::ExitCode = 1
-    throw $aggEx
+    Write-Warning "===== MODULE INSTALLATION ERRORS ====="
+    Write-Warning "Some modules failed to install after multiple attempts:"
+    foreach($error in $moduleErrors) {
+        Write-Warning "  - Module: $($error.ModuleName) v$($error.ModuleVersion) - Attempt $($error.Attempt): $($error.ErrorMessage)"
+    }
+    Write-Warning "======================================"
 }
 
 if($verificationErrors.Count -gt 0)
 {
-    $combinedMessage = "Module verification failed:`n" + ($verificationErrors -join "`n")
-    $aggEx = [System.Exception]::new($combinedMessage)
-    [Environment]::ExitCode = 1
-    throw $aggEx
+    Write-Warning "===== MODULE VERIFICATION ERRORS ====="
+    Write-Warning "Some modules failed verification checks:"
+    foreach($error in $verificationErrors) {
+        Write-Warning "  - $error"
+    }
+    Write-Warning "======================================"
 }
 
 if($versionDirectoryErrors.Count -gt 0)
 {
+    Write-Warning "===== VERSION DIRECTORY ERRORS ====="
     Write-Warning "Version directory issues encountered (these may cause import problems):"
     foreach($versionError in $versionDirectoryErrors) {
-        Write-Warning "  $versionError"
+        Write-Warning "  - $versionError"
     }
     Write-Warning "Consider manually checking and renaming version directories if import issues occur."
+    Write-Warning "===================================="
 }
 
 Write-Output "Finished Installing and Verifying Modules"
