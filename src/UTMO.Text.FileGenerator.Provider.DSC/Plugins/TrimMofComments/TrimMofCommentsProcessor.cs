@@ -39,13 +39,17 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
                     break;
                 }
             }
-            
-            Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
-            var fileText = await File.ReadAllTextAsync(mofOutputFile);
 
-            if (this.HeaderMatcher.IsMatch(fileText))
+            if (resource is IManifestProducer producer && producer.GenerateManifest)
             {
-                await File.WriteAllTextAsync(mofOutputFile, this.HeaderMatcher.Match(fileText).Groups["Body"].Value);
+                Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
+                Guard.Requires<InvalidOperationException>(File.Exists(mofOutputFile), $"MOF output file does not exist: {mofOutputFile}");
+                var fileText = await File.ReadAllTextAsync(mofOutputFile);
+
+                if (this.HeaderMatcher.IsMatch(fileText))
+                {
+                    await File.WriteAllTextAsync(mofOutputFile, this.HeaderMatcher.Match(fileText).Groups["Body"].Value);
+                }
             }
         }
         
