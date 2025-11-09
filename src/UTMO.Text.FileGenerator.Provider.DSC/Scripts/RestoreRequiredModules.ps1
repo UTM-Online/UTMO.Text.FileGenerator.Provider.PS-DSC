@@ -5,6 +5,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
@@ -237,7 +238,7 @@ if(-not $repoExists)
 }
 
 Write-Output "Validate and install required modules"
-$moduleErrors = @()
+$moduleInstallErrors = @()
 $versionDirectoryErrors = @()
 
 $totalModules = $moduleManifest.Count
@@ -313,18 +314,19 @@ foreach($module in $moduleManifest)
             catch
             {
                 $loopCount++
+                $currentError = $_
                 $errorDetails = @{
                     ModuleName = $Name
                     ModuleVersion = $Version
                     Attempt = $loopCount
-                    Exception = $_
-                    ErrorType = $_.Exception.GetType().Name
-                    ErrorMessage = $_.Exception.Message
+                    Exception = $currentError
+                    ErrorType = $currentError.Exception.GetType().Name
+                    ErrorMessage = $currentError.Exception.Message
                 }
-                $moduleErrors += $errorDetails
+                $moduleInstallErrors += $errorDetails
                 Write-Warning "Failed To Install $Name (Attempt $loopCount)"
-                Write-Warning "ErrorType: $($_.Exception.GetType().Name)"
-                Write-Warning "Error Message: $($_.Exception.Message)"
+                Write-Warning "ErrorType: $($currentError.Exception.GetType().Name)"
+                Write-Warning "Error Message: $($currentError.Exception.Message)"
             }
         }
         while($loopCount -le $MaxRetryCount)
@@ -512,12 +514,12 @@ Write-Output "PSModulePath: $($env:PSModulePath)"
 Write-Output "Current user modules path: $($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
 
 # Report errors as warnings instead of throwing exceptions
-if($moduleErrors.Count -gt 0)
+if($moduleInstallErrors.Count -gt 0)
 {
     Write-Warning "===== MODULE INSTALLATION ERRORS ====="
     Write-Warning "Some modules failed to install after multiple attempts:"
-    foreach($error in $moduleErrors) {
-        Write-Warning "  - Module: $($error.ModuleName) v$($error.ModuleVersion) - Attempt $($error.Attempt): $($error.ErrorMessage)"
+    foreach($installError in $moduleInstallErrors) {
+        Write-Warning "  - Module: $($installError.ModuleName) v$($installError.ModuleVersion) - Attempt $($installError.Attempt): $($installError.ErrorMessage)"
     }
     Write-Warning "======================================"
 }
@@ -526,8 +528,8 @@ if($verificationErrors.Count -gt 0)
 {
     Write-Warning "===== MODULE VERIFICATION ERRORS ====="
     Write-Warning "Some modules failed verification checks:"
-    foreach($error in $verificationErrors) {
-        Write-Warning "  - $error"
+    foreach($err in $verificationErrors) {
+        Write-Warning "  - $err"
     }
     Write-Warning "======================================"
 }
