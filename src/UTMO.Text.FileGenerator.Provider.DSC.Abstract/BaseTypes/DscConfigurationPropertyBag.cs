@@ -10,17 +10,28 @@ using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
+using System.Linq;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Attributes;
+using System.Reflection;
 
 public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
     private readonly HashSet<string> _quotedEnumKeys = new();
+    // Track keys whose values originated from enum-typed properties
+    private readonly HashSet<string> _enumKeys = new();
 
     private ILogger<DscConfigurationPropertyBag>? Logger { get; set; }
-    
+    private Type? _ownerType;
+
     internal void SetLogger(ILogger<DscConfigurationPropertyBag> logger)
     {
         this.Logger = logger;
+    }
+
+    internal void SetOwner(Type ownerType)
+    {
+        this._ownerType = ownerType;
     }
     
     public void Set<T>(string key, T value, [CallerMemberName] string? callerMemberName = null)
@@ -30,20 +41,21 @@ public class DscConfigurationPropertyBag : ILiquidizable
             return;
         }
 
+        // Treat both enum and nullable enum values uniformly via runtime check
+        if (value is Enum)
+        {
+            this._propertyBag[key] = value.ToString()!;
+            this._enumKeys.Add(key);
+
+            if (!string.IsNullOrEmpty(callerMemberName))
+            {
+                this.CheckAndMarkQuotedEnum(callerMemberName, key);
+            }
+            return;
+        }
+
         switch (typeof(T))
         {
-            case {IsEnum: true}:
-            {
-                this._propertyBag[key] = value.ToString()!;
-                
-                // Check if the calling property has the QuotedEnum attribute
-                if (!string.IsNullOrEmpty(callerMemberName))
-                {
-                    this.CheckAndMarkQuotedEnum(callerMemberName, key);
-                }
-                break;
-            }
-
             default:
             {
                 if (this._propertyBag.TryAdd(key, value))
@@ -61,25 +73,74 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         try
         {
-            // Get the calling type from the stack trace
+            // Prefer using the known owner type to resolve the property
+            if (this._ownerType != null)
+            {
+                foreach (var candidate in new[] { propertyName, key }.Where(n => !string.IsNullOrWhiteSpace(n)))
+                {
+                    var propInfo = this._ownerType.GetProperty(
+                        candidate!,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                    if (propInfo != null)
+                    {
+                        var hasQuotedEnumAttribute = propInfo.GetCustomAttributes(typeof(QuotedEnumAttribute), inherit: true).Any();
+                        if (hasQuotedEnumAttribute)
+                        {
+                            this._quotedEnumKeys.Add(key);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Fallback: walk the stack to infer the property from an accessor
             var stackTrace = new System.Diagnostics.StackTrace();
             for (int i = 0; i < stackTrace.FrameCount; i++)
             {
                 var frame = stackTrace.GetFrame(i);
                 var method = frame?.GetMethod();
-                if (method != null && method.DeclaringType != null && method.DeclaringType != typeof(DscConfigurationPropertyBag))
+                if (method == null)
                 {
-                    var property = method.DeclaringType.GetProperty(propertyName);
-                    if (property != null)
-                    {
-                        var hasQuotedEnumAttribute = property.GetCustomAttributes(typeof(Attributes.QuotedEnumAttribute), false).Any();
-                        if (hasQuotedEnumAttribute)
-                        {
-                            this._quotedEnumKeys.Add(key);
-                        }
-                        break;
-                    }
+                    continue;
                 }
+
+                var declaringType = method.DeclaringType;
+                if (declaringType == null || declaringType == typeof(DscConfigurationPropertyBag))
+                {
+                    continue;
+                }
+
+                // Derive property name from accessor when possible
+                string? candidateName = null;
+                if (method.IsSpecialName && (method.Name.StartsWith("set_") || method.Name.StartsWith("get_")))
+                {
+                    candidateName = method.Name.Substring(4);
+                }
+                else
+                {
+                    candidateName = propertyName;
+                }
+
+                if (string.IsNullOrWhiteSpace(candidateName))
+                {
+                    continue;
+                }
+
+                var fallbackProp = declaringType.GetProperty(
+                    candidateName,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                if (fallbackProp == null)
+                {
+                    continue;
+                }
+
+                var hasAttr = fallbackProp.GetCustomAttributes(typeof(QuotedEnumAttribute), inherit: true).Any();
+                if (hasAttr)
+                {
+                    this._quotedEnumKeys.Add(key);
+                }
+                break;
             }
         }
         catch
@@ -201,7 +262,24 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     if (!string.IsNullOrWhiteSpace(s) && !s.Equals(PropertyBagValues.NoValue))
                     {
-                        liquidObject[prop.Key] = $"\"{s}\"";
+                        // If this key originated from an enum property, only quote when marked as QuotedEnum
+                        if (this._enumKeys.Contains(prop.Key))
+                        {
+                            if (this._quotedEnumKeys.Contains(prop.Key))
+                            {
+                                liquidObject[prop.Key] = $"\"{s}\"";
+                            }
+                            else
+                            {
+                                // Emit bare enum value when not quoted
+                                liquidObject[prop.Key] = s;
+                            }
+                        }
+                        else
+                        {
+                            // Regular string property: always quote
+                            liquidObject[prop.Key] = $"\"{s}\"";
+                        }
                     }
                     else if (s.Equals(PropertyBagValues.NoValue))
                     {
@@ -231,15 +309,8 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
                 default:
                 {
-                    // Check if this is a quoted enum value
-                    if (this._quotedEnumKeys.Contains(prop.Key) && prop.Value is Enum enumValue)
-                    {
-                        liquidObject[prop.Key] = $"\"{enumValue}\"";
-                    }
-                    else
-                    {
-                        liquidObject[prop.Key] = prop.Value;
-                    }
+                    // For non-string values, just pass through as-is
+                    liquidObject[prop.Key] = prop.Value;
                     break;
                 }
             }

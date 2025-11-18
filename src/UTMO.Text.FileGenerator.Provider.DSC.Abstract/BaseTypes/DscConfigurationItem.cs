@@ -13,6 +13,8 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
     {
         this.Name        = name;
         this.Description = string.Empty;
+        // Register this instance's type as the owner of the property bag for attribute lookups
+        this.PropertyBag.SetOwner(this.GetType());
     }
 
     [MemberName("resource_id")]
