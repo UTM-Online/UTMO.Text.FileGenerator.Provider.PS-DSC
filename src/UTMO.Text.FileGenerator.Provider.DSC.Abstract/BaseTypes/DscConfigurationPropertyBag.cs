@@ -47,10 +47,9 @@ public class DscConfigurationPropertyBag : ILiquidizable
             this._propertyBag[key] = value.ToString()!;
             this._enumKeys.Add(key);
 
-            if (!string.IsNullOrEmpty(callerMemberName))
-            {
-                this.CheckAndMarkQuotedEnum(callerMemberName, key);
-            }
+            // Always check for QuotedEnum attribute, even if callerMemberName is null
+            // The CheckAndMarkQuotedEnum method can handle null propertyName and will use the key as fallback
+            this.CheckAndMarkQuotedEnum(callerMemberName, key);
             return;
         }
 
