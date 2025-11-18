@@ -63,4 +63,22 @@ public static class PSDesiredStateConfigurationConstants
             public const string ReturnCode = "ReturnCode";
         }
     }
+    
+    public static class Service
+    {
+        public const string ResourceId = "Service";
+        
+        public static class Properties
+        {
+            public const string Name = "Name";
+            public const string State = "State";
+            public const string StartupType = "StartupType";
+            public const string BuiltInAccount = "BuiltInAccount";
+            public const string Credential = "Credential";
+            public const string Dependencies = "Dependencies";
+            public const string Description = "Description";
+            public const string DisplayName = "DisplayName";
+            public const string Path = "Path";
+        }
+    }
 }
