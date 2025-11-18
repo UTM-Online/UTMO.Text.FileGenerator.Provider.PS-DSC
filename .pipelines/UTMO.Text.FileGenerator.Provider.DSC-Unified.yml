@@ -49,6 +49,8 @@ extends:
     DeploymentName: DSCGenerator
     ReleaseDisplayName: 'Publish DSC Generator Packages'
     UseWildcardMatch: true
+    RunTests: true
+    TestRunTitle: 'DSC Generator Unit Tests'
     FeedSettings:
       'ConfigGen': 'internal'
       'UTMO Packages': 'external'

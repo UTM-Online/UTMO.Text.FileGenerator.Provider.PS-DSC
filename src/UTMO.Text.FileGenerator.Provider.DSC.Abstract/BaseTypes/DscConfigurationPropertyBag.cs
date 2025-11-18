@@ -186,11 +186,16 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 return default!;
             }
 
-            return typeof(T) switch
+            var targetType = typeof(T);
+            var underlyingType = Nullable.GetUnderlyingType(targetType);
+            
+            // Check if T is an enum or a nullable enum
+            if (targetType.IsEnum || (underlyingType != null && underlyingType.IsEnum))
             {
-                { IsEnum: true } _ => this.SafeParseEnum<T>(value.ToString()!),
-                var _ => (T)value,
-            };
+                return this.SafeParseEnum<T>(value.ToString()!);
+            }
+            
+            return (T)value;
         }
         catch (NullReferenceException)
         {
@@ -216,6 +221,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         try
         {
+            var targetType = typeof(T);
+            var underlyingType = Nullable.GetUnderlyingType(targetType);
+            
+            // If T is a nullable enum, parse to the underlying enum type first
+            if (underlyingType != null && underlyingType.IsEnum)
+            {
+                var enumValue = Enum.Parse(underlyingType, value);
+                // Boxing is necessary to convert from the underlying enum type to Nullable<TEnum>
+                return (T)(object)enumValue!;
+            }
+            
+            // T is a non-nullable enum
             return (T) Enum.Parse(typeof(T), value);
         }
         catch (Exception)

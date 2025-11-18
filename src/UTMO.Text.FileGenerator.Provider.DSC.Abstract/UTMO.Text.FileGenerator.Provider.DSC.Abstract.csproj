@@ -9,6 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="DSCProviderCore.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="UTMO.Text.FileGenerator"/>
     </ItemGroup>
 

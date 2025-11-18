@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MSTest" />
+        <PackageReference Include="Moq" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+        <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
+    </ItemGroup>
+
+</Project>
