@@ -48,4 +48,19 @@ public static class PSDesiredStateConfigurationConstants
             public const string MembersToInclude = "MembersToInclude";
         }
     }
+    
+    public static class Package
+    {
+        public const string ResourceId = "Package";
+        
+        public static class Properties
+        {
+            public const string Name = "Name";
+            public const string ProductId = "ProductId";
+            public const string Path = "Path";
+            public const string Arguments = "Arguments";
+            public const string LogPath = "LogPath";
+            public const string ReturnCode = "ReturnCode";
+        }
+    }
 }
