@@ -17,4 +17,8 @@
       <PackageReference Include="UTMO.Text.FileGenerator.Validators"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj.DotSettings" />
+    </ItemGroup>
+
 </Project>

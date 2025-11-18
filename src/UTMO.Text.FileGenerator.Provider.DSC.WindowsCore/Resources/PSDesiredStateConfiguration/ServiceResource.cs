@@ -1,3 +1,5 @@
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Attributes;
+
 namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
@@ -19,12 +21,14 @@ public sealed class ServiceResource : PSDesiredStateConfigurationBase, IServiceR
         set => this.PropertyBag.Set(Constants.Properties.Name, value);
     }
     
+    [QuotedEnum]
     public ServiceState? State
     {
         get => this.PropertyBag.Get<ServiceState?>(Constants.Properties.State);
         set => this.PropertyBag.Set(Constants.Properties.State, value);
     }
     
+    [QuotedEnum]
     public ServiceStartupType? StartupType
     {
         get => this.PropertyBag.Get<ServiceStartupType?>(Constants.Properties.StartupType);
