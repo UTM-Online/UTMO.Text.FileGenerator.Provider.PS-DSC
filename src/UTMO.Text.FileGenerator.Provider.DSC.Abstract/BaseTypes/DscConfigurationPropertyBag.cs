@@ -232,7 +232,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 default:
                 {
                     // Check if this is a quoted enum value
-                    if (this._quotedEnumKeys.Contains(prop.Key) && prop.Value is string enumValue)
+                    if (this._quotedEnumKeys.Contains(prop.Key) && prop.Value is Enum enumValue)
                     {
                         liquidObject[prop.Key] = $"\"{enumValue}\"";
                     }
