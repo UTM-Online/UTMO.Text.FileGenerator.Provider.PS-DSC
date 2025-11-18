@@ -349,7 +349,7 @@ public class DscConfigurationPropertyBagTests
     }
 
     [TestMethod]
-    public void ToLiquid_WithEnum_ReturnsBareValue()
+    public void ToLiquid_WithEnum_ReturnsQuotedValue()
     {
         // Arrange
         const string key = "TestKey";
@@ -360,7 +360,8 @@ public class DscConfigurationPropertyBagTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual("Value1", result[key]);
+        // Enums are quoted by default (no UnquotedEnum attribute present)
+        Assert.AreEqual("\"Value1\"", result[key]);
     }
 
     [TestMethod]
@@ -591,13 +592,13 @@ public class DscConfigurationPropertyBagTests
             this._propertyBag = propertyBag;
         }
 
-        [QuotedEnum]
         public TestEnum QuotedEnumProperty
         {
             get => this._propertyBag!.Get<TestEnum>(nameof(this.QuotedEnumProperty));
             set => this._propertyBag!.Set(nameof(this.QuotedEnumProperty), value);
         }
 
+        [UnquotedEnum]
         public TestEnum UnquotedEnumProperty
         {
             get => this._propertyBag!.Get<TestEnum>(nameof(this.UnquotedEnumProperty));

@@ -17,7 +17,7 @@ using System.Reflection;
 public class DscConfigurationPropertyBag : ILiquidizable
 {
     private readonly Dictionary<string,object> _propertyBag = new();
-    private readonly HashSet<string> _quotedEnumKeys = new();
+    private readonly HashSet<string> _unquotedEnumKeys = new();
     // Track keys whose values originated from enum-typed properties
     private readonly HashSet<string> _enumKeys = new();
 
@@ -47,9 +47,9 @@ public class DscConfigurationPropertyBag : ILiquidizable
             this._propertyBag[key] = value.ToString()!;
             this._enumKeys.Add(key);
 
-            // Always check for QuotedEnum attribute, even if callerMemberName is null
-            // The CheckAndMarkQuotedEnum method can handle null propertyName and will use the key as fallback
-            this.CheckAndMarkQuotedEnum(callerMemberName, key);
+            // Always check for UnquotedEnum attribute, even if callerMemberName is null
+            // The CheckAndMarkUnquotedEnum method can handle null propertyName and will use the key as fallback
+            this.CheckAndMarkUnquotedEnum(callerMemberName, key);
             return;
         }
 
@@ -68,7 +68,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
     }
     
-    private void CheckAndMarkQuotedEnum(string propertyName, string key)
+    private void CheckAndMarkUnquotedEnum(string propertyName, string key)
     {
         try
         {
@@ -82,10 +82,10 @@ public class DscConfigurationPropertyBag : ILiquidizable
                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                     if (propInfo != null)
                     {
-                        var hasQuotedEnumAttribute = propInfo.GetCustomAttributes(typeof(QuotedEnumAttribute), inherit: true).Any();
-                        if (hasQuotedEnumAttribute)
+                        var hasUnquotedEnumAttribute = propInfo.GetCustomAttributes(typeof(UnquotedEnumAttribute), inherit: true).Any();
+                        if (hasUnquotedEnumAttribute)
                         {
-                            this._quotedEnumKeys.Add(key);
+                            this._unquotedEnumKeys.Add(key);
                             return;
                         }
                     }
@@ -134,17 +134,17 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     continue;
                 }
 
-                var hasAttr = fallbackProp.GetCustomAttributes(typeof(QuotedEnumAttribute), inherit: true).Any();
+                var hasAttr = fallbackProp.GetCustomAttributes(typeof(UnquotedEnumAttribute), inherit: true).Any();
                 if (hasAttr)
                 {
-                    this._quotedEnumKeys.Add(key);
+                    this._unquotedEnumKeys.Add(key);
                 }
                 break;
             }
         }
         catch
         {
-            // If reflection fails, just continue without marking it as quoted
+            // If reflection fails, just continue without marking it as unquoted
         }
     }
     
@@ -278,17 +278,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     if (!string.IsNullOrWhiteSpace(s) && !s.Equals(PropertyBagValues.NoValue))
                     {
-                        // If this key originated from an enum property, only quote when marked as QuotedEnum
+                        // If this key originated from an enum property, only skip quoting when marked as UnquotedEnum
                         if (this._enumKeys.Contains(prop.Key))
                         {
-                            if (this._quotedEnumKeys.Contains(prop.Key))
+                            if (this._unquotedEnumKeys.Contains(prop.Key))
                             {
-                                liquidObject[prop.Key] = $"\"{s}\"";
+                                // Emit bare enum value when marked as unquoted
+                                liquidObject[prop.Key] = s;
                             }
                             else
                             {
-                                // Emit bare enum value when not quoted
-                                liquidObject[prop.Key] = s;
+                                // Quote enum values by default
+                                liquidObject[prop.Key] = $"\"{s}\"";
                             }
                         }
                         else

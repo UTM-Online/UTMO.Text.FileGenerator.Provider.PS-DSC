@@ -13,7 +13,7 @@ public class ServiceResourceQuotedEnumTests
         // Arrange
         var svc = ServiceResource.Create("TestService", r =>
         {
-            r.State = ServiceState.Running; // nullable enum with [QuotedEnum]
+            r.State = ServiceState.Running; // nullable enum, quoted by default
         });
 
         // Act
@@ -31,7 +31,7 @@ public class ServiceResourceQuotedEnumTests
         // Arrange
         var svc = ServiceResource.Create("TestService", r =>
         {
-            r.StartupType = ServiceStartupType.Automatic; // nullable enum with [QuotedEnum]
+            r.StartupType = ServiceStartupType.Automatic; // nullable enum, quoted by default
         });
 
         // Act
@@ -127,7 +127,7 @@ public class ServiceResourceQuotedEnumTests
         // Assert
         Assert.IsNotNull(liquid);
         // Because owner type property name matches key, attribute SHOULD still be discovered; ensure expectation aligns with implementation
-        // Implementation iterates candidates {propertyName, key}; propertyName is null -> uses key; finds property with [QuotedEnum] => quotes
+        // Implementation iterates candidates {propertyName, key}; propertyName is null -> uses key; finds property without [UnquotedEnum] => quotes by default
         Assert.AreEqual("\"Running\"", liquid[ServiceConstants.Properties.State]);
     }
 
@@ -147,7 +147,7 @@ public class ServiceResourceQuotedEnumTests
 
         // Assert
         Assert.IsNotNull(liquid);
-        // Still quoted because key tracked as enum origin and attribute marked quoted
+        // Still quoted because key tracked as enum origin and no UnquotedEnum attribute found (quoted by default)
         Assert.AreEqual("\"Stopped\"", liquid[ServiceConstants.Properties.State]);
     }
 
@@ -164,7 +164,7 @@ public class ServiceResourceQuotedEnumTests
 
         // Assert
         Assert.IsNotNull(liquid);
-        // No QuotedEnum attribute => bare value
-        Assert.AreEqual("Running", liquid["SyntheticEnumKey"]);
+        // No UnquotedEnum attribute => quoted by default
+        Assert.AreEqual("\"Running\"", liquid["SyntheticEnumKey"]);
     }
 }
