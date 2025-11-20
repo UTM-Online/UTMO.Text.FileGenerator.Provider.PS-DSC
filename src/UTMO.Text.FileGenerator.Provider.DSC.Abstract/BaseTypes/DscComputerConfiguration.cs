@@ -1,8 +1,11 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 using UTMO.Text.FileGenerator.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class DscComputerConfiguration : DscResourceBase
 {
     public override string ResourceTypeName => DscResourceTypeNames.DscComputerConfiguration;
@@ -14,13 +17,13 @@ public class DscComputerConfiguration : DscResourceBase
     public override bool GenerateManifest => false;
     
     [MemberName("node_name")]
-    public string NodeName { get; init; }
+    public required string NodeName { get; init; }
     
     [MemberName("ConfigurationResources")]
-    public List<DscConfigurationItem> NodeConfigurations { get; init; }
+    public required List<DscConfigurationItem> NodeConfigurations { get; init; }
     
     [MemberName("RequiredModules")]
-    public List<RequiredModule> RequiredModules { get; init; }
+    public List<RequiredModule> RequiredModules { get; init; } = [];
 
     public static explicit operator DscComputerConfiguration(DscLcmConfiguration cfg)
     {

@@ -68,8 +68,13 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
     }
     
-    private void CheckAndMarkUnquotedEnum(string propertyName, string key)
+    private void CheckAndMarkUnquotedEnum(string? propertyName, string key)
     {
+        if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+        
         try
         {
             // Prefer using the known owner type to resolve the property

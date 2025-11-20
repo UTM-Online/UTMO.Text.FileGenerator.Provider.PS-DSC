@@ -27,14 +27,14 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
     public TimeSpan MaxRuntime { get; }
 
-    public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
+    public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         var manifestPath = Path.Join(this.Options.OutputPath, "Manifests", environment.EnvironmentName, "RequiredModule.Manifest.json");
 
         if (!File.Exists(manifestPath))
         {
             this.Logger.LogError("Required Module Manifest not found at {ManifestPath}", manifestPath);
-            return;
+            return false;
         }
         
         this.Logger.LogInformation(LogMessages.StartingRestoreRequiredModules);
@@ -44,7 +44,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         if (!File.Exists(scriptPath))
         {
             this.Logger.LogError("PowerShell script not found at {ScriptPath}", scriptPath);
-            return;
+            return false;
         }
 
         try
@@ -100,12 +100,11 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             {
                 var errorMessage = !string.IsNullOrWhiteSpace(stdErr) ? stdErr : $"Process exited with code {process.ExitCode}";
                 this.Logger.LogError(LogMessages.RestoreRequiredModulesFailed, errorMessage);
-                throw new InvalidOperationException($"Windows PowerShell script execution failed: {errorMessage}");
+                return false;
             }
-            else
-            {
-                this.Logger.LogInformation(LogMessages.RestoredRequiredModulesSucceeded);
-            }
+
+            this.Logger.LogInformation(LogMessages.RestoredRequiredModulesSucceeded);
+            return true;
         }
         catch (OperationCanceledException)
         {

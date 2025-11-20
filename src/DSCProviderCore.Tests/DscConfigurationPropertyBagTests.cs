@@ -566,7 +566,7 @@ public class DscConfigurationPropertyBagTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(3, result.Count);
+        Assert.HasCount(3, result);
         Assert.AreEqual("\"value\"", result["String"]);
         Assert.AreEqual(42, result["Int"]);
         Assert.AreEqual("$true", result["Bool"]);

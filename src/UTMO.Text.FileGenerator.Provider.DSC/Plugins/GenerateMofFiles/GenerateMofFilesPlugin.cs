@@ -24,14 +24,14 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         this.MaxRuntime = TimeSpan.FromSeconds(45);
     }
 
-    public async Task HandleTemplate(ITemplateModel model)
+    public async Task<bool> HandleTemplate(ITemplateModel model)
     {
         Guard.StringNotNull(nameof(model.ResourceTypeName), model.ResourceTypeName);
 
         if (model.ResourceTypeName != DscResourceTypeNames.DscConfiguration && model.ResourceTypeName != DscResourceTypeNames.DscLcmConfiguration)
         {
             this.Logger.LogWarning(LogMessages.SkippingNonDscResource, model.ResourceName);
-            return;
+            return true;
         }
 
         this.Logger.LogDebug(LogMessages.StartingMofFileGeneration, model.ResourceName);
@@ -45,7 +45,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         catch (Exception)
         {
             this.Logger.LogError(LogMessages.ErrorGeneratingOutputPath, model.ResourceName);
-            throw;
+            return false;
         }
 
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
@@ -63,7 +63,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         catch (Exception)
         {
             this.Logger.LogError(LogMessages.ErrorGeneratingMofOutputPath, model.ResourceName);
-            throw;
+            return false;
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
@@ -126,6 +126,8 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             {
                 this.Logger.LogTrace(LogMessages.MofGenerationSucceeded, model.ResourceName);
             }
+            
+            return true;
         }
         catch (Exception ex)
         {

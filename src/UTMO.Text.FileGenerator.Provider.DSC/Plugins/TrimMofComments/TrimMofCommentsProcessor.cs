@@ -18,7 +18,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
 
     public TimeSpan MaxRuntime => TimeSpan.FromMinutes(2);
 
-    public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
+    public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         this.Logger.LogInformation("Starting plugin: trim comments from MOF files");
         foreach (var resource in environment.Resources)
@@ -54,6 +54,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         }
         
         this.Logger.LogInformation("Finished plugin: trim comments from MOF files");
+        return true;
     }
 
     public IGeneralFileWriter Writer { get; init; }

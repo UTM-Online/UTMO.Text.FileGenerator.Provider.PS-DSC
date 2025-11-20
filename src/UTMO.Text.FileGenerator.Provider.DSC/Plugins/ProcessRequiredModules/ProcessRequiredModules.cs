@@ -21,14 +21,14 @@ public class ProcessRequiredModules : IPipelinePlugin
 
     public TimeSpan MaxRuntime => TimeSpan.FromMinutes(10);
 
-    public async Task ProcessPlugin(ITemplateGenerationEnvironment environment)
+    public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         var manifestPath = Path.Join(this.Options.OutputPath, "Manifests", environment.EnvironmentName, "RequiredModule.Manifest.json");
 
         if (!File.Exists(manifestPath))
         {
             this.Logger.LogError("Required Module Manifest not found at {ManifestPath}", manifestPath);
-            return;
+            return false;
         }
         
         this.Logger.LogInformation("Starting Process Required Modules Plugin");
@@ -97,6 +97,8 @@ public class ProcessRequiredModules : IPipelinePlugin
             this.Logger.LogError(ex, "Error occurred while processing required modules");
             System.Environment.Exit(-261);
         }
+
+        return true;
     }
 
     private ILogger<ProcessRequiredModules> Logger { get; }
