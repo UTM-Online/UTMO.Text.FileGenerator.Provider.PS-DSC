@@ -117,16 +117,17 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 
                 this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
                 stdErr = null;
+                return false;
             }
-            else if (!string.IsNullOrWhiteSpace(stdErr))
+
+            if (!string.IsNullOrWhiteSpace(stdErr))
             {
                 this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
+                return false;
             }
-            else
-            {
-                this.Logger.LogTrace(LogMessages.MofGenerationSucceeded, model.ResourceName);
-            }
-            
+
+            this.Logger.LogTrace(LogMessages.MofGenerationSucceeded, model.ResourceName);
+
             return true;
         }
         catch (Exception ex)
@@ -143,7 +144,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             }
             
             this.Logger.LogError(LogMessages.MofGenerationException, ex.GetType().Name, model.ResourceName, parsedError);
-            throw;
+            return false;
         }
     }
 
