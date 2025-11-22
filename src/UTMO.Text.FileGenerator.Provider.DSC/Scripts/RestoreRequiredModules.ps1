@@ -7,6 +7,10 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+$currentPsModulePath = $env:PSModulePath
+
+$env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
     param(
@@ -547,3 +551,4 @@ if($versionDirectoryErrors.Count -gt 0)
 
 Write-Output "Finished Installing and Verifying Modules"
 
+$env:PSModulePath = $currentPsModulePath
