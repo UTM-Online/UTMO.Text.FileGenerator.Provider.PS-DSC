@@ -43,7 +43,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
             if (resource is IManifestProducer producer && producer.GenerateManifest)
             {
                 Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
-                Guard.Requires<InvalidOperationException>(File.Exists(mofOutputFile), $"MOF output file does not exist: {mofOutputFile}");
+                Guard.Requires<InvalidOperationException>(File.Exists(mofOutputFile), $"!ERROR! MOF output file does not exist: {mofOutputFile}");
                 var fileText = await File.ReadAllTextAsync(mofOutputFile);
 
                 if (this.HeaderMatcher.IsMatch(fileText))
