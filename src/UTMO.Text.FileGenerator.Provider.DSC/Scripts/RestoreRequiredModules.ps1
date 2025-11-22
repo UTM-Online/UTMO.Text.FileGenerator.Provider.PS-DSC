@@ -290,7 +290,7 @@ foreach($module in $moduleManifest)
                     }
                 }
 
-                $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'AllUsers'; ErrorAction = 'Stop'}
+                $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
 
                 if($module.AllowClobber)
                 {
