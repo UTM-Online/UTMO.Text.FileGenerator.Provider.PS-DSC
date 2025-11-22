@@ -8,7 +8,6 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $currentPsModulePath = $env:PSModulePath
-
 $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 
 # Function to fix module version directory names when UseAlternateFormat is true

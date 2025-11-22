@@ -2,5 +2,10 @@ param(
 [string]$OutputPath
 )
 
+$currentPsModulePath = $env:PSModulePath
+$env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+
 {% block script %}
 {% endblock %}
+
+$env:PSModulePath = $currentPsModulePath
