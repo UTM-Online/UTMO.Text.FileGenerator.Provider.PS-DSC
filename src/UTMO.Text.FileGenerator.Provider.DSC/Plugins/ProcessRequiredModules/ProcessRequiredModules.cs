@@ -85,17 +85,15 @@ public class ProcessRequiredModules : IPipelinePlugin
             if (!string.IsNullOrWhiteSpace(stdErr))
             {
                 this.Logger.LogError("Error occurred while processing required modules:\r\n{Error}", stdErr);
-                System.Environment.Exit(-260);
+                return false;
             }
-            else
-            {
-                this.Logger.LogInformation("Required modules processed successfully:\r\n{Output}", stdOut);
-            }
+
+            this.Logger.LogInformation("Required modules processed successfully:\r\n{Output}", stdOut);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Error occurred while processing required modules");
-            System.Environment.Exit(-261);
+            return false;
         }
 
         return true;

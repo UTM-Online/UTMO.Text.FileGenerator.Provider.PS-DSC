@@ -110,12 +110,12 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         {
             var timeoutMessage = $"Windows PowerShell script execution timed out after {this.MaxRuntime}";
             this.Logger.LogError(LogMessages.RestoreRequiredModulesFailed, timeoutMessage);
-            throw new TimeoutException(timeoutMessage);
+            return false;
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, LogMessages.RestoreRequiredModulesFailed, ex.Message);
-            throw;
+            return false;
         }
     }
 
