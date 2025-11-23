@@ -3,7 +3,7 @@ param(
 )
 
 $currentPsModulePath = $env:PSModulePath
-$env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" };
 
 {% block script %}
 {% endblock %}
