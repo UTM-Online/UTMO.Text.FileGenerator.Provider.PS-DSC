@@ -52,7 +52,8 @@ foreach ($moduleName in $ModulesToBootstrap) {
 Write-Output "Bootstrap module copying completed."
 
 $currentPsModulePath = $env:PSModulePath;
-$env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+$env:PSModulePath = $env:PsModulePath | ?{$_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules"};
+# $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
