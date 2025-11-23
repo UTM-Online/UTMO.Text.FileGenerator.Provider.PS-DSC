@@ -14,6 +14,10 @@
     <PropertyGroup Condition="'$(_SuppressExecCommandExpantion_)' == ''">
         <_SuppressExecCommandExpantion_>true</_SuppressExecCommandExpantion_>
     </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(EnablePreBuildCleanup)' == ''">
+        <EnablePreBuildCleanup>true</EnablePreBuildCleanup>
+    </PropertyGroup>
 
     <PropertyGroup>
 
@@ -25,7 +29,7 @@
 
     </PropertyGroup>
     
-    <Target Name="CleanGeneratedOutput" BeforeTargets="Clean;Build">
+    <Target Name="CleanGeneratedOutput" BeforeTargets="Clean;Build" Condition="'$(EnablePreBuildCleanup)' == 'true' ">
         <ItemGroup>
             <_OutTemplateFiles Include="$(OutputPath)\Templates\**\*.liquid" />
             <_GeneratedFiles Include="$(GeneratedOutputPath)\**\*.*" />
