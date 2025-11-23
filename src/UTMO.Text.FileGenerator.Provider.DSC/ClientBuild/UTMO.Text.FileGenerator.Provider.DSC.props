@@ -22,6 +22,7 @@
     
     <PropertyGroup>
         <EnableManifestValidation>false</EnableManifestValidation>
+        <DSCScriptsDirectory>$(MSBuildThisFileDirectory)\..\Scripts</DSCScriptsDirectory>
     </PropertyGroup>
 
 </Project>
