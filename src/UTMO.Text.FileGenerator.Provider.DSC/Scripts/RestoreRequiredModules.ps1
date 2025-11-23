@@ -20,21 +20,21 @@ Write-Output "Bootstrapping required modules from system to user profile..."
 foreach ($moduleName in $ModulesToBootstrap) {
     $sourceModulePath = Join-Path -Path $SystemModulesBasePath -ChildPath $moduleName
     $destinationModulePath = Join-Path -Path $userModulesBasePath -ChildPath $moduleName
-    
+
     if (Test-Path $sourceModulePath) {
         Write-Output "Copying module $moduleName from $sourceModulePath to $destinationModulePath"
-        
+
         # Remove existing module in destination if it exists
         if (Test-Path $destinationModulePath) {
             Write-Output "Removing existing module at $destinationModulePath"
             Remove-Item -Path $destinationModulePath -Recurse -Force -ErrorAction SilentlyContinue
         }
-        
+
         # Create the user modules directory if it doesn't exist
         if (-not (Test-Path $userModulesBasePath)) {
             New-Item -Path $userModulesBasePath -ItemType Directory -Force | Out-Null
         }
-        
+
         # Copy the module
         try {
             Copy-Item -Path $sourceModulePath -Destination $destinationModulePath -Recurse -Force
@@ -52,14 +52,22 @@ foreach ($moduleName in $ModulesToBootstrap) {
 Write-Output "Bootstrap module copying completed."
 
 $currentPsModulePath = $env:PSModulePath;
-$env:PSModulePath = $env:PsModulePath | ?{$_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules"};
+$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" };
 # $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
     param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$StandardVersion,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$AlternateVersion
     )
 
@@ -153,7 +161,12 @@ function Repair-ModuleVersionDirectory {
 # Function to validate DSC resources in a module when Import-Module fails
 function Test-DSCResourcesInModule {
     param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ModuleVersion
     )
 
@@ -218,8 +231,9 @@ function Test-DSCResourcesInModule {
                     $moduleFiles = Get-ChildItem -Path $versionFolder -Filter "*.psm1"
                     foreach($moduleFile in $moduleFiles) {
                         try {
-                            $content = Get-Content -Path $moduleFile.FullName -Raw -ErrorAction SilentlyContinue
-                            if($content -and ($content -match '\[DscResource\(\)\]' -or $content -match 'Configuration\s+\w+')) {
+                            # Use Select-String for better performance instead of reading entire file
+                            $dscMatches = Select-String -Path $moduleFile.FullName -Pattern '\[DscResource\(\)\]|Configuration\s+\w+' -ErrorAction SilentlyContinue
+                            if($dscMatches) {
                                 $dscResourcesFound += $moduleFile.BaseName
                                 Write-Information "Found DSC resource definitions in: $($moduleFile.Name)" -InformationAction Continue
                             }
@@ -241,24 +255,45 @@ function Test-DSCResourcesInModule {
 
 Write-Output "Whoami: $(whoami)"
 
-# Ensure PowerShell module paths are correctly set for current user
-$userModulesPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\WindowsPowerShell\Modules"
-if (-not (Test-Path $userModulesPath)) {
-    New-Item -Path $userModulesPath -ItemType Directory -Force | Out-Null
-}
-
-$currentPSModulePath = $env:PSModulePath
-if (-not $currentPSModulePath.Contains($userModulesPath)) {
-    $env:PSModulePath = "$userModulesPath;$currentPSModulePath"
-    Write-Output "Updated PSModulePath to include user modules directory: $userModulesPath"
-}
-
-Write-Output "Current PSModulePath: $($env:PSModulePath)"
-Write-Output "User modules directory: $userModulesPath"
-
 Write-Output "Loading Module Manifest File"
 
-$moduleManifest = Get-Content $moduleManifestPath | ConvertFrom-Json
+# Validate input parameters
+if ([string]::IsNullOrWhiteSpace($moduleManifestPath)) {
+    throw "moduleManifestPath parameter cannot be null or empty"
+}
+
+if (-not (Test-Path $moduleManifestPath)) {
+    throw "Module manifest file not found: $moduleManifestPath"
+}
+
+# Parse JSON with error handling
+try {
+    $jsonContent = Get-Content $moduleManifestPath -Raw -ErrorAction Stop
+    if ([string]::IsNullOrWhiteSpace($jsonContent)) {
+        throw "Module manifest file is empty"
+    }
+    
+    $moduleManifest = $jsonContent | ConvertFrom-Json -ErrorAction Stop
+    
+    if (-not $moduleManifest) {
+        throw "Module manifest is null or empty after parsing"
+    }
+    
+    # Validate manifest structure
+    if (-not ($moduleManifest -is [array]) -and -not $moduleManifest.Count -and -not $moduleManifest.Name) {
+        throw "Invalid module manifest structure - expected array of module objects or single module object"
+    }
+    
+    # Convert single object to array for consistent processing
+    if ($moduleManifest -isnot [array]) {
+        $moduleManifest = @($moduleManifest)
+    }
+    
+    Write-Output "Successfully loaded module manifest with $($moduleManifest.Count) modules"
+}
+catch {
+    throw "Failed to parse module manifest file '$moduleManifestPath': $($_.Exception.Message)"
+}
 
 $MaxRetryCount = 5
 
@@ -276,11 +311,22 @@ $moduleInstallErrors = @()
 $versionDirectoryErrors = @()
 
 $totalModules = $moduleManifest.Count
+if ($totalModules -eq 0) {
+    Write-Warning "No modules found in manifest"
+    return
+}
 $currentModule = 0
 
 foreach($module in $moduleManifest)
 {
     $currentModule++
+    
+    # Validate module object and required properties
+    if (-not $module -or -not $module.Name -or -not $module.Version) {
+        Write-Warning "Invalid module object found at index $($currentModule - 1) - missing Name or Version property"
+        continue
+    }
+    
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
@@ -330,8 +376,8 @@ foreach($module in $moduleManifest)
                 }
 
                 Install-Module @parameters
-                $loopCount = $MaxRetryCount + 1
                 Write-Information "Finished installing $Name" -InformationAction Continue
+                break  # Exit the loop on successful installation
 
                 # Fix version directory naming if using alternate format
                 if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
@@ -347,7 +393,7 @@ foreach($module in $moduleManifest)
             {
                 $loopCount++
                 $currentError = $_
-                $errorDetails = @{
+                $errorDetails = [PSCustomObject]@{
                     ModuleName = $Name
                     ModuleVersion = $Version
                     Attempt = $loopCount
@@ -392,6 +438,12 @@ Write-Output "Verifying module installations..."
 $verificationErrors = @()
 foreach($module in $moduleManifest)
 {
+    # Validate module object again in verification loop
+    if (-not $module -or -not $module.Name -or -not $module.Version) {
+        Write-Warning "Invalid module object found during verification - missing Name or Version property"
+        continue
+    }
+    
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
