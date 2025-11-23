@@ -6,8 +6,52 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+$SystemModulesBasePath = "$env:ProgramFiles\WindowsPowerShell\Modules"
 
-$currentPsModulePath = $env:PSModulePath
+# Bootstrap required modules
+$ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
+
+$Repository = "DSCResources"
+
+# Copy bootstrap modules from system path to user profile
+$userModulesBasePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+Write-Output "Bootstrapping required modules from system to user profile..."
+
+foreach ($moduleName in $ModulesToBootstrap) {
+    $sourceModulePath = Join-Path -Path $SystemModulesBasePath -ChildPath $moduleName
+    $destinationModulePath = Join-Path -Path $userModulesBasePath -ChildPath $moduleName
+    
+    if (Test-Path $sourceModulePath) {
+        Write-Output "Copying module $moduleName from $sourceModulePath to $destinationModulePath"
+        
+        # Remove existing module in destination if it exists
+        if (Test-Path $destinationModulePath) {
+            Write-Output "Removing existing module at $destinationModulePath"
+            Remove-Item -Path $destinationModulePath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        
+        # Create the user modules directory if it doesn't exist
+        if (-not (Test-Path $userModulesBasePath)) {
+            New-Item -Path $userModulesBasePath -ItemType Directory -Force | Out-Null
+        }
+        
+        # Copy the module
+        try {
+            Copy-Item -Path $sourceModulePath -Destination $destinationModulePath -Recurse -Force
+            Write-Output "Successfully copied module $moduleName"
+        }
+        catch {
+            Write-Warning "Failed to copy module $moduleName`: $($_.Exception.Message)"
+        }
+    }
+    else {
+        Write-Warning "Source module not found: $sourceModulePath"
+    }
+}
+
+Write-Output "Bootstrap module copying completed."
+
+$currentPsModulePath = $env:PSModulePath;
 $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 
 # Function to fix module version directory names when UseAlternateFormat is true
@@ -17,29 +61,29 @@ function Repair-ModuleVersionDirectory {
         [string]$StandardVersion,
         [string]$AlternateVersion
     )
-    
+
     try {
         # Get all possible module paths
         $modulePaths = $env:PSModulePath -split ';' | Where-Object { $_ }
-        
+
         foreach($modulePath in $modulePaths) {
             $moduleFolder = Join-Path -Path $modulePath -ChildPath $ModuleName
-            
+
             if(Test-Path $moduleFolder) {
                 Write-Information "Checking module directory: $moduleFolder" -InformationAction Continue
-                
+
                 # First check if the AlternateVersion directory already exists
                 $alternateVersionDir = Join-Path -Path $moduleFolder -ChildPath $AlternateVersion
                 if(Test-Path $alternateVersionDir) {
                     Write-Information "AlternateVersion directory already exists: $alternateVersionDir" -InformationAction Continue
                     return $true
                 }
-                
+
                 # Look for StandardVersion directory to rename
                 $standardVersionDir = Join-Path -Path $moduleFolder -ChildPath $StandardVersion
                 if(Test-Path $standardVersionDir) {
                     Write-Information "Found StandardVersion directory to rename: $standardVersionDir -> $alternateVersionDir" -InformationAction Continue
-                    
+
                     try {
                         Rename-Item -Path $standardVersionDir -NewName $AlternateVersion -Force
                         Write-Information "Successfully renamed module version directory from $StandardVersion to $AlternateVersion" -InformationAction Continue
@@ -50,17 +94,17 @@ function Repair-ModuleVersionDirectory {
                         return $false
                     }
                 }
-                
+
                 # Look for any version directory that might match (in case of truncation)
                 $versionFolders = Get-ChildItem -Path $moduleFolder -Directory | Where-Object { $_.Name -match '^\d+\.\d+' }
-                
+
                 if($versionFolders) {
                     # Try to find a version that matches the pattern (could be truncated)
                     $matchingFolder = $null
-                    
+
                     # Check for exact matches first
                     $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $StandardVersion } | Select-Object -First 1
-                    
+
                     # If no exact match, look for truncated versions
                     if(-not $matchingFolder) {
                         # Check if StandardVersion ends with .0 and look for truncated version
@@ -68,17 +112,17 @@ function Repair-ModuleVersionDirectory {
                             $truncatedVersion = $matches[1]
                             $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $truncatedVersion } | Select-Object -First 1
                         }
-                        
+
                         # Also check if we need to add .0 to match
                         if(-not $matchingFolder -and $StandardVersion -match '^\d+\.\d+$') {
                             $extendedVersion = "$StandardVersion.0"
                             $matchingFolder = $versionFolders | Where-Object { $_.Name -eq $extendedVersion } | Select-Object -First 1
                         }
                     }
-                    
+
                     if($matchingFolder) {
                         Write-Information "Found version directory to rename: $($matchingFolder.Name) -> $AlternateVersion" -InformationAction Continue
-                        
+
                         try {
                             Rename-Item -Path $matchingFolder.FullName -NewName $AlternateVersion -Force
                             Write-Information "Successfully renamed module version directory from $($matchingFolder.Name) to $AlternateVersion" -InformationAction Continue
@@ -90,7 +134,7 @@ function Repair-ModuleVersionDirectory {
                         }
                     }
                 }
-                
+
                 Write-Warning "No suitable version directory found for module $ModuleName to rename to $AlternateVersion"
                 return $false
             }
@@ -100,7 +144,7 @@ function Repair-ModuleVersionDirectory {
         Write-Warning "Error fixing module version directory for $ModuleName`: $($_.Exception.Message)"
         return $false
     }
-    
+
     Write-Warning "Module folder not found for $ModuleName in any module path"
     return $false
 }
@@ -111,16 +155,16 @@ function Test-DSCResourcesInModule {
         [string]$ModuleName,
         [string]$ModuleVersion
     )
-    
+
     $dscResourcesFound = @()
-    
+
     try {
         # Get all possible module paths
         $modulePaths = $env:PSModulePath -split ';' | Where-Object { $_ }
-        
+
         foreach($modulePath in $modulePaths) {
             $moduleFolder = Join-Path -Path $modulePath -ChildPath $ModuleName
-            
+
             if(Test-Path $moduleFolder) {
                 # Look for version-specific folder
                 $versionFolder = Join-Path -Path $moduleFolder -ChildPath $ModuleVersion
@@ -133,10 +177,10 @@ function Test-DSCResourcesInModule {
                         $versionFolder = $moduleFolder
                     }
                 }
-                
+
                 if(Test-Path $versionFolder) {
                     Write-Information "Searching for DSC resources in: $versionFolder" -InformationAction Continue
-                    
+
                     # Look for DSCResources folder
                     $dscResourcesFolder = Join-Path -Path $versionFolder -ChildPath "DSCResources"
                     if(Test-Path $dscResourcesFolder) {
@@ -150,7 +194,7 @@ function Test-DSCResourcesInModule {
                             }
                         }
                     }
-                    
+
                     # Also look for .psd1 manifest files that might define DSC resources
                     $manifestFiles = Get-ChildItem -Path $versionFolder -Filter "*.psd1"
                     foreach($manifestFile in $manifestFiles) {
@@ -168,7 +212,7 @@ function Test-DSCResourcesInModule {
                             # Continue if manifest can't be read
                         }
                     }
-                    
+
                     # Look for .psm1 files directly in the module folder that might contain DSC resources
                     $moduleFiles = Get-ChildItem -Path $versionFolder -Filter "*.psm1"
                     foreach($moduleFile in $moduleFiles) {
@@ -190,7 +234,7 @@ function Test-DSCResourcesInModule {
     catch {
         Write-Warning "Error searching for DSC resources in module $ModuleName`: $($_.Exception.Message)"
     }
-    
+
     return $dscResourcesFound | Select-Object -Unique
 }
 
@@ -218,20 +262,6 @@ $moduleManifest = Get-Content $moduleManifestPath | ConvertFrom-Json
 $MaxRetryCount = 5
 
 Write-Output "Validate and Configure DSC Module Repository"
-
-switch($Env:COMPUTERNAME)
-{
-    "JOIRWILT2007"
-    {
-        $Repository = "UTMO-DSCResources"
-        break
-    }
-
-    default
-    {
-        $Repository = "DSCResources"
-    }
-}
 
 $repoExists = Get-PSRepository -Name $Repository -ErrorAction SilentlyContinue
 
@@ -264,8 +294,6 @@ foreach($module in $moduleManifest)
     }
 
     Write-Progress -Activity "Installing Required Modules" -Status "Processing $Name v$Version" -PercentComplete (($currentModule / $totalModules) * 100)
-
-    $fullyQualifiedName = @{ModuleName=$Name;ModuleVersion=$Version}
 
     $installedModule = Get-InstalledModule -Name $Name -RequiredVersion $Version -ErrorAction SilentlyContinue
 
@@ -303,7 +331,7 @@ foreach($module in $moduleManifest)
                 Install-Module @parameters
                 $loopCount = $MaxRetryCount + 1
                 Write-Information "Finished installing $Name" -InformationAction Continue
-                
+
                 # Fix version directory naming if using alternate format
                 if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
                     Write-Information "Module $Name uses alternate format, checking version directory..." -InformationAction Continue
@@ -337,7 +365,7 @@ foreach($module in $moduleManifest)
     else
     {
         Write-Information "$Name already installed" -InformationAction Continue
-        
+
         # Even if module is already installed, check if version directory needs fixing for alternate format
         if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
             Write-Information "Module $Name uses alternate format, verifying version directory..." -InformationAction Continue
@@ -487,9 +515,9 @@ foreach($module in $moduleManifest)
         {
             # If Import-Module failed, try to validate DSC resources in the module directly
             Write-Information "Import-Module failed for $Name, attempting to validate DSC resources directly..." -InformationAction Continue
-            
+
             $dscResources = Test-DSCResourcesInModule -ModuleName $Name -ModuleVersion $Version
-            
+
             if($dscResources -and $dscResources.Count -gt 0) {
                 Write-Information "Module $Name v$Version contains valid DSC resources despite import failure: $($dscResources -join ', ')" -InformationAction Continue
                 $importSuccess = $true
@@ -504,7 +532,7 @@ foreach($module in $moduleManifest)
                     }
                 }
             }
-            
+
             if(-not $importSuccess) {
                 $verificationErrors += "Module $Name could not be imported with any version formats tried: $($versionsAttempted -join ', ') and no valid DSC resources were found in the module directories. Last error: $($_.Exception.Message)"
             }
