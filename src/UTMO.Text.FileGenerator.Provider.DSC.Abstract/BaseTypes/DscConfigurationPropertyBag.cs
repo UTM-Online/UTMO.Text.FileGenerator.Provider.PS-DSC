@@ -324,6 +324,13 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"\"{span}\"";
                     break;
                 }
+                case DateTime dt:
+                {
+                    // Format DateTime as ISO 8601 string that PowerShell can parse
+                    // Use the format "yyyy-MM-ddTHH:mm:ss" which is unambiguous
+                    liquidObject[prop.Key] = $"\"{dt:yyyy-MM-ddTHH:mm:ss}\"";
+                    break;
+                }
                 case char ch:
                 {
                     liquidObject[prop.Key] = $"\"{ch}\"";
