@@ -1,4 +1,4 @@
-﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants;
+﻿﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants;
 
 public static class NetworkingDscConstants
 {
@@ -51,6 +51,22 @@ public static class NetworkingDscConstants
             public const string UseDevolution = "UseDevolution";
             
             public const string DevolutionLevel = "DevolutionLevel";
+        }
+    }
+    
+    public static class DnsServerAddress
+    {
+        public const string ResourceId = "DnsServerAddress";
+        
+        public static class Properties
+        {
+            public const string InterfaceAlias = "InterfaceAlias";
+            
+            public const string AddressFamily = "AddressFamily";
+            
+            public const string Address = "Address";
+            
+            public const string Validate = "Validate";
         }
     }
 }

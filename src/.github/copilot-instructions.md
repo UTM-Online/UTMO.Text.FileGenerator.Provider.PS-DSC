@@ -161,6 +161,7 @@ After making changes, always:
 - When adding a new resource, create comprehensive documentation for with the following parameters
   - It is a markdown file compatible with docfx
     - Use the following format for the documents uid `SoftwareDev/UTMO-FileGeneration/DSC/Resources/<<ModuleName>>/<<ResourceName>>`
+    - Use PowerShell Commands to read and write files as needed
   - Include the namespace and assembly information
   - Include summary, syntax, properties, and examples sections
   - place the file here "S:\Repos\UTMO\CentralDocumentation\OneDocs\Docs\SoftwareDev\UTMO-FileGeneration\DSC\Resources"
