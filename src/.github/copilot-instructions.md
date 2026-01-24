@@ -158,5 +158,12 @@ After making changes, always:
 - The solution uses JetBrains ReSharper settings (`.DotSettings` files)
 - Test parallelization is enabled at method level
 - NuGet packages are restored to `.packages` directory
+- When adding a new resource, create comprehensive documentation for with the following parameters
+  - It is a markdown file compatible with docfx
+    - Use the following format for the documents uid `SoftwareDev/UTMO-FileGeneration/DSC/Resources/<<ModuleName>>/<<ResourceName>>`
+  - Include the namespace and assembly information
+  - Include summary, syntax, properties, and examples sections
+  - place the file here "S:\Repos\UTMO\CentralDocumentation\OneDocs\Docs\SoftwareDev\UTMO-FileGeneration\DSC\Resources"
+  - update the toc file at "S:\Repos\UTMO\CentralDocumentation\OneDocs\Docs\SoftwareDev\UTMO-FileGeneration\DSC\Resources\toc.yml"
 
 Trust these instructions. Only search the codebase if information here is incomplete or incorrect.
