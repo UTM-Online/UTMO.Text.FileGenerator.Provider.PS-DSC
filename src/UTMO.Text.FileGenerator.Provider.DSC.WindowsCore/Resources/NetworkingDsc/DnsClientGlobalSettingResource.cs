@@ -91,4 +91,6 @@ public sealed class DnsClientGlobalSettingResource : NetworkingDscBase, IDnsClie
 
     /// <inheritdoc />
     public override string ResourceId => Constants.ResourceId;
+
+    public override bool HasEnsure => false;
 }
