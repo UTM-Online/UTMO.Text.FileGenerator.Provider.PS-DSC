@@ -88,4 +88,17 @@ public static class PSDesiredStateConfigurationConstants
             public const string Path = "Path";
         }
     }
+    
+    public static class Script
+    {
+        public const string ResourceId = "Script";
+        
+        public static class Properties
+        {
+            public const string GetScript = "GetScript";
+            public const string SetScript = "SetScript";
+            public const string TestScript = "TestScript";
+            public const string Credential = "Credential";
+        }
+    }
 }
