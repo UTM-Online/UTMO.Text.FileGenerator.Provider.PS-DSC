@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -26,6 +26,13 @@ public sealed class IisFeatureDelegationResource : WebAdministrationDscBase, IIi
     public static IisFeatureDelegationResource Create(string name, Action<IIisFeatureDelegation> configure)
     {
         var resource = new IisFeatureDelegationResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static IisFeatureDelegationResource Create(string name, Action<IIisFeatureDelegation> configure, out IisFeatureDelegationResource resource)
+    {
+        resource = new IisFeatureDelegationResource(name);
         configure(resource);
         return resource;
     }

@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -21,6 +21,13 @@ public sealed class SslSettingsResource : WebAdministrationDscBase, ISslSettings
     public static SslSettingsResource Create(string name, Action<ISslSettings> configure)
     {
         var resource = new SslSettingsResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static SslSettingsResource Create(string name, Action<ISslSettings> configure, out SslSettingsResource resource)
+    {
+        resource = new SslSettingsResource(name);
         configure(resource);
         return resource;
     }

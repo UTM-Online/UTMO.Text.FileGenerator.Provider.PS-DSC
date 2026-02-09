@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -35,6 +35,13 @@ public sealed class WebVirtualDirectoryResource : WebAdministrationDscBase, IWeb
     public static WebVirtualDirectoryResource Create(string name, Action<IWebVirtualDirectory> configure)
     {
         var resource = new WebVirtualDirectoryResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static WebVirtualDirectoryResource Create(string name, Action<IWebVirtualDirectory> configure, out WebVirtualDirectoryResource resource)
+    {
+        resource = new WebVirtualDirectoryResource(name);
         configure(resource);
         return resource;
     }

@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -41,6 +41,13 @@ public sealed class IisModuleResource : WebAdministrationDscBase, IIisModule
     public static IisModuleResource Create(string name, Action<IIisModule> configure)
     {
         var resource = new IisModuleResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static IisModuleResource Create(string name, Action<IIisModule> configure, out IisModuleResource resource)
+    {
+        resource = new IisModuleResource(name);
         configure(resource);
         return resource;
     }

@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -67,6 +67,13 @@ public sealed class WebApplicationResource : WebAdministrationDscBase, IWebAppli
     public static WebApplicationResource Create(string name, Action<IWebApplication> configure)
     {
         var resource = new WebApplicationResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static WebApplicationResource Create(string name, Action<IWebApplication> configure, out WebApplicationResource resource)
+    {
+        resource = new WebApplicationResource(name);
         configure(resource);
         return resource;
     }

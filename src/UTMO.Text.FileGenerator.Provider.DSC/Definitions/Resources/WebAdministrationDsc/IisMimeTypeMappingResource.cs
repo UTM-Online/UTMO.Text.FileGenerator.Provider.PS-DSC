@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -25,6 +25,13 @@ public sealed class IisMimeTypeMappingResource : WebAdministrationDscBase, IIisM
     public static IisMimeTypeMappingResource Create(string name, Action<IIisMimeTypeMapping> configure)
     {
         var resource = new IisMimeTypeMappingResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static IisMimeTypeMappingResource Create(string name, Action<IIisMimeTypeMapping> configure, out IisMimeTypeMappingResource resource)
+    {
+        resource = new IisMimeTypeMappingResource(name);
         configure(resource);
         return resource;
     }

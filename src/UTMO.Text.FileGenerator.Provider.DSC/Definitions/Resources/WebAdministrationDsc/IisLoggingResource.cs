@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -46,6 +46,13 @@ public sealed class IisLoggingResource : WebAdministrationDscBase, IIisLogging
     public static IisLoggingResource Create(string name, Action<IIisLogging> configure)
     {
         var resource = new IisLoggingResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static IisLoggingResource Create(string name, Action<IIisLogging> configure, out IisLoggingResource resource)
+    {
+        resource = new IisLoggingResource(name);
         configure(resource);
         return resource;
     }

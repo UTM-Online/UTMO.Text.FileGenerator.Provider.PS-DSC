@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -26,6 +26,13 @@ public sealed class WebAppPoolDefaultsResource : WebAdministrationDscBase, IWebA
     public static WebAppPoolDefaultsResource Create(string name, Action<IWebAppPoolDefaults> configure)
     {
         var resource = new WebAppPoolDefaultsResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static WebAppPoolDefaultsResource Create(string name, Action<IWebAppPoolDefaults> configure, out WebAppPoolDefaultsResource resource)
+    {
+        resource = new WebAppPoolDefaultsResource(name);
         configure(resource);
         return resource;
     }

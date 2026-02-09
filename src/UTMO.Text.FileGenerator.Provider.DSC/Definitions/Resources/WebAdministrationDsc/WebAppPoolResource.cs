@@ -89,6 +89,14 @@ public sealed class WebAppPoolResource : WebAdministrationDscBase, IWebAppPool
         configure(resource);
         return resource;
     }
+    
+    public static WebAppPoolResource Create(string name, Action<IWebAppPool> configure, out WebAppPoolResource resource)
+    {
+        resource = new WebAppPoolResource(name);
+        configure(resource);
+        return resource;
+    }
+    
     public override Task<List<ValidationFailedException>> Validate()
     {
         var errors = this.ValidationBuilder()

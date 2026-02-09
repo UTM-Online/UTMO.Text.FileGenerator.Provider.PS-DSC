@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
@@ -30,6 +30,13 @@ public sealed class WebConfigPropertyResource : WebAdministrationDscBase, IWebCo
     public static WebConfigPropertyResource Create(string name, Action<IWebConfigProperty> configure)
     {
         var resource = new WebConfigPropertyResource(name);
+        configure(resource);
+        return resource;
+    }
+    
+    public static WebConfigPropertyResource Create(string name, Action<IWebConfigProperty> configure, out WebConfigPropertyResource resource)
+    {
+        resource = new WebConfigPropertyResource(name);
         configure(resource);
         return resource;
     }
