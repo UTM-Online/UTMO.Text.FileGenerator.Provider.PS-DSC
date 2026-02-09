@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants;
 
 public static class PSDesiredStateConfigurationConstants
 {
@@ -9,7 +9,14 @@ public static class PSDesiredStateConfigurationConstants
         public static class Properties
         {
             public const string DestinationPath = "DestinationPath";
+            public const string Attributes = "Attributes";
+            public const string Checksum = "Checksum";
             public const string Contents = "Contents";
+            public const string Credential = "Credential";
+            public const string Force = "Force";
+            public const string MatchSource = "MatchSource";
+            public const string Recurse = "Recurse";
+            public const string SourcePath = "SourcePath";
             public const string Type = "Type";
         }
     }
