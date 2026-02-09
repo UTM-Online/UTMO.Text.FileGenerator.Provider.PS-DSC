@@ -166,5 +166,7 @@ After making changes, always:
   - Include summary, syntax, properties, and examples sections
   - place the file here "S:\Repos\UTMO\CentralDocumentation\OneDocs\Docs\SoftwareDev\UTMO-FileGeneration\DSC\Resources"
   - update the toc file at "S:\Repos\UTMO\CentralDocumentation\OneDocs\Docs\SoftwareDev\UTMO-FileGeneration\DSC\Resources\toc.yml"
+- Should naming conflicts arise use a more specific name for the resource, for example instead of "User" use "LocalUser" or "ADUser" depending on the context of the resource.
+  - Never override a resources property name if it already exists in the base class, for example "User" has a property called "Name" so if we need to create a resource that has a name property we should call it "UserName" instead of "Name" to avoid confusion.
 
 Trust these instructions. Only search the codebase if information here is incomplete or incorrect.
