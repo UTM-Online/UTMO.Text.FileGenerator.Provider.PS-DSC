@@ -8,9 +8,9 @@ public class CertificatesDsc : RequiredModule
     {
     }
 
-    public override string ModuleName => "CertificatesDsc";
-    public override string ModuleVersion => string.Empty;
-    
+    public override string ModuleName => "CertificateDsc";
+    public override string ModuleVersion => "6.0.0";
+
     public static RequiredModule Instance { get; } = new CertificatesDsc();
 
     public override bool GenerateManifest => false;
