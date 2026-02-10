@@ -237,7 +237,7 @@ public class CertReqResourceTests
 
         // Assert
         Assert.IsNotNull(module);
-        Assert.AreEqual("CertificatesDsc", module.ModuleName);
+        Assert.AreEqual("CertificateDsc", module.ModuleName);
     }
 }
 
