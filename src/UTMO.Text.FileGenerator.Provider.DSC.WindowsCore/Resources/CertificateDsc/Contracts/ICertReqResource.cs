@@ -1,7 +1,7 @@
-namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Contracts;
-
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
-using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Enums;
+
+namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Contracts;
 
 public interface ICertReqResource : IDscResourceConfig
 {

@@ -1,4 +1,4 @@
-namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Enums;
+namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Enums;
 
 public enum CertificateRequestKeyType
 {

@@ -10,7 +10,7 @@ public abstract class CertificatesDscBase : DscConfigurationItem
     {
     }
 
-    public sealed override RequiredModule SourceModule => CertificatesDsc.Instance;
+    public sealed override RequiredModule SourceModule => CertificateDsc.Instance;
     
     public sealed override bool HasEnsure => true;
 }

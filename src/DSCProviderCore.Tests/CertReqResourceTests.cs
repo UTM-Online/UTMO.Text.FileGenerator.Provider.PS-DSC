@@ -1,10 +1,11 @@
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Enums;
+
 namespace DSCProviderCore.Tests;
 
 #pragma warning disable MSTEST0037
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc;
-using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Enums;
 
 [TestClass]
 public class CertReqResourceTests

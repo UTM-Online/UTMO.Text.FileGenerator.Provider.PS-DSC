@@ -2,16 +2,16 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.ModuleDefinitions;
 
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
-public class CertificatesDsc : RequiredModule
+public class CertificateDsc : RequiredModule
 {
-    private CertificatesDsc()
+    private CertificateDsc()
     {
     }
 
     public override string ModuleName => "CertificateDsc";
     public override string ModuleVersion => "6.0.0";
 
-    public static RequiredModule Instance { get; } = new CertificatesDsc();
+    public static RequiredModule Instance { get; } = new CertificateDsc();
 
     public override bool GenerateManifest => false;
 }

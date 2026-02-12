@@ -1,18 +1,19 @@
-namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc;
-
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
-using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Contracts;
-using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificatesDsc.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Contracts;
+using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc.Enums;
 using UTMO.Text.FileGenerator.Validators;
-using Constants = UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.CertificatesDscConstants.CertReq;
+
+namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.CertificateDsc;
+
+using Constants = Constants.CertificatesDscConstants.CertReq;
 
 /// <summary>
 /// Represents a CertReq resource from the CertificatesDsc module.
 /// This resource manages certificate requests and certificates.
 /// </summary>
-public sealed class CertReqResource : CertificatesDscBase, ICertReqResource
+public sealed class     CertReqResource : CertificatesDscBase, ICertReqResource
 {
     private CertReqResource(string name) : base(name)
     {
