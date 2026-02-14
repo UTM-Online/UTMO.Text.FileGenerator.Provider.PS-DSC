@@ -57,9 +57,9 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         return true;
     }
 
-    public IGeneralFileWriter Writer { get; init; }
+    public IGeneralFileWriter? Writer { get; init; }
 
-    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+    public ITemplateGenerationEnvironment? Environment { get; init; }
 
     public PluginPosition Position => PluginPosition.After;
     

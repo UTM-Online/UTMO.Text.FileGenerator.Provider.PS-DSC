@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Definitions/">
+    <Project Path="UTMO.Text.FileGenerator.Provider.DSC.AD-DSC/UTMO.Text.FileGenerator.Provider.DSC.AD-DSC.csproj" />
+    <Project Path="UTMO.Text.FileGenerator.Provider.DSC.cChoco/UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
+    <Project Path="UTMO.Text.FileGenerator.Provider.DSC.WindowsCore/UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
+    <Project Path="WindowsDefenderDsc/WindowsDefenderDsc.csproj" />
+  </Folder>
+  <Folder Name="/Solution Folder/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="DSCProviderCore.Tests/DSCProviderCore.Tests.csproj" />
+  </Folder>
+  <Project Path="UTMO.Text.FileGenerator.Provider.DSC.Abstract/UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+  <Project Path="UTMO.Text.FileGenerator.Provider.DSC/UTMO.Text.FileGenerator.Provider.DSC.csproj" />
+</Solution>

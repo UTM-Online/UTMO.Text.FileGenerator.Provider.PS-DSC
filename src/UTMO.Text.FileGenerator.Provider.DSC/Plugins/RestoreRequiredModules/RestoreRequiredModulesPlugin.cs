@@ -121,9 +121,9 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
 
 
-    public IGeneralFileWriter Writer { get; init; }
+    public IGeneralFileWriter? Writer { get; init; }
 
-    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+    public ITemplateGenerationEnvironment? Environment { get; init; }
 
     public PluginPosition Position => PluginPosition.Before;
 }
