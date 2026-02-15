@@ -1,4 +1,4 @@
-﻿// // ***********************************************************************
+﻿﻿// // ***********************************************************************
 // // Assembly         : UTMO.Text.FileGenerator.Provider.DSC
 // // Author           : Josh Irwin (joirwi)
 // // Created          : 11/22/2023
@@ -6,8 +6,8 @@
 // // Last Modified By : Josh Irwin (joirwi)
 // // Last Modified On : 11/22/2023 3:13 PM
 // // ***********************************************************************
-// // <copyright file="PrimaryIpAddress.cs" company="Microsoft Corp">
-// //     Copyright (c) Microsoft Corporation. All rights reserved.
+// // <copyright file="PrimaryIpAddress.cs" company="Joshua S. Irwin">
+// //     Copyright (c) 2026 Joshua S. Irwin. All rights reserved.
 // // </copyright>
 // // <summary></summary>
 // // ***********************************************************************

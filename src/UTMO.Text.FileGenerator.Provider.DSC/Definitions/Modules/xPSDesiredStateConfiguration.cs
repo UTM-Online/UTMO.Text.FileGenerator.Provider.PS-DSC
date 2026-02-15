@@ -1,4 +1,4 @@
-﻿// // ***********************************************************************
+﻿﻿// // ***********************************************************************
 // // Assembly         : UTMO.DSC.Configurations
 // // Author           : Josh Irwin (joirwi)
 // // Created          : 09/08/2023
@@ -6,8 +6,8 @@
 // // Last Modified By : Josh Irwin (joirwi)
 // // Last Modified On : 09/08/2023 12:07 PM
 // // ***********************************************************************
-// // <copyright file="xPSDesiredStateConfiguration.cs" company="Microsoft Corp">
-// //     Copyright (c) Microsoft Corporation. All rights reserved.
+// // <copyright file="xPSDesiredStateConfiguration.cs" company="Joshua S. Irwin">
+// //     Copyright (c) 2026 Joshua S. Irwin. All rights reserved.
 // // </copyright>
 // // <summary></summary>
 // // ***********************************************************************
