@@ -204,4 +204,4 @@ public sealed class MyResource : PSDesiredStateConfigurationBase, IMyResource
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
 
-Copyright 2026 UTM Online
+Copyright 2026 Joshua S. Irwin. All rights reserved. Use of this source code is governed by the Apache License that can be found in the LICENSE file.
