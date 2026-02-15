@@ -4,10 +4,10 @@
     <PinTransientDependencies>true</PinTransientDependencies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="2.15.11" />
+    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="2.15.12" />
     <PackageVersion Include="System.Management.Automation" Version="7.5.4" />
     <PackageVersion Include="UTMO.Common.Guards" Version="1.0.7" />
-    <PackageVersion Include="UTMO.Text.FileGenerator" Version="2.15.11" />
+    <PackageVersion Include="UTMO.Text.FileGenerator" Version="2.15.12" />
     <PackageVersion Include="MSTest" Version="4.1.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
