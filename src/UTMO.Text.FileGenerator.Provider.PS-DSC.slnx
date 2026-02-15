@@ -6,6 +6,7 @@
     <Project Path="WindowsDefenderDsc/WindowsDefenderDsc.csproj" />
   </Folder>
   <Folder Name="/Solution Folder/">
+    <File Path="../README.md" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="global.json" />
