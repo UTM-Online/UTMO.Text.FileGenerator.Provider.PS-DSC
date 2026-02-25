@@ -1,4 +1,4 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
+﻿﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -20,6 +20,8 @@ public class DscConfigurationPropertyBag : ILiquidizable
     private readonly HashSet<string> _unquotedEnumKeys = new();
     // Track keys whose values originated from enum-typed properties
     private readonly HashSet<string> _enumKeys = new();
+    // Track keys that should be rendered as PowerShell script blocks { ... }
+    private readonly HashSet<string> _scriptBlockKeys = new();
 
     private ILogger<DscConfigurationPropertyBag>? Logger { get; set; }
     private Type? _ownerType;
@@ -59,10 +61,20 @@ public class DscConfigurationPropertyBag : ILiquidizable
             {
                 if (this._propertyBag.TryAdd(key, value))
                 {
+                    // Check for ScriptBlock attribute on string properties
+                    if (value is string)
+                    {
+                        this.CheckAndMarkScriptBlock(callerMemberName, key);
+                    }
                     return;
                 }
 
                 this._propertyBag[key] = value;
+                // Check for ScriptBlock attribute on string properties
+                if (value is string)
+                {
+                    this.CheckAndMarkScriptBlock(callerMemberName, key);
+                }
                 break;
             }
         }
@@ -153,6 +165,77 @@ public class DscConfigurationPropertyBag : ILiquidizable
         }
     }
     
+    private void CheckAndMarkScriptBlock(string? propertyName, string key)
+    {
+        if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        try
+        {
+            if (this._ownerType != null)
+            {
+                foreach (var candidate in new[] { propertyName, key }.Where(n => !string.IsNullOrWhiteSpace(n)))
+                {
+                    var propInfo = this._ownerType.GetProperty(
+                        candidate!,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                    if (propInfo != null)
+                    {
+                        var hasScriptBlock = propInfo.GetCustomAttributes(typeof(ScriptBlockAttribute), inherit: true).Any();
+                        if (hasScriptBlock)
+                        {
+                            this._scriptBlockKeys.Add(key);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Fallback: walk the stack to infer the property from an accessor
+            var stackTrace = new System.Diagnostics.StackTrace();
+            for (int i = 0; i < stackTrace.FrameCount; i++)
+            {
+                var frame = stackTrace.GetFrame(i);
+                var method = frame?.GetMethod();
+                if (method == null) continue;
+
+                var declaringType = method.DeclaringType;
+                if (declaringType == null || declaringType == typeof(DscConfigurationPropertyBag)) continue;
+
+                string? candidateName = null;
+                if (method.IsSpecialName && (method.Name.StartsWith("set_") || method.Name.StartsWith("get_")))
+                {
+                    candidateName = method.Name.Substring(4);
+                }
+                else
+                {
+                    candidateName = propertyName;
+                }
+
+                if (string.IsNullOrWhiteSpace(candidateName)) continue;
+
+                var fallbackProp = declaringType.GetProperty(
+                    candidateName,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                if (fallbackProp == null) continue;
+
+                var hasAttr = fallbackProp.GetCustomAttributes(typeof(ScriptBlockAttribute), inherit: true).Any();
+                if (hasAttr)
+                {
+                    this._scriptBlockKeys.Add(key);
+                }
+                break;
+            }
+        }
+        catch
+        {
+            // If reflection fails, just continue without marking it as a script block
+        }
+    }
+
     /// <summary>
     /// Sets the value of the property bag with the specified key using the types default value.
     /// </summary>
@@ -283,8 +366,13 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 {
                     if (!string.IsNullOrWhiteSpace(s) && !s.Equals(PropertyBagValues.NoValue))
                     {
+                        // Script block properties are wrapped in { } for valid DSC syntax
+                        if (this._scriptBlockKeys.Contains(prop.Key))
+                        {
+                            liquidObject[prop.Key] = $"{{\n{s}\n}}";
+                        }
                         // If this key originated from an enum property, only skip quoting when marked as UnquotedEnum
-                        if (this._enumKeys.Contains(prop.Key))
+                        else if (this._enumKeys.Contains(prop.Key))
                         {
                             if (this._unquotedEnumKeys.Contains(prop.Key))
                             {

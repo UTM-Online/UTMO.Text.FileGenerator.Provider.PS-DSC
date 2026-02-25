@@ -1,6 +1,7 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.BaseDefinitions;
 using UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Resources.PSDesiredStateConfiguration.Contracts;
 using UTMO.Text.FileGenerator.Validators;
@@ -20,6 +21,7 @@ public sealed class ScriptResource : PSDesiredStateConfigurationBase, IScriptRes
     /// Gets or sets a script block that returns the current state of the resource.
     /// The script must return a hashtable with at least a Result key.
     /// </summary>
+    [ScriptBlock]
     public string GetScript
     {
         get => this.PropertyBag.Get(Constants.Properties.GetScript);
@@ -29,6 +31,7 @@ public sealed class ScriptResource : PSDesiredStateConfigurationBase, IScriptRes
     /// <summary>
     /// Gets or sets a script block that sets the resource to the desired state.
     /// </summary>
+    [ScriptBlock]
     public string SetScript
     {
         get => this.PropertyBag.Get(Constants.Properties.SetScript);
@@ -39,6 +42,7 @@ public sealed class ScriptResource : PSDesiredStateConfigurationBase, IScriptRes
     /// Gets or sets a script block that tests if the resource is in the desired state.
     /// The script must return $true or $false.
     /// </summary>
+    [ScriptBlock]
     public string TestScript
     {
         get => this.PropertyBag.Get(Constants.Properties.TestScript);
