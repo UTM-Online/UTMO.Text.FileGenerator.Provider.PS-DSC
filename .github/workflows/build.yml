@@ -27,13 +27,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: '1'
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         continue-on-error: true
         with:
           global-json-file: src/global.json
-
+        env:
+          DOTNET_INSTALL_DIR: 'b:\tools_cache\dotnet'
+          DOTNET_ROOT: 'b:\tools_cache\dotnet'
+      
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
 
