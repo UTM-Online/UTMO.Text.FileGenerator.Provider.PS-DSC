@@ -22,7 +22,8 @@ jobs:
       id-token: write
       attestations: write
 
-    runs-on: OnPremRunners
+    runs-on: 
+      group: OnPremRunners
 
     steps:
       - uses: actions/checkout@v4
