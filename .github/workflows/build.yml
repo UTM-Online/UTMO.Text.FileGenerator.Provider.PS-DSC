@@ -30,6 +30,7 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+        continue-on-error: true
         with:
           global-json-file: src/global.json
 
