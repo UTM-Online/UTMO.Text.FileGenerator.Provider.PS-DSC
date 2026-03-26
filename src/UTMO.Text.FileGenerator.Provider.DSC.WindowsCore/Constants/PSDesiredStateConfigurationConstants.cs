@@ -101,4 +101,16 @@ public static class PSDesiredStateConfigurationConstants
             public const string Credential = "Credential";
         }
     }
+
+    public static class Environment
+    {
+        public const string ResourceId = "Environment";
+
+        public static class Properties
+        {
+            public const string Name = "Name";
+            public const string Path = "Path";
+            public const string Value = "Value";
+        }
+    }
 }
