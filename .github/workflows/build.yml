@@ -50,7 +50,7 @@ jobs:
         run: dotnet test ${{ env.SOLUTION }} --no-build --verbosity normal
 
       - name: Package
-        run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }}
+        run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }} --no-restore
 
       - name: Configure Nuget Push Target
         run: dotnet nuget add source --name PHX2 "https://packages.public.utmonline.net/nuget/TextFileGeneration/v3/index.json"
