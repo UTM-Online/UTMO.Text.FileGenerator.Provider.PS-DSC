@@ -53,9 +53,11 @@ jobs:
 
       - name: Configure Nuget Push Target
         run: dotnet nuget add source --name PHX2 "https://packages.public.utmonline.net/nuget/TextFileGeneration/v3/index.json"
+        continue-on-error: true
 
       - name: Push to Nuget
-        run: dotnet nuget push '${{ github.workspace }}/src/publish/*.nupkg' --source PHX2 --skip-duplicate --api-key ${{ secrets.PACKAGES_PUSH_SECRET }}
+        run: |
+          dotnet nuget push '${{ github.workspace }}/src/publish/*.nupkg' --source PHX2 --skip-duplicate --api-key ${{ secrets.PACKAGES_PUSH_SECRET }}
 
       - name: Publish Package Metadata
         run: |
