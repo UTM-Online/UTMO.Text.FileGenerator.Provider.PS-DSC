@@ -57,7 +57,11 @@ jobs:
 
       - name: Push to Nuget
         run: |
-          dotnet nuget push '${{ github.workspace }}/src/publish/*.nupkg' --source PHX2 --skip-duplicate --api-key ${{ secrets.PACKAGES_PUSH_SECRET }}
+          $packages = Get-ChildItem -Path '${{ github.workspace }}/src/publish/*.nupkg'
+          foreach ($package in $packages) {
+            Write-Host "Pushing package: $($package.FullName)"
+            dotnet nuget push $package.FullName --source PHX2 --skip-duplicate --api-key ${{ secrets.PACKAGES_PUSH_SECRET }} -v d
+          }
 
       - name: Publish Package Metadata
         run: |
