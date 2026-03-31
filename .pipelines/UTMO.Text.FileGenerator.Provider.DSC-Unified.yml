@@ -30,7 +30,6 @@ resources:
       type: git
       name: OneBuild\OneBuild.Pipelines.v2
       ref: refs/heads/main
-      endpoint: UTMO
 
 variables:
   - name: ProjectRoot
