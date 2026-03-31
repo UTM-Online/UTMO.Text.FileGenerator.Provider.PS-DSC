@@ -1,4 +1,4 @@
-﻿name: ${{ parameters.MajorVersion }}.${{ parameters.MinorVersion }}$(Rev:.r)
+name: ${{ parameters.MajorVersion }}.${{ parameters.MinorVersion }}$(Rev:.r)
 
 parameters:
   - name: Configuration
