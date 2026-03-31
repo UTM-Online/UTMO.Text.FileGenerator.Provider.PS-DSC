@@ -52,4 +52,4 @@ extends:
     RunTests: true
     TestRunTitle: 'DSC Generator Unit Tests'
     FeedSettings:
-      TestFeed:'internal'
+      TestFeed: 'internal'
