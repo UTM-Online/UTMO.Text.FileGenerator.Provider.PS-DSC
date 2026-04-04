@@ -25,6 +25,9 @@ public class DscComputerConfiguration : DscResourceBase
     [MemberName("RequiredModules")]
     public List<RequiredModule> RequiredModules { get; init; } = [];
 
+    [MemberName("requires_plaintext_password")]
+    public bool RequiresPlainTextPassword => this.NodeConfigurations.Any(x => x.RequiresPlainTextPassword);
+
     public static explicit operator DscComputerConfiguration(DscLcmConfiguration cfg)
     {
         return new DscComputerConfiguration()

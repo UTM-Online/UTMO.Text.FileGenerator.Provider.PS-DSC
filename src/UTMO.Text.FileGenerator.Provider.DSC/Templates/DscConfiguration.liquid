@@ -1,5 +1,17 @@
 {% extends "script_base" %}
 {% block script %}
+{% if requires_plaintext_password == true %}
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            NodeName = 'localhost'
+            PSDscAllowPlainTextPassword = $true
+            PSDscAllowDomainUser = $true
+        }
+    )
+}
+
+{% endif %}
 Configuration {{ FullName }}
 {
 {%- for module in RequiredModules %}
@@ -19,6 +31,6 @@ Configuration {{ FullName }}
 {% endif %}{% endfor %}
 }
 
-{{ FullName }} -OutputPath $OutputPath
+{% if requires_plaintext_password == true %}{{ FullName }} -OutputPath $OutputPath -ConfigurationData $ConfigurationData{% else %}{{ FullName }} -OutputPath $OutputPath{% endif %}
 Rename-Item -Path $(Join-Path -Path $OutputPath -ChildPath "localhost.mof") -NewName "{{ FullName }}.mof"
 {% endblock %}

@@ -5,8 +5,10 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 
 /// <summary>
 /// Represents a gMSA identity rendered as a PSCredential with an empty secure string password.
+/// DSC compilation still treats this as credential material, so configurations must permit
+/// plaintext passwords when this wrapper is used.
 /// </summary>
-public sealed partial class GmsaCredential : IPowerShellExpression
+public sealed partial class GmsaCredential : IPowerShellExpression, IRequiresPlainTextPassword
 {
     public GmsaCredential(string accountName)
     {

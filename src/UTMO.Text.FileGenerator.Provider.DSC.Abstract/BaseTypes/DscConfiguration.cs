@@ -51,6 +51,9 @@ public abstract class DscConfiguration : DscResourceBase
         
     [MemberName(nameof(ConfigurationResources))]
     public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems().ToList();
+
+    [MemberName("requires_plaintext_password")]
+    public bool RequiresPlainTextPassword => this.ConfigurationItems().Any(x => x.RequiresPlainTextPassword);
         
     [MemberName("module_source")]
     public abstract string ModuleSource { get; }
