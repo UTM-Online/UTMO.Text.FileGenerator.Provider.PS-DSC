@@ -107,12 +107,12 @@ public sealed class WebAppPoolResource : WebAdministrationDscBase, IWebAppPool
 
         if (this.IdentityType == AppPoolIdentityType.SpecificUser && this.Credential is null)
         {
-            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.RequiredPropertyMissing, "Credential must be set to a gMSA when IdentityType is SpecificUser."));
+            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.RequiredPropertyMissing, "Credential must reference a gMSA account (GmsaCredential) when IdentityType is SpecificUser."));
         }
 
         if (this.IdentityType != AppPoolIdentityType.SpecificUser && this.Credential is not null)
         {
-            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.InvalidConfiguration, "Credential can only be set when IdentityType is SpecificUser and must reference a gMSA."));
+            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.InvalidConfiguration, "Credential can only be set when IdentityType is SpecificUser and must be a GmsaCredential referencing a gMSA account."));
         }
 
         return Task.FromResult(errors);
