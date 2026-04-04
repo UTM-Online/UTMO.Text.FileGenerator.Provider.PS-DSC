@@ -15,9 +15,9 @@ public sealed class WebAdministrationDsc : RequiredModule
 
     public override string ModuleVersion => "4.2.1";
 
-    // public override string? RewriteModuleVersion => "4.2.1.0";
+    public override string? RewriteModuleVersion => "4.2.1";
 
-    public override bool UseAlternateFormat => false;
+    public override bool UseAlternateFormat => true;
 
     public static RequiredModule Instance { get; } = new WebAdministrationDsc();
 }
