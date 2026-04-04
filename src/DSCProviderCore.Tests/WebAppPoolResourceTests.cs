@@ -103,6 +103,13 @@ public class WebAppPoolResourceTests
             "svc-web",
             @"CONTOSO\svc-web",
             "username:password",
+            @"CONTOSO\svc web$",
+            @"CONTOSO\svc-web$ ",
+            @" CONTOSO\svc-web$",
+            "CONTOSO\\svc\nweb$",
+            "CONTOSO\\svc\tweb$",
+            @"CONTOSO\svc/web$",
+            @"CONTOSO\svc[web$",
         };
 
         foreach (var accountName in invalidAccountNames)
@@ -111,6 +118,33 @@ public class WebAppPoolResourceTests
             Assert.ThrowsExactly<ArgumentException>(() => new GmsaCredential(accountName));
         }
     }
+
+    [TestMethod]
+    public void GmsaCredential_WhenAccountNameIsSamCompatible_AllowsAccountOrDomainQualifiedForms()
+    {
+        // Arrange
+        var validAccountNames = new[]
+        {
+            "svc-web$",
+            @"CONTOSO\svc-web$",
+            @"CONTOSO\svc'o$",
+            @"contoso.local\svc.web_01$",
+        };
+
+        foreach (var accountName in validAccountNames)
+        {
+            // Act
+            var credential = new GmsaCredential(accountName);
+
+            // Assert
+            Assert.AreEqual(accountName, credential.AccountName);
+        }
+    }
+
+    [TestMethod]
+    public void GmsaCredential_WhenAccountNameContainsLineBreak_ThrowsArgumentException()
+    {
+        // Act / Assert
+        Assert.ThrowsExactly<ArgumentException>(() => new GmsaCredential("CONTOSO\\svc\r\nweb$"));
+    }
 }
-
-

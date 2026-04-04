@@ -15,14 +15,17 @@ public sealed partial class GmsaCredential : IPowerShellExpression
             throw new ArgumentException("A gMSA account name is required.", nameof(accountName));
         }
 
-        var normalizedAccountName = accountName.Trim();
-
-        if (!GmsaAccountNamePattern().IsMatch(normalizedAccountName))
+        if (ContainsWhitespaceOrControlCharacters(accountName))
         {
-            throw new ArgumentException("gMSA account names must be provided as 'account$' or 'domain\\account$'.", nameof(accountName));
+            throw new ArgumentException("gMSA account names cannot contain whitespace or control characters.", nameof(accountName));
         }
 
-        this.AccountName = normalizedAccountName;
+        if (!GmsaAccountNamePattern().IsMatch(accountName))
+        {
+            throw new ArgumentException("gMSA account names must be provided as 'account$' or 'domain\\account$' using SAM-compatible characters.", nameof(accountName));
+        }
+
+        this.AccountName = accountName;
     }
 
     public string AccountName { get; }
@@ -35,6 +38,19 @@ public sealed partial class GmsaCredential : IPowerShellExpression
 
     private static string EscapePowerShellSingleQuotedString(string value) => value.Replace("'", "''", StringComparison.Ordinal);
 
-    [GeneratedRegex(@"^(?:[^\\/:*?\""<>|]+\\)?[^\\/:*?\""<>|]+\$$", RegexOptions.CultureInvariant)]
+    private static bool ContainsWhitespaceOrControlCharacters(string value)
+    {
+        foreach (var c in value)
+        {
+            if (char.IsWhiteSpace(c) || char.IsControl(c))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    [GeneratedRegex(@"^(?:(?:[A-Za-z0-9][A-Za-z0-9._-]*)\\)?[A-Za-z0-9][A-Za-z0-9._'-]*\$$", RegexOptions.CultureInvariant)]
     private static partial Regex GmsaAccountNamePattern();
 }
