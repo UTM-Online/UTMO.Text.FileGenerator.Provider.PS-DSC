@@ -1,6 +1,7 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Types;
 public interface IWebAppPool : IDscResourceConfig
 {
     string PoolName { get; set; }
@@ -11,7 +12,7 @@ public interface IWebAppPool : IDscResourceConfig
     string? ManagedRuntimeVersion { get; set; }
     AppPoolStartMode? StartMode { get; set; }
     AppPoolIdentityType? IdentityType { get; set; }
-    string? Credential { get; set; }
+    GmsaCredential? Credential { get; set; }
     string? IdleTimeout { get; set; }
     IdleTimeoutAction? IdleTimeoutAction { get; set; }
     uint? MaxProcesses { get; set; }

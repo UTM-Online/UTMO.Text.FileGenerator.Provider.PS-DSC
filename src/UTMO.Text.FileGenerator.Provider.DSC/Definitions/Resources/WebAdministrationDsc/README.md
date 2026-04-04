@@ -85,7 +85,10 @@ Creates and configures IIS application pools.
 - `ManagedPipelineMode` - Integrated or Classic
 - `ManagedRuntimeVersion` - CLR version (v4.0, v2.0, or empty for no managed code)
 - `IdentityType` - Identity type (ApplicationPoolIdentity, NetworkService, etc.)
+- `Credential` - gMSA-only credential wrapper used when `IdentityType` is `SpecificUser`
 - `StartMode` - OnDemand or AlwaysRunning
+
+When `IdentityType` is `SpecificUser`, `Credential` must be set to a `GmsaCredential`. Raw usernames, passwords, and ad-hoc `PSCredential` expressions are intentionally not supported.
 
 ### WebAppPoolDefaults
 
@@ -177,6 +180,7 @@ Creates and configures virtual directories.
 ```csharp
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Types;
 
 // Create an application pool
 var appPool = WebAppPoolResource.Create("MyAppPool", pool =>
@@ -185,7 +189,8 @@ var appPool = WebAppPoolResource.Create("MyAppPool", pool =>
     pool.State = AppPoolState.Started;
     pool.ManagedPipelineMode = ManagedPipelineMode.Integrated;
     pool.ManagedRuntimeVersion = "v4.0";
-    pool.IdentityType = AppPoolIdentityType.ApplicationPoolIdentity;
+    pool.IdentityType = AppPoolIdentityType.SpecificUser;
+    pool.Credential = new GmsaCredential(@"CONTOSO\svc-web$");
 });
 
 // Create a website
