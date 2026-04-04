@@ -5,6 +5,7 @@ using Moq;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Attributes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 
 [TestClass]
 public class DscConfigurationPropertyBagTests
@@ -489,6 +490,22 @@ public class DscConfigurationPropertyBagTests
         Assert.AreEqual(value, result[key]);
     }
 
+    [TestMethod]
+    public void ToLiquid_WithPowerShellExpression_RendersWithoutQuoting()
+    {
+        // Arrange
+        const string key = "Credential";
+        var value = new TestPowerShellExpression("[PSCredential]::new('CONTOSO\\svc-web$', [System.Security.SecureString]::new())");
+        this._propertyBag!.Set(key, value);
+
+        // Act
+        var result = this._propertyBag.ToLiquid() as Dictionary<string, object>;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(value.ToPowerShell(), result[key]);
+    }
+
     #endregion
 
     #region SetOwner and QuotedEnum Tests
@@ -604,6 +621,11 @@ public class DscConfigurationPropertyBagTests
             get => this._propertyBag!.Get<TestEnum>(nameof(this.UnquotedEnumProperty));
             set => this._propertyBag!.Set(nameof(this.UnquotedEnumProperty), value);
         }
+    }
+
+    public sealed class TestPowerShellExpression(string expression) : IPowerShellExpression
+    {
+        public string ToPowerShell() => expression;
     }
 
     #endregion

@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.Abstract\UTMO.Text.FileGenerator.Provider.DSC.Abstract.csproj" />
+        <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC\UTMO.Text.FileGenerator.Provider.DSC.csproj" />
         <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore\UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
     </ItemGroup>
 

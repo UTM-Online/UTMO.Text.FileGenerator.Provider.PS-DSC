@@ -1,8 +1,10 @@
 ﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
+using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.BaseDefinitions.Resources;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Enums;
+using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Types;
 using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.Constants.WebAdministrationDscConstants.WebAppPool;
 public sealed class WebAppPoolResource : WebAdministrationDscBase, IWebAppPool
@@ -48,9 +50,9 @@ public sealed class WebAppPoolResource : WebAdministrationDscBase, IWebAppPool
         get => this.PropertyBag.Get<AppPoolIdentityType?>(Constants.Properties.IdentityType);
         set => this.PropertyBag.Set(Constants.Properties.IdentityType, value);
     }
-    public string? Credential
+    public GmsaCredential? Credential
     {
-        get => this.PropertyBag.Get(Constants.Properties.Credential);
+        get => this.PropertyBag.Get<GmsaCredential?>(Constants.Properties.Credential);
         set => this.PropertyBag.Set(Constants.Properties.Credential, value);
     }
     public string? IdleTimeout
@@ -102,6 +104,17 @@ public sealed class WebAppPoolResource : WebAdministrationDscBase, IWebAppPool
         var errors = this.ValidationBuilder()
             .ValidateStringNotNullOrEmpty(this.PoolName, nameof(this.PoolName))
             .errors;
+
+        if (this.IdentityType == AppPoolIdentityType.SpecificUser && this.Credential is null)
+        {
+            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.RequiredPropertyMissing, "Credential must reference a gMSA account (GmsaCredential) when IdentityType is SpecificUser."));
+        }
+
+        if (this.IdentityType != AppPoolIdentityType.SpecificUser && this.Credential is not null)
+        {
+            errors.Add(new ValidationFailedException(Constants.Properties.Credential, nameof(this.Credential), ValidationFailureType.InvalidConfiguration, "Credential can only be set when IdentityType is SpecificUser and must be a GmsaCredential referencing a gMSA account."));
+        }
+
         return Task.FromResult(errors);
     }
     public override string ResourceId => Constants.ResourceId;

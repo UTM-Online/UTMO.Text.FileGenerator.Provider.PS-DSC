@@ -7,6 +7,7 @@ using DotLiquid;
 using Microsoft.Extensions.Logging;
 using Utils;
 using UTMO.Text.FileGenerator.Abstract;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Messaging;
@@ -357,6 +358,12 @@ public class DscConfigurationPropertyBag : ILiquidizable
             
             switch (prop.Value)
             {
+                case IPowerShellExpression powerShellExpression:
+                {
+                    // Security-sensitive path: emitted as raw PowerShell without quoting/escaping.
+                    liquidObject[prop.Key] = powerShellExpression.ToPowerShell();
+                    break;
+                }
                 case bool b:
                 {
                     liquidObject[prop.Key] = b ? "$true" : "$false";

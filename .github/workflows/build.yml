@@ -8,6 +8,10 @@ on:
     branches: [ "main" ]
     paths:
       - "src/**"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "src/**"
   workflow_dispatch:
 
 env:
@@ -53,10 +57,12 @@ jobs:
         run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }} --no-restore
 
       - name: Configure Nuget Push Target
+        if: github.event_name != 'pull_request'
         run: dotnet nuget add source --name PHX2 "https://packages.public.utmonline.net/nuget/TextFileGeneration/v3/index.json"
         continue-on-error: true
 
       - name: Push to Nuget
+        if: github.event_name != 'pull_request'
         run: |
           $packages = Get-ChildItem -Path '${{ github.workspace }}/src/publish/*.nupkg'
           foreach ($package in $packages) {
@@ -65,6 +71,7 @@ jobs:
           }
 
       - name: Publish Package Metadata
+        if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -127,6 +134,7 @@ jobs:
           }
 
       - name: Create GitHub Release
+        if: github.event_name != 'pull_request'
         run: gh release create v${{ env.VERSION }} --title "Release ${{ env.VERSION }}" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -135,4 +143,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: published-app
-          path: '${{ github.workspace }}/src/UTMO.Text.FileGenerator/publish'
+          path: '${{ github.workspace }}/src/publish'
