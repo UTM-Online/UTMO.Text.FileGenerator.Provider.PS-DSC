@@ -143,4 +143,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: published-app
-          path: '${{ github.workspace }}/src/UTMO.Text.FileGenerator/publish'
+          path: '${{ github.workspace }}/src/publish'
