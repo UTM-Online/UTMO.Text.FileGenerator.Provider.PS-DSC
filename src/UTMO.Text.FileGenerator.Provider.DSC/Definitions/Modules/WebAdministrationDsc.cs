@@ -15,7 +15,7 @@ public sealed class WebAdministrationDsc : RequiredModule
 
     public override string ModuleVersion => "4.2.1";
 
-    public override string? RewriteModuleVersion => "4.2.1";
+    public override string? RewriteModuleVersion => this.ModuleVersion;
 
     public override bool UseAlternateFormat => true;
 
