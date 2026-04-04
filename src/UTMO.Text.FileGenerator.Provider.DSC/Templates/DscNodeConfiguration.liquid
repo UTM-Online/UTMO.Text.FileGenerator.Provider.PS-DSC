@@ -4,9 +4,12 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName = 'localhost'
+            NodeName = '*'
             PSDscAllowPlainTextPassword = $true
             PSDscAllowDomainUser = $true
+        },
+        @{
+            NodeName = '{{ node_name }}'
         }
     )
 }
@@ -18,18 +21,22 @@ Configuration {{ node_name }}
     Import-DscResource -ModuleName @{ModuleName = '{{ module.Name }}'; RequiredVersion = '{{ module.Version }}'}{%- else -%}
     Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}{% endif -%}{% endfor %}
 
-{% for resource in ConfigurationResources -%}
-    {{ resource.resource_id }} {{ resource.name }}
+    Node '{{ node_name }}'
     {
-        {% for value in resource.property_bag %}{{ value.Key }} = {{ value.Value }}{% if forloop.last == false %}
-        {% endif %}{% endfor %}{% if resource.has_ensure == true %}
-        Ensure = '{{ resource.ensure }}'{% endif %}{% if resource.depends_on != empty %}
-        DependsOn = @({% for item in resource.depends_on %}'{{ item }}'{% if forloop.last == false %}, {% endif %}{% endfor %}){% endif %}
-    }{% if forloop.last == false %}
+{% for resource in ConfigurationResources -%}
+        {{ resource.resource_id }} {{ resource.name }}
+        {
+            {% for value in resource.property_bag %}{{ value.Key }} = {{ value.Value }}{% if forloop.last == false %}
+            {% endif %}{% endfor %}{% if resource.has_ensure == true %}
+            Ensure = '{{ resource.ensure }}'{% endif %}{% if resource.depends_on != empty %}
+            DependsOn = @({% for item in resource.depends_on %}'{{ item }}'{% if forloop.last == false %}, {% endif %}{% endfor %}){% endif %}
+        }{% if forloop.last == false %}
 
 {% endif %}{% endfor %}
+    }
 }
 
-{% if requires_plaintext_password == true %}{{ node_name }} -OutputPath $OutputPath -ConfigurationData $ConfigurationData{% else %}{{ node_name }} -OutputPath $OutputPath{% endif %}
-Rename-Item -Path $(Join-Path -Path $OutputPath -ChildPath "localhost.mof") -NewName "{{ node_name }}.mof"
+$CompileParameters = @{ OutputPath = $OutputPath }
+{% if requires_plaintext_password == true %}$CompileParameters.ConfigurationData = $ConfigurationData
+{% endif %}{{ node_name }} @CompileParameters
 {% endblock %}
