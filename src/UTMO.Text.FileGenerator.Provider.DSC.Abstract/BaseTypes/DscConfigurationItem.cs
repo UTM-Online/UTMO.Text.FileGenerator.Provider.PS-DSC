@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Models;
 using UTMO.Text.FileGenerator.Attributes;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 [SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "API Surface, must remain public for consumers")]
@@ -35,6 +36,9 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
 
     [MemberName("property_bag")]
     public virtual DscConfigurationPropertyBag PropertyBag { get; } = new();
+
+    [IgnoreMember]
+    public virtual bool RequiresPlainTextPassword => this.PropertyBag.ContainsValue<IRequiresPlainTextPassword>();
     
     [MemberName("has_ensure")]
     public abstract bool HasEnsure { get; }

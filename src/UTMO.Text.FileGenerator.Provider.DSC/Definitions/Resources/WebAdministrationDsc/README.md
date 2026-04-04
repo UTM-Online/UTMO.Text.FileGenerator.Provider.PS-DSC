@@ -90,6 +90,8 @@ Creates and configures IIS application pools.
 
 When `IdentityType` is `SpecificUser`, `Credential` must be set to a `GmsaCredential`. Raw usernames, passwords, and ad-hoc `PSCredential` expressions are intentionally not supported.
 
+When a `GmsaCredential` is supplied, generated DSC configuration scripts automatically compile with configuration data that sets `PSDscAllowPlainTextPassword = $true` so MOF generation succeeds.
+
 ### WebAppPoolDefaults
 
 Configures default settings for all application pools.

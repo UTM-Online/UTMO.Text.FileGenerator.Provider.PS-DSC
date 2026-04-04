@@ -1,5 +1,6 @@
 namespace DSCProviderCore.Tests;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc;
 using UTMO.Text.FileGenerator.Provider.DSC.Definitions.Resources.WebAdministrationDsc.Enums;
@@ -25,6 +26,89 @@ public class WebAppPoolResourceTests
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual("[PSCredential]::new('CONTOSO\\svc-web$', [System.Security.SecureString]::new())", result[WebAdministrationDscConstants.WebAppPool.Properties.Credential]);
+    }
+
+    [TestMethod]
+    public void RequiresPlainTextPassword_WhenGmsaCredentialIsSet_ReturnsTrue()
+    {
+        // Arrange
+        var resource = WebAppPoolResource.Create("MyAppPool", pool =>
+        {
+            pool.PoolName = "MyAppPool";
+            pool.IdentityType = AppPoolIdentityType.SpecificUser;
+            pool.Credential = new GmsaCredential(@"CONTOSO\svc-web$");
+        });
+
+        // Act / Assert
+        Assert.IsTrue(resource.RequiresPlainTextPassword);
+    }
+
+    [TestMethod]
+    public void RequiresPlainTextPassword_WhenGmsaCredentialIsNotSet_ReturnsFalse()
+    {
+        // Arrange
+        var resource = WebAppPoolResource.Create("MyAppPool", pool =>
+        {
+            pool.PoolName = "MyAppPool";
+            pool.IdentityType = AppPoolIdentityType.ApplicationPoolIdentity;
+        });
+
+        // Act / Assert
+        Assert.IsFalse(resource.RequiresPlainTextPassword);
+    }
+
+    [TestMethod]
+    public void DscConfiguration_RequiresPlainTextPassword_WhenGmsaCredentialIsUsed_ReturnsTrue()
+    {
+        // Arrange
+        var resource = WebAppPoolResource.Create("MyAppPool", pool =>
+        {
+            pool.PoolName = "MyAppPool";
+            pool.IdentityType = AppPoolIdentityType.SpecificUser;
+            pool.Credential = new GmsaCredential(@"CONTOSO\svc-web$");
+        });
+
+        var configuration = new TestDscConfiguration(resource);
+
+        // Act / Assert
+        Assert.IsTrue(configuration.RequiresPlainTextPassword);
+    }
+
+    [TestMethod]
+    public void DscConfiguration_RequiresPlainTextPassword_WhenGmsaCredentialIsNotUsed_ReturnsFalse()
+    {
+        // Arrange
+        var resource = WebAppPoolResource.Create("MyAppPool", pool =>
+        {
+            pool.PoolName = "MyAppPool";
+            pool.IdentityType = AppPoolIdentityType.ApplicationPoolIdentity;
+        });
+
+        var configuration = new TestDscConfiguration(resource);
+
+        // Act / Assert
+        Assert.IsFalse(configuration.RequiresPlainTextPassword);
+    }
+
+    [TestMethod]
+    public void DscComputerConfiguration_RequiresPlainTextPassword_WhenGmsaCredentialIsUsed_ReturnsTrue()
+    {
+        // Arrange
+        var resource = WebAppPoolResource.Create("MyAppPool", pool =>
+        {
+            pool.PoolName = "MyAppPool";
+            pool.IdentityType = AppPoolIdentityType.SpecificUser;
+            pool.Credential = new GmsaCredential(@"CONTOSO\svc-web$");
+        });
+
+        var configuration = new DscComputerConfiguration
+        {
+            NodeName = "localhost",
+            NodeConfigurations = [resource],
+        };
+
+        // Act / Assert
+        Assert.IsTrue(configuration.RequiresPlainTextPassword);
     }
 
     [TestMethod]
@@ -146,5 +230,18 @@ public class WebAppPoolResourceTests
     {
         // Act / Assert
         Assert.ThrowsExactly<ArgumentException>(() => new GmsaCredential("CONTOSO\\svc\r\nweb$"));
+    }
+
+    private sealed class TestDscConfiguration(params DscConfigurationItem[] items) : DscConfiguration
+    {
+        private readonly IReadOnlyList<DscConfigurationItem> _items = items;
+
+        public override string FullName => nameof(TestDscConfiguration);
+
+        public override string ModuleSource => nameof(TestDscConfiguration);
+
+        public override string ConfigSource => nameof(TestDscConfiguration);
+
+        protected override IEnumerable<DscConfigurationItem> ConfigurationItems() => this._items;
     }
 }

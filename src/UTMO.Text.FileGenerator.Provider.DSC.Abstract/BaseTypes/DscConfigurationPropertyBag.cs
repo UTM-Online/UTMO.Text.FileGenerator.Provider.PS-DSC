@@ -335,6 +335,11 @@ public class DscConfigurationPropertyBag : ILiquidizable
         return this.Get<string>(key, caller);
     }
 
+    internal bool ContainsValue<TValue>() where TValue : class
+    {
+        return this._propertyBag.Values.OfType<TValue>().Any();
+    }
+
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public object ToLiquid()
     {
