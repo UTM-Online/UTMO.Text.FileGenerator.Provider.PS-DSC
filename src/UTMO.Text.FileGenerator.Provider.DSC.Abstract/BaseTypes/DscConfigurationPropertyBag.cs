@@ -360,6 +360,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
             {
                 case IPowerShellExpression powerShellExpression:
                 {
+                    // Security-sensitive path: emitted as raw PowerShell without quoting/escaping.
                     liquidObject[prop.Key] = powerShellExpression.ToPowerShell();
                     break;
                 }
