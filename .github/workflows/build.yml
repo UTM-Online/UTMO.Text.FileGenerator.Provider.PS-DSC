@@ -27,8 +27,7 @@ jobs:
       attestations: write
       artifact-metadata: write
 
-    runs-on: 
-      group: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
