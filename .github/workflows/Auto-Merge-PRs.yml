@@ -51,6 +51,15 @@ jobs:
               return;
             }
 
+            // Approve PR
+            await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number: prNumber,
+              event: 'APPROVE',
+              body: 'Approved by bot.',
+            });
+
             // Merge
             await github.rest.pulls.merge({
               owner,
@@ -64,5 +73,5 @@ jobs:
               owner,
               repo,
               issue_number: prNumber,
-              body: '✅ PR merged by bot.',
+              body: '✅ PR approved and merged by bot.',
             });
