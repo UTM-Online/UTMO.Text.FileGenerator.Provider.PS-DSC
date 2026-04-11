@@ -11,7 +11,6 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 using UTMO.Text.FileGenerator.Provider.DSC.Models;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.GenerateMofFiles;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.ProcessRequiredModules;
-using UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.TrimMofComments;
 using UTMO.Text.FileGenerator.Utils;
 
@@ -143,8 +142,7 @@ public class DscGenerator
 
         Logger.Information(@"Configuring DSC Generator");
         
-        generator.FileGenerator.RegisterPipelinePlugin<RestoreRequiredModulesPlugin>()
-                 .RegisterRendererPlugin<GenerateMofFilesPlugin>()
+        generator.FileGenerator.RegisterRendererPlugin<GenerateMofFilesPlugin>()
                  .RegisterPipelinePlugin<ProcessRequiredModules>()
                  .UseEnvironment<DscGenerationEnvironment>()
                  .RegisterCustomCliOptions<DscCliOptions>()
