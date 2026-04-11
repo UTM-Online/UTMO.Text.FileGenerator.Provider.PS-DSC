@@ -28,7 +28,7 @@ jobs:
       artifact-metadata: write
 
     runs-on: 
-      group: ubuntu-latest #OnPremRunners
+      group: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
