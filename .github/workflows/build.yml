@@ -62,6 +62,7 @@ jobs:
 
       - name: Push to Nuget
         if: github.event_name != 'pull_request'
+        shell: pwsh
         run: |
           $packages = Get-ChildItem -Path '${{ github.workspace }}/src/publish/*.nupkg'
           foreach ($package in $packages) {
