@@ -28,7 +28,7 @@ jobs:
       artifact-metadata: write
 
     runs-on: 
-      group: OnPremRunners
+      group: ubuntu-latest #OnPremRunners
 
     steps:
       - uses: actions/checkout@v4
@@ -40,9 +40,9 @@ jobs:
         continue-on-error: true
         with:
           global-json-file: src/global.json
-        env:
-          DOTNET_INSTALL_DIR: 'b:\tools_cache\dotnet'
-          DOTNET_ROOT: 'b:\tools_cache\dotnet'
+        #env:
+        #  DOTNET_INSTALL_DIR: 'b:\tools_cache\dotnet'
+        #  DOTNET_ROOT: 'b:\tools_cache\dotnet'
       
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
