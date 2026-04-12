@@ -2,7 +2,6 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Text.FileGenerator.Abstract.Contracts;
@@ -46,8 +45,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         }
         
         this.Logger.LogInformation(LogMessages.StartingRestoreRequiredModules);
-        var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var scriptPath = Path.Join(rootPath, "Scripts", ScriptConstants.RestoreRequiredModules);
+        var scriptPath = Path.Combine(AppContext.BaseDirectory, "Scripts", ScriptConstants.RestoreRequiredModules);
 
         if (!File.Exists(scriptPath))
         {
