@@ -138,7 +138,10 @@ public class DscGenerator
     {
         Logger.Debug(@"Creating DSC Generator");
 
-        var options = Parser.Default.ParseArguments<DscCliOptions>(args).Value;
+        var options = Parser.Default.ParseArguments<DscCliOptions>(args)
+                          .MapResult(
+                              parsed => (DscCliOptions?)parsed,
+                              _ => null);
         
         var generator = new DscGenerator
                         {
