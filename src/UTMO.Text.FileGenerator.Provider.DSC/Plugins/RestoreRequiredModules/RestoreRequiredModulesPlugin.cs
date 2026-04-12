@@ -47,6 +47,10 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             return false;
         }
 
+        Process? process = null;
+        Task<string>? stdOutTask = null;
+        Task<string>? stdErrTask = null;
+
         try
         {
             // Use Windows PowerShell (powershell.exe) instead of PowerShell Core for compatibility
@@ -79,22 +83,20 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
             this.Logger.LogDebug("Starting Windows PowerShell process for module restoration");
             
-            using var process = new Process();
+            process = new Process();
             process.StartInfo = processInfo;
             process.Start();
             
-            var stdOutTask = process.StandardOutput.ReadToEndAsync();
-            var stdErrTask = process.StandardError.ReadToEndAsync();
+            stdOutTask = this.ReadStandardOutputAsync(process);
+            stdErrTask = this.ReadStandardErrorAsync(process);
             
             using var cancellationTokenSource = new CancellationTokenSource(this.MaxRuntime);
-            var processTask = process.WaitForExitAsync(cancellationTokenSource.Token);
+            await this.WaitForExitAsync(process, cancellationTokenSource.Token);
             
-            await Task.WhenAll(stdOutTask, stdErrTask, processTask);
+            var stdOut = await this.ReadStreamSafelyAsync(stdOutTask, "stdout");
+            var stdErr = await this.ReadStreamSafelyAsync(stdErrTask, "stderr");
             
-            var stdOut = await stdOutTask;
-            var stdErr = await stdErrTask;
-            
-            this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut ?? "None");
+            this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut);
             
             if (process.ExitCode != 0)
             {
@@ -112,6 +114,26 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         }
         catch (OperationCanceledException)
         {
+            if (process != null)
+            {
+                try
+                {
+                    if (!process.HasExited)
+                    {
+                        this.KillProcess(process);
+                    }
+
+                    await this.WaitForExitAsync(process);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogWarning(ex, "Failed to terminate timed-out PowerShell process tree cleanly.");
+                }
+            }
+
+            _ = await this.ReadStreamSafelyAsync(stdOutTask, "stdout");
+            _ = await this.ReadStreamSafelyAsync(stdErrTask, "stderr");
+
             var timeoutMessage = $"Windows PowerShell script execution timed out after {this.MaxRuntime}";
             this.Logger.LogError(LogMessages.RestoreRequiredModulesFailed, timeoutMessage);
             return false;
@@ -121,6 +143,53 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             this.Logger.LogError(ex, LogMessages.RestoreRequiredModulesFailed, ex.Message);
             return false;
         }
+        finally
+        {
+            process?.Dispose();
+        }
+    }
+
+    private async Task<string> ReadStreamSafelyAsync(Task<string>? streamReadTask, string streamName)
+    {
+        if (streamReadTask == null)
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            return await streamReadTask;
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogWarning(ex, "Failed to read PowerShell process {StreamName} stream.", streamName);
+            return string.Empty;
+        }
+    }
+
+    protected virtual Task<string> ReadStandardOutputAsync(Process process)
+    {
+        return process.StandardOutput.ReadToEndAsync();
+    }
+
+    protected virtual Task<string> ReadStandardErrorAsync(Process process)
+    {
+        return process.StandardError.ReadToEndAsync();
+    }
+
+    protected virtual Task WaitForExitAsync(Process process, CancellationToken cancellationToken)
+    {
+        return process.WaitForExitAsync(cancellationToken);
+    }
+
+    protected virtual Task WaitForExitAsync(Process process)
+    {
+        return process.WaitForExitAsync();
+    }
+
+    protected virtual void KillProcess(Process process)
+    {
+        process.Kill(entireProcessTree: true);
     }
 
 
