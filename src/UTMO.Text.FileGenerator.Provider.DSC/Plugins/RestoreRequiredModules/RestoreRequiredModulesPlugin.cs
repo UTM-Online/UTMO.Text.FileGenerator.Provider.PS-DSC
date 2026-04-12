@@ -96,13 +96,17 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             
             this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut ?? "None");
             
-            if (!string.IsNullOrWhiteSpace(stdErr) || process.ExitCode != 0)
+            if (process.ExitCode != 0)
             {
                 var errorMessage = !string.IsNullOrWhiteSpace(stdErr) ? stdErr : $"Process exited with code {process.ExitCode}";
                 this.Logger.LogError(LogMessages.RestoreRequiredModulesFailed, errorMessage);
                 return false;
             }
 
+            if (!string.IsNullOrWhiteSpace(stdErr))
+            {
+                this.Logger.LogWarning("RestoreRequiredModules.ps1 completed with warnings: {Warnings}", stdErr);
+            }
             this.Logger.LogInformation(LogMessages.RestoredRequiredModulesSucceeded);
             return true;
         }

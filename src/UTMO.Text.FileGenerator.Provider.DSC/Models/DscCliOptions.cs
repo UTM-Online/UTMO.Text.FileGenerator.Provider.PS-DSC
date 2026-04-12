@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
-
+﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Models;
 using CommandLine;
 using UTMO.Text.FileGenerator.Models;
 
