@@ -1,5 +1,7 @@
+using CommandLine;
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 
 namespace UTMO.Text.FileGenerator.Provider.DSC;
 
@@ -135,6 +137,9 @@ public class DscGenerator
     public static DscGenerator Create(string[] args,  LogEventLevel logLevel = LogEventLevel.Information)
     {
         Logger.Debug(@"Creating DSC Generator");
+
+        var options = Parser.Default.ParseArguments<DscCliOptions>(args).Value;
+        
         var generator = new DscGenerator
                         {
                             FileGenerator = FileGenerator.Create(args, logLevel),
@@ -143,11 +148,20 @@ public class DscGenerator
         Logger.Information(@"Configuring DSC Generator");
         
         generator.FileGenerator.RegisterRendererPlugin<GenerateMofFilesPlugin>()
-                 .RegisterPipelinePlugin<ProcessRequiredModules>()
                  .UseEnvironment<DscGenerationEnvironment>()
                  .RegisterCustomCliOptions<DscCliOptions>()
                  .RegisterPipelinePlugin<TrimMofCommentsProcessor>();
 
+        if (options.RestoreRequiredModules)
+        {
+            generator.FileGenerator.RegisterPipelinePlugin<RestoreRequiredModulesPlugin>();
+        }
+
+        if (options.RepackageRequiredModules)
+        {
+            generator.FileGenerator.RegisterPipelinePlugin<ProcessRequiredModules>();
+        }
+        
         Logger.Information(@"Scanning for DSC Configurations");
         var configurations = GetAllLoadedDscTypes<DscConfiguration>();
 
@@ -173,6 +187,7 @@ public class DscGenerator
     public void Run()
     {
         Logger.Information(@"Running DSC Generator");
+        
         this.FileGenerator.Run();
     }
 }
