@@ -3,6 +3,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Text.FileGenerator.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Abstract;
@@ -53,10 +54,9 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
         try
         {
-            // Use Windows PowerShell (powershell.exe) instead of PowerShell Core for compatibility
             var processInfo = new ProcessStartInfo
             {
-                FileName = "powershell.exe", // Explicitly use Windows PowerShell
+                FileName = this.PowerShellExecutable,
                 Arguments = $"-ExecutionPolicy Bypass -NoProfile -File \"{scriptPath}\" -moduleManifestPath \"{manifestPath}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -186,6 +186,9 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
     {
         return process.WaitForExitAsync();
     }
+
+    protected virtual string PowerShellExecutable =>
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "powershell.exe" : "pwsh";
 
     protected virtual void KillProcess(Process process)
     {
