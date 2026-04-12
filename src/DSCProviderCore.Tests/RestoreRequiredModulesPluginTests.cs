@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using UTMO.Text.FileGenerator.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Abstract;
-using UTMO.Text.FileGenerator.Provider.DSC.Constants;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 
 namespace DSCProviderCore.Tests;
@@ -18,7 +17,6 @@ public class RestoreRequiredModulesPluginTests
     {
         // Arrange
         var outputRoot = CreateOutputRootWithManifest("dev");
-        var scriptSetup = EnsureRestoreScriptExists();
 
         try
         {
@@ -46,7 +44,6 @@ public class RestoreRequiredModulesPluginTests
         finally
         {
             CleanupOutputRoot(outputRoot);
-            RestoreScript(scriptSetup.path, scriptSetup.existed, scriptSetup.originalContent);
         }
     }
 
@@ -55,7 +52,6 @@ public class RestoreRequiredModulesPluginTests
     {
         // Arrange
         var outputRoot = CreateOutputRootWithManifest("dev");
-        var scriptSetup = EnsureRestoreScriptExists();
 
         try
         {
@@ -83,7 +79,6 @@ public class RestoreRequiredModulesPluginTests
         finally
         {
             CleanupOutputRoot(outputRoot);
-            RestoreScript(scriptSetup.path, scriptSetup.existed, scriptSetup.originalContent);
         }
     }
 
@@ -94,38 +89,6 @@ public class RestoreRequiredModulesPluginTests
         Directory.CreateDirectory(manifestDirectory);
         File.WriteAllText(Path.Combine(manifestDirectory, "RequiredModule.Manifest.json"), "{}");
         return outputRoot;
-    }
-
-    private static (string path, bool existed, string? originalContent) EnsureRestoreScriptExists()
-    {
-        var providerAssemblyPath = typeof(RestoreRequiredModulesPlugin).Assembly.Location;
-        var providerAssemblyDirectory = Path.GetDirectoryName(providerAssemblyPath) ?? throw new InvalidOperationException("Could not resolve provider assembly directory.");
-        var scriptsDirectory = Path.Combine(providerAssemblyDirectory, "Scripts");
-        Directory.CreateDirectory(scriptsDirectory);
-
-        var scriptPath = Path.Combine(scriptsDirectory, ScriptConstants.RestoreRequiredModules);
-        var existed = File.Exists(scriptPath);
-        var originalContent = existed ? File.ReadAllText(scriptPath) : null;
-
-        // Keep the process alive long enough for timeout path to execute deterministically.
-        var testScript = "param([string]$moduleManifestPath)`nStart-Sleep -Seconds 30";
-        File.WriteAllText(scriptPath, testScript);
-
-        return (scriptPath, existed, originalContent);
-    }
-
-    private static void RestoreScript(string scriptPath, bool existed, string? originalContent)
-    {
-        if (existed)
-        {
-            File.WriteAllText(scriptPath, originalContent ?? string.Empty);
-            return;
-        }
-
-        if (File.Exists(scriptPath))
-        {
-            File.Delete(scriptPath);
-        }
     }
 
     private static void CleanupOutputRoot(string outputRoot)
@@ -158,6 +121,17 @@ public class RestoreRequiredModulesPluginTests
 
         public bool StdErrDrainCompleted => this.stdErrTaskSource.Task.IsCompleted;
 
+        protected override bool IsPlatformSupported => true;
+
+        protected override bool ScriptFileExists(string scriptPath) => true;
+
+        protected override Process StartProcess(ProcessStartInfo processInfo) =>
+            new Process { StartInfo = processInfo };
+
+        protected override bool HasProcessExited(Process process) => false;
+
+        protected override Task WaitForExitAsync(Process process) => Task.CompletedTask;
+
         protected override Task<string> ReadStandardOutputAsync(Process process)
         {
             return this.stdOutTaskSource.Task;
@@ -187,8 +161,6 @@ public class RestoreRequiredModulesPluginTests
                 this.stdOutTaskSource.TrySetResult("stdout");
                 this.stdErrTaskSource.TrySetResult("stderr");
             }
-
-            base.KillProcess(process);
         }
     }
 }

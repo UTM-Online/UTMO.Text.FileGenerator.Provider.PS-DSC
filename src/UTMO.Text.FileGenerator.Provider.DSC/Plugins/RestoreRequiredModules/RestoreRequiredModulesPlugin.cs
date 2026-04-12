@@ -30,7 +30,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
     public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         // RestoreRequiredModules is Windows-specific (DSC and PowerShell modules are Windows-only)
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!this.IsPlatformSupported)
         {
             this.Logger.LogError("RestoreRequiredModules plugin requires Windows. Current platform: {Platform}", RuntimeInformation.OSDescription);
             return false;
@@ -47,7 +47,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         this.Logger.LogInformation(LogMessages.StartingRestoreRequiredModules);
         var scriptPath = Path.Combine(AppContext.BaseDirectory, "Scripts", ScriptConstants.RestoreRequiredModules);
 
-        if (!File.Exists(scriptPath))
+        if (!this.ScriptFileExists(scriptPath))
         {
             this.Logger.LogError("PowerShell script not found at {ScriptPath}", scriptPath);
             return false;
@@ -87,10 +87,8 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             processInfo.EnvironmentVariables["LOCALAPPDATA"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
 
             this.Logger.LogDebug("Starting Windows PowerShell process for module restoration");
-            
-            process = new Process();
-            process.StartInfo = processInfo;
-            process.Start();
+
+            process = this.StartProcess(processInfo);
             
             stdOutTask = this.ReadStandardOutputAsync(process);
             stdErrTask = this.ReadStandardErrorAsync(process);
@@ -123,7 +121,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             {
                 try
                 {
-                    if (!process.HasExited)
+                    if (!this.HasProcessExited(process))
                     {
                         this.KillProcess(process);
                     }
@@ -199,7 +197,18 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
         process.Kill(entireProcessTree: true);
     }
 
+    protected virtual bool IsPlatformSupported => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+    protected virtual bool ScriptFileExists(string scriptPath) => File.Exists(scriptPath);
+
+    protected virtual Process StartProcess(ProcessStartInfo processInfo)
+    {
+        var process = new Process { StartInfo = processInfo };
+        process.Start();
+        return process;
+    }
+
+    protected virtual bool HasProcessExited(Process process) => process.HasExited;
 
     public IGeneralFileWriter? Writer { get; init; }
 
