@@ -152,14 +152,32 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Encountered an error restoring required modules. Std Err:  {stdErr}.
+        ///   Looks up a localized string similar to Encountered an unhandled exception while restoring required modules: {Details}.
+        /// </summary>
+        internal static string RestoreRequiredModulesException {
+            get {
+                return ResourceManager.GetString("RestoreRequiredModulesException", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered an error restoring required modules. Details: {Details}.
         /// </summary>
         internal static string RestoreRequiredModulesFailed {
             get {
                 return ResourceManager.GetString("RestoreRequiredModulesFailed", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Required module restore timed out after {Timeout}.
+        /// </summary>
+        internal static string RestoreRequiredModulesTimedOut {
+            get {
+                return ResourceManager.GetString("RestoreRequiredModulesTimedOut", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Script Config Path: {scriptConfig}.
         /// </summary>

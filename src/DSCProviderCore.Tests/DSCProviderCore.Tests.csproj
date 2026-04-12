@@ -12,6 +12,7 @@
         <PackageReference Include="MSTest" />
         <PackageReference Include="Moq" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="UTMO.Text.FileGenerator" />
     </ItemGroup>
 
     <ItemGroup>
