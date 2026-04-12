@@ -15,5 +15,5 @@ public class DscCliOptions : GeneratorCliOptions
     public bool RestoreRequiredModules { get; set; }
     
     [Option('p', "repackageRequiredModules", Required = false, HelpText = "Indicates whether to repackage required DSC modules after restoring them.", Default = false)]
-    public bool RepackageRequiredModules  { get; set; }
+    public bool RepackageRequiredModules { get; set; }
 }
