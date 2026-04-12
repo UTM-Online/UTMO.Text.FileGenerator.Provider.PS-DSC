@@ -59,7 +59,13 @@ Error Stream: {StandardError}</value>
         <value>[RestoreModules] STD Out: {stdOut}</value>
     </data>
     <data name="RestoreRequiredModulesFailed" xml:space="preserve">
-        <value>Encountered an error restoring required modules. Std Err:  {stdErr}</value>
+        <value>Encountered an error restoring required modules. Details: {Details}</value>
+    </data>
+    <data name="RestoreRequiredModulesTimedOut" xml:space="preserve">
+        <value>Required module restore timed out after {Timeout}</value>
+    </data>
+    <data name="RestoreRequiredModulesException" xml:space="preserve">
+        <value>Encountered an unhandled exception while restoring required modules: {Details}</value>
     </data>
     <data name="RestoredRequiredModulesSucceeded" xml:space="preserve">
         <value>Successfully restore required modules.</value>

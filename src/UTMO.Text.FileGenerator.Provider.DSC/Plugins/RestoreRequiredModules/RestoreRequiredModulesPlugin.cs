@@ -134,13 +134,12 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             _ = await this.ReadStreamSafelyAsync(stdOutTask, "stdout");
             _ = await this.ReadStreamSafelyAsync(stdErrTask, "stderr");
 
-            var timeoutMessage = $"Windows PowerShell script execution timed out after {this.MaxRuntime}";
-            this.Logger.LogError(LogMessages.RestoreRequiredModulesFailed, timeoutMessage);
+            this.Logger.LogError(LogMessages.RestoreRequiredModulesTimedOut, this.MaxRuntime);
             return false;
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, LogMessages.RestoreRequiredModulesFailed, ex.Message);
+            this.Logger.LogError(ex, LogMessages.RestoreRequiredModulesException, ex.Message);
             return false;
         }
         finally
