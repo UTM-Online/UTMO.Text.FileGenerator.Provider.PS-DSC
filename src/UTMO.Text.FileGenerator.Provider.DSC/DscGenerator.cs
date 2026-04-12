@@ -152,14 +152,21 @@ public class DscGenerator
                  .RegisterCustomCliOptions<DscCliOptions>()
                  .RegisterPipelinePlugin<TrimMofCommentsProcessor>();
 
-        if (options.RestoreRequiredModules)
+        if (options is not null)
         {
-            generator.FileGenerator.RegisterPipelinePlugin<RestoreRequiredModulesPlugin>();
-        }
+            if (options.RestoreRequiredModules)
+            {
+                generator.FileGenerator.RegisterPipelinePlugin<RestoreRequiredModulesPlugin>();
+            }
 
-        if (options.RepackageRequiredModules)
+            if (options.RepackageRequiredModules)
+            {
+                generator.FileGenerator.RegisterPipelinePlugin<ProcessRequiredModules>();
+            }
+        }
+        else
         {
-            generator.FileGenerator.RegisterPipelinePlugin<ProcessRequiredModules>();
+            Logger.Warning(@"No CLI options provided, skipping registration of DSC module processing plugins");
         }
         
         Logger.Information(@"Scanning for DSC Configurations");
