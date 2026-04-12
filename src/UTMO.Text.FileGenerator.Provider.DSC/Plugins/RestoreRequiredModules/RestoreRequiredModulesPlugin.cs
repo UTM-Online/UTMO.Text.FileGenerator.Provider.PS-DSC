@@ -30,6 +30,13 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
 
     public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
+        // RestoreRequiredModules is Windows-specific (DSC and PowerShell modules are Windows-only)
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            this.Logger.LogError("RestoreRequiredModules plugin requires Windows. Current platform: {Platform}", RuntimeInformation.OSDescription);
+            return false;
+        }
+
         var manifestPath = Path.Join(this.Options.OutputPath, "Manifests", environment.EnvironmentName, "RequiredModule.Manifest.json");
 
         if (!File.Exists(manifestPath))
@@ -68,10 +75,10 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             // Ensure PowerShell module path includes the current user's modules directory
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
             var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
-            
+
             if (!currentPSModulePath.Contains(userModulePath))
             {
-                processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
+                processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath}{Path.PathSeparator}{currentPSModulePath}";
             }
             
             // Ensure the process runs with the current user's environment
