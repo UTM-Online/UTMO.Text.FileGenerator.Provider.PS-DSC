@@ -4,6 +4,7 @@
     <PinTransientDependencies>true</PinTransientDependencies>
   </PropertyGroup>
   <ItemGroup>
+      <!-- DO NOT MERGE TO MAIN WITH UNSTABLE DEPENDENCIES -->
     <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="[2.16.20-alpha, )" />
     <PackageVersion Include="System.Management.Automation" Version="7.5.5" />
     <PackageVersion Include="UTMO.Common.Guards" Version="1.0.7" />

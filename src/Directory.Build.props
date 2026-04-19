@@ -1,6 +1,8 @@
 <Project>
     <PropertyGroup>
         <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <!-- Treat all warnings as errors to maintain code quality -->
+        <!-- DO NOT MERGE TO MAIN WITH THIS SET TO FALSE -->
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     </PropertyGroup>
 </Project>
