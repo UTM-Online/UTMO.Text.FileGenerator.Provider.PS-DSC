@@ -5,6 +5,7 @@ using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
 using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoInstaller;
 
+[Obsolete("cChoco Package has been deprecated, use the ChocolateySoftwareResources instead.", true)]
 public class ChocoInstallerResource : cChocoBase, IChocoInstallerResource
 {
     private ChocoInstallerResource(string name) : base(name)
