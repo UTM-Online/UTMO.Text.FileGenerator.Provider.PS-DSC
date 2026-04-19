@@ -1,6 +1,6 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.ChocoModule;
 
-using Abstract.BaseTypes;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 public class ChocoModule : RequiredModule
 {
