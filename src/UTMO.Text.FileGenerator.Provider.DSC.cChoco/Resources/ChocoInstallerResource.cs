@@ -5,7 +5,7 @@ using UTMO.Text.FileGenerator.Provider.DSC.cChoco.Contracts;
 using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants.ChocoInstaller;
 
-[Obsolete("cChoco Package has been deprecated, use the ChocolateySoftwareResources instead.", true)]
+[Obsolete("cChoco Package has been deprecated, use the ChocolateySoftwareResources instead.", false)]
 public class ChocoInstallerResource : cChocoBase, IChocoInstallerResource
 {
     private ChocoInstallerResource(string name) : base(name)
@@ -17,20 +17,20 @@ public class ChocoInstallerResource : cChocoBase, IChocoInstallerResource
         get => this.PropertyBag.Get(Constants.Parameters.InstallDirectory);
         set => this.PropertyBag.Set(Constants.Parameters.InstallDirectory, value);
     }
-    
+
     public string ChocoInstallScriptUrl
     {
         get => this.PropertyBag.Get(Constants.Parameters.ChocoInstallScriptUrl);
         set => this.PropertyBag.Set(Constants.Parameters.ChocoInstallScriptUrl, value);
     }
-    
+
     public static ChocoInstallerResource Create(string name, Action<IChocoInstallerResource> action)
     {
         var resource = new ChocoInstallerResource(name);
         action(resource);
         return resource;
     }
-    
+
     public static ChocoInstallerResource Create(string name, Action<IChocoInstallerResource> action, out ChocoInstallerResource resource)
     {
         resource = new ChocoInstallerResource(name);
@@ -42,7 +42,7 @@ public class ChocoInstallerResource : cChocoBase, IChocoInstallerResource
     {
         var validations = this.ValidationBuilder()
                               .ValidateStringNotNullOrEmpty(this.InstallDirectory, nameof(this.InstallDirectory));
-        
+
         return Task.FromResult(validations.errors);
     }
 
