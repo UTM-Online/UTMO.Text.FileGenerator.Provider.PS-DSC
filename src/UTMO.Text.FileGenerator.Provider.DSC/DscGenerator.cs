@@ -31,35 +31,35 @@ public class DscGenerator
         try
         {
             Logger.Debug("Scanning loaded assemblies for types inheriting from {TargetType}", typeof(T).FullName);
-            
+
             var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && a.FullName != null)
                 .ToList();
 
             var types = new List<Type>();
             var baseTypeName = typeof(T).FullName;
-            
+
             foreach (var assembly in loadedAssemblies)
             {
                 try
                 {
                     // Check if assembly contains DSC types by looking for our base types or known DSC assemblies
                     bool shouldScanAssembly = false;
-                    
+
                     // Always scan our own DSC assemblies
-                    if (assembly.FullName!.Contains("UTMO.Text.FileGenerator.Provider.DSC") || 
+                    if (assembly.FullName!.Contains("UTMO.Text.FileGenerator.Provider.DSC") ||
                         assembly.FullName.Contains("WindowsDefender"))
                     {
                         shouldScanAssembly = true;
                     }
-                    
+
                     // For other assemblies, check if they reference our base types
                     if (!shouldScanAssembly)
                     {
                         try
                         {
                             var referencedAssemblies = assembly.GetReferencedAssemblies();
-                            shouldScanAssembly = referencedAssemblies.Any(ra => 
+                            shouldScanAssembly = referencedAssemblies.Any(ra =>
                                 ra.FullName.Contains("UTMO.Text.FileGenerator.Provider.DSC.Abstract") ||
                                 ra.FullName.Contains("UTMO.Text.FileGenerator.Provider.DSC"));
                         }
@@ -69,7 +69,7 @@ public class DscGenerator
                             try
                             {
                                 var hasRelevantTypes = assembly.GetTypes()
-                                    .Any(t => t.BaseType?.FullName == baseTypeName || 
+                                    .Any(t => t.BaseType?.FullName == baseTypeName ||
                                              (t.BaseType != null && t.BaseType.IsSubclassOf(typeof(T))));
                                 shouldScanAssembly = hasRelevantTypes;
                             }
@@ -85,9 +85,9 @@ public class DscGenerator
                         var assemblyTypes = assembly.GetTypes()
                             .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract)
                             .ToList();
-                        
+
                         types.AddRange(assemblyTypes);
-                        
+
                         if (assemblyTypes.Any())
                         {
                             Logger.Debug($@"Found {assemblyTypes.Count} {typeof(T).Name} types in assembly {assembly.GetName().Name}");
@@ -97,7 +97,7 @@ public class DscGenerator
                 catch (ReflectionTypeLoadException ex)
                 {
                     Logger.Warning(ex, $@"Could not load types from assembly {assembly.GetName().Name}");
-                    
+
                     // Try to get the types that did load successfully
                     var loadedTypes = ex.Types?.Where(t => t != null && t.IsSubclassOf(typeof(T)) && !t.IsAbstract).ToList();
                     if (loadedTypes?.Any() == true)
@@ -111,14 +111,14 @@ public class DscGenerator
                     Logger.Debug(ex, $@"Skipping assembly {assembly.GetName().Name} due to error");
                 }
             }
-            
+
             Logger.Information($@"Found {types.Count} total {typeof(T).Name} types across all loaded assemblies");
             return types;
         }
         catch (Exception ex)
         {
             Logger.Error(ex, $@"Error scanning for {typeof(T).Name} types, falling back to calling assembly only");
-            
+
             // Fallback to original behavior if the new approach fails
             try
             {
@@ -142,14 +142,14 @@ public class DscGenerator
                           .MapResult(
                               parsed => (DscCliOptions?)parsed,
                               _ => null);
-        
+
         var generator = new DscGenerator
                         {
                             FileGenerator = FileGenerator.Create(args, logLevel),
                         };
 
         Logger.Information(@"Configuring DSC Generator");
-        
+
         generator.FileGenerator.RegisterRendererPlugin<GenerateMofFilesPlugin>()
                  .UseEnvironment<DscGenerationEnvironment>()
                  .RegisterCustomCliOptions<DscCliOptions>()
@@ -171,7 +171,7 @@ public class DscGenerator
         {
             Logger.Warning(@"No CLI options provided, skipping registration of DSC module processing plugins");
         }
-        
+
         Logger.Information(@"Scanning for DSC Configurations");
         var configurations = GetAllLoadedDscTypes<DscConfiguration>();
 
@@ -197,7 +197,7 @@ public class DscGenerator
     public void Run()
     {
         Logger.Information(@"Running DSC Generator");
-        
-        this.FileGenerator.Run();
+
+        this.FileGenerator.RunWithExitCode();
     }
 }
