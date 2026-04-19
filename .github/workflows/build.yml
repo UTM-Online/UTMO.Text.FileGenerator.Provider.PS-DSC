@@ -17,15 +17,13 @@ on:
 env:
   VERSION: 3.3.${{ github.run_number }}
   SOLUTION: src/UTMO.Text.FileGenerator.Provider.PS-DSC.slnx
+  IS_PRERELEASE: ${{ github.ref != 'refs/heads/main' && github.event_name != 'pull_request' }}
+  VERSION_SUFFIX: ${{ github.ref != 'refs/heads/main' && github.event_name != 'pull_request' && '-prerelease' || '' }}
 
 jobs:
   build:
     permissions:
-      contents: write
-      packages: write
-      id-token: write
-      attestations: write
-      artifact-metadata: write
+      contents: read
 
     runs-on: ubuntu-latest
 
@@ -42,7 +40,7 @@ jobs:
         #env:
         #  DOTNET_INSTALL_DIR: 'b:\tools_cache\dotnet'
         #  DOTNET_ROOT: 'b:\tools_cache\dotnet'
-      
+
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
 
@@ -53,15 +51,39 @@ jobs:
         run: dotnet test ${{ env.SOLUTION }} --no-build --verbosity normal
 
       - name: Package
-        run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }} --no-restore
+        run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }}${{ env.VERSION_SUFFIX }} --no-restore
+
+      - name: Publish Build Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: published-app
+          path: '${{ github.workspace }}/src/publish'
+
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/'))
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v6
+        with:
+          name: published-app
+          path: '${{ github.workspace }}/src/publish'
 
       - name: Configure Nuget Push Target
-        if: github.event_name != 'pull_request'
         run: dotnet nuget add source --name PHX2 "https://packages.public.utmonline.net/nuget/TextFileGeneration/v3/index.json"
         continue-on-error: true
 
       - name: Push to Nuget
-        if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
           $packages = Get-ChildItem -Path '${{ github.workspace }}/src/publish/*.nupkg'
@@ -71,7 +93,6 @@ jobs:
           }
 
       - name: Publish Package Metadata
-        if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -134,13 +155,7 @@ jobs:
           }
 
       - name: Create GitHub Release
-        if: github.event_name != 'pull_request'
-        run: gh release create v${{ env.VERSION }} --title "Release ${{ env.VERSION }}" --generate-notes
+        run: gh release create v${{ env.VERSION }}${{ env.VERSION_SUFFIX }} --title "Release ${{ env.VERSION }}${{ env.VERSION_SUFFIX }}" --generate-notes ${{ env.IS_PRERELEASE == 'true' && '--prerelease' || '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish Build Artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: published-app
-          path: '${{ github.workspace }}/src/publish'
