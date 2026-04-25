@@ -48,7 +48,7 @@ jobs:
         run: dotnet build ${{ env.SOLUTION }} --no-restore -c Release /p:Version=${{ env.VERSION }}${{ env.VERSION_SUFFIX }} --verbosity minimal
 
       - name: Test
-        run: dotnet test ${{ env.SOLUTION }} --no-build --verbosity normal
+        run: dotnet test ${{ env.SOLUTION }} --no-restore --verbosity normal
 
       - name: Package
         run: dotnet pack ${{ env.SOLUTION }} -c Release -o '${{ github.workspace }}/src/publish' /p:PackageVersion=${{ env.VERSION }}${{ env.VERSION_SUFFIX }} --no-restore
