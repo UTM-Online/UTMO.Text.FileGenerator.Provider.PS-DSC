@@ -4,13 +4,13 @@
     <PinTransientDependencies>true</PinTransientDependencies>
   </PropertyGroup>
   <ItemGroup>
-      <!-- DO NOT MERGE TO MAIN WITH UNSTABLE DEPENDENCIES -->
-    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="[2.16.20-alpha, )" />
+    <!-- DO NOT MERGE TO MAIN WITH UNSTABLE DEPENDENCIES -->
+    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="2.16.61" />
     <PackageVersion Include="System.Management.Automation" Version="7.5.5" />
     <PackageVersion Include="UTMO.Common.Guards" Version="1.0.7" />
-    <PackageVersion Include="UTMO.Text.FileGenerator" Version="[2.16.20-alpha, )" />
+    <PackageVersion Include="UTMO.Text.FileGenerator" Version="2.16.61" />
     <PackageVersion Include="MSTest" Version="4.2.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
   </ItemGroup>
 </Project>
