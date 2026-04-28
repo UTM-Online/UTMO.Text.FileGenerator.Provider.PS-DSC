@@ -15,13 +15,16 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
     using Models;
+    using UTMO.Text.FileGenerator.Attributes;
 
     public class AlternateIpAddresses : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => false;
         
+        [TemplateProperty]
         public IReadOnlyList<string> IPv4Addresses => this._ipv4;
         
+        [TemplateProperty]
         public IReadOnlyList<string> IPv6Addresses => this._ipv6;
         
         public AlternateIpAddresses AddIPv4Address(string address)

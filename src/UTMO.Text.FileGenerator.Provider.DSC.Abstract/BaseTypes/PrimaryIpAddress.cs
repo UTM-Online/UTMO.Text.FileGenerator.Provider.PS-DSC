@@ -15,13 +15,16 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 {
     using Models;
+    using UTMO.Text.FileGenerator.Attributes;
 
     public class PrimaryIpAddress : SubTemplateResourceBase
     {
         public override bool GenerateManifest => false;
         
+        [TemplateProperty]
         public string? IPv4Address { get; private set; }
         
+        [TemplateProperty]
         public string? IPv6Address { get; private set; }
         
         public PrimaryIpAddress SetIPv4Address(string address)

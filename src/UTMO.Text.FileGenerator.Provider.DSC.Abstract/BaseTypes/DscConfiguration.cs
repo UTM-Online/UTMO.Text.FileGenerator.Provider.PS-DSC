@@ -33,31 +33,39 @@ public abstract class DscConfiguration : DscResourceBase
 
     public sealed override string TemplatePath => nameof(DscConfiguration);
 
+    [TemplateProperty]
     public virtual string Description { get; } = string.Empty;
         
+    [TemplateProperty]
     public abstract string FullName { get; }
 
     public override string ResourceName => this.FullName;
 
-    protected virtual DscMode Mode { get; } = DscMode.Pull;
+    [TemplateProperty]
+    public virtual DscMode Mode { get; } = DscMode.Pull;
 
     public virtual string TemplateName => nameof(DscConfiguration);
 		
+    [TemplateProperty]
     [MemberName(nameof(RequiredModules))]
     public List<RequiredModule> RequiredModules => this.ConfigurationItems().Select(x => x.SourceModule).Distinct().ToList();
     
     // ReSharper disable once MemberCanBeProtected.Global
     protected abstract IEnumerable<DscConfigurationItem> ConfigurationItems();
         
+    [TemplateProperty]
     [MemberName(nameof(ConfigurationResources))]
     public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems().ToList();
 
+    [TemplateProperty]
     [MemberName("requires_plaintext_password")]
     public bool RequiresPlainTextPassword => this.ConfigurationItems().Any(x => x.RequiresPlainTextPassword);
         
+    [TemplateProperty]
     [MemberName("module_source")]
     public abstract string ModuleSource { get; }
         
+    [TemplateProperty]
     [MemberName("config_source")]
     public abstract string ConfigSource { get; }
 

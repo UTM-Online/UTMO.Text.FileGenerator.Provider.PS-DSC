@@ -25,12 +25,16 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         
         public sealed override string ResourceTypeName => $"{base.ResourceTypeName}/ManagedServiceAccount";
         
+        [TemplateProperty]
         public abstract string AccountName { get; }
 
+        [TemplateProperty]
         public abstract string DscDisplayName { get; }
 
+        [TemplateProperty]
         public virtual DscEnsure Ensure { get; } = DscEnsure.Present;
         
+        [TemplateProperty]
         public string ManagingPrinciples => string.Join(',', this._managingPrinciples.Select(x => $"\"{x.NodeName}$\""));
         
         [IgnoreMember]
