@@ -1,6 +1,7 @@
 using CommandLine;
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using UTMO.Text.FileGenerator.Extensions;
 using UTMO.Text.FileGenerator.Provider.DSC.Plugins.RestoreRequiredModules;
 
 namespace UTMO.Text.FileGenerator.Provider.DSC;
@@ -147,6 +148,8 @@ public class DscGenerator
                         {
                             FileGenerator = FileGenerator.Create(args, logLevel),
                         };
+
+        generator.FileGenerator.ConfigureHost(a => a.ConfigureHostConfiguration(config => config.EnableSuppressNonPublicPropertyWarnings()));
 
         Logger.Information(@"Configuring DSC Generator");
 
