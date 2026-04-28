@@ -21,6 +21,10 @@ public class TemplatePropertyComplianceTests
         yield return typeof(DscConfigurationItem).Assembly;               // DSC.Abstract
         yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.DscGenerator).Assembly; // DSC (main)
         yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.CoreResources.Constants.PSDesiredStateConfigurationConstants).Assembly; // WindowsCore
+        yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.AD_DSC.ActiveDirectoryDscConstants).Assembly; // AD-DSC
+        yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants).Assembly; // cChoco
+        yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.ChocoModule.Resources.ChocolateyPackageResource).Assembly; // ChocoModule
+        yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.WindowsDefender.WindowsDefenderConstants).Assembly; // WindowsDefenderDsc
     }
 
     /// <summary>
@@ -178,7 +182,7 @@ public class TemplatePropertyComplianceTests
         var type = typeof(DscConfiguration);
 
         // These are the direct-name properties (no MemberName mapping needed — template uses exact property name)
-        var directProps = new[] { "FullName", "RequiredModules", "ConfigurationResources" };
+        var directProps = new[] { "FullName", "Description", "RequiredModules", "ConfigurationResources" };
         foreach (var propName in directProps)
         {
             var prop = type.GetProperty(propName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
