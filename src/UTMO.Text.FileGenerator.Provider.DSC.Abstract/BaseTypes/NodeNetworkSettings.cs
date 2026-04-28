@@ -18,19 +18,21 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     using Models;
     using UTMO.Text.FileGenerator.Attributes;
 
-    [SuppressMessage("ReSharper", "CollectionNeverQueried.Local")]
+    [SuppressMessage("ReSharper", "CollectionNeverQueried.Global")]
     public class NodeNetworkSettings : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => false;
         
+        [TemplateProperty]
         [MemberName("primary_net_adapter")]
         public NetworkAdapter PrimaryNetworkAdapter { get; } = new NetworkAdapter()
         {
             Name = "Ethernet",
         };
         
+        [TemplateProperty]
         [MemberName("secondary_net_adapters")]
-        private List<NetworkAdapter> SecondaryNetworkAdapters { get; } = new List<NetworkAdapter>();
+        public List<NetworkAdapter> SecondaryNetworkAdapters { get; } = new List<NetworkAdapter>();
         
         public NodeNetworkSettings AddSecondaryNetworkAdapter(NetworkAdapter networkAdapter)
         {

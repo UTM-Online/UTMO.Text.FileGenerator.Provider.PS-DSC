@@ -21,12 +21,15 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     {
         public sealed override bool GenerateManifest => false;
         
+        [TemplateProperty]
         [MemberName("name")]
         public string Name { get; set; } = null!;
 
+        [TemplateProperty]
         [MemberName("primary_ip")]
         public PrimaryIpAddress PrimaryIpAddress { get; } = new PrimaryIpAddress();
         
+        [TemplateProperty]
         [MemberName("alternate_ips")]
         public AlternateIpAddresses AlternateIpAddresses { get; } = new AlternateIpAddresses();
     }

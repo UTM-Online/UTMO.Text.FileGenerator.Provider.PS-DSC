@@ -26,6 +26,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public sealed override string TemplatePath => "LcmConfiguration";
         
+        [TemplateProperty]
         [MemberName("node_name")]
         public abstract string NodeName { get; }
 
@@ -42,25 +43,31 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         public override bool GenerateManifest => true;
 
+        [TemplateProperty]
         [MemberName("partial_configs")]
         // ReSharper disable once MemberCanBePrivate.Global
         public List<DscConfiguration> DscConfiguration { get; } = new();
         
+        [TemplateProperty]
         [MemberName("lcm_settings")]
         public virtual DscLcmSettings LcmSettings { get; } = new();
         
+        [TemplateProperty]
         [MemberName("pull_server_web")]
-        protected abstract DscLcmWebResource PullServerWebResource { get; }
+        public abstract DscLcmWebResource PullServerWebResource { get; }
         
+        [TemplateProperty]
         [MemberName("resource_repository_web")]
-        protected abstract DscLcmWebResource ResourceRepositoryWebResource { get; }
+        public abstract DscLcmWebResource ResourceRepositoryWebResource { get; }
         
+        [TemplateProperty]
         [MemberName("report_server_web")]
-        protected abstract DscLcmWebResource ReportServerWebResource { get; }
+        public abstract DscLcmWebResource ReportServerWebResource { get; }
         
         [IgnoreMember]
         public virtual List<DscConfigurationItem> NodeConfigurations { get; } = new();
         
+        [TemplateProperty]
         [MemberName("has_local_configuration")]
         public bool HasLocalConfiguration => this.NodeConfigurations.Count != 0;
         

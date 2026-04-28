@@ -21,9 +21,11 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     {
         public override bool GenerateManifest => true;
         
+        [TemplateProperty]
         [MemberName("Name")]
         public abstract string ModuleName { get; }
 
+        [TemplateProperty]
         [MemberName("Version")]
         public abstract string ModuleVersion { get; }
 
@@ -34,6 +36,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [IgnoreMember]
         public virtual string? RewriteModuleVersion { get; } = null;
         
+        [TemplateProperty]
         public virtual bool UseAlternateFormat { get; } = false;
 
         public override string ResourceTypeName => "/DSC/RequiredModule";

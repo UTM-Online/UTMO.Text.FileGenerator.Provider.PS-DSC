@@ -16,15 +16,19 @@ public class DscComputerConfiguration : DscResourceBase
     
     public override bool GenerateManifest => false;
     
+    [TemplateProperty]
     [MemberName("node_name")]
     public required string NodeName { get; init; }
     
+    [TemplateProperty]
     [MemberName("ConfigurationResources")]
     public required List<DscConfigurationItem> NodeConfigurations { get; init; }
     
+    [TemplateProperty]
     [MemberName("RequiredModules")]
     public List<RequiredModule> RequiredModules { get; init; } = [];
 
+    [TemplateProperty]
     [MemberName("requires_plaintext_password")]
     public bool RequiresPlainTextPassword => this.NodeConfigurations.Any(x => x.RequiresPlainTextPassword);
 

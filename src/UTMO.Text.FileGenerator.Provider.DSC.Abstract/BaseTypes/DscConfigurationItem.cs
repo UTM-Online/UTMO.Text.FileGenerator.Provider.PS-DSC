@@ -18,28 +18,35 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
         this.PropertyBag.SetOwner(this.GetType());
     }
 
+    [TemplateProperty]
     [MemberName("resource_id")]
     public abstract string ResourceId { get; }
 
+    [TemplateProperty]
     [MemberName("name")]
     public string Name { get; set; }
 
+    [TemplateProperty]
     [MemberName("description")]
     public string Description { get; set; }
 
+    [TemplateProperty]
     [MemberName("ensure")]
     public DscEnsure Ensure { get; set; }
 
+    [TemplateProperty]
     [MemberName("depends_on")]
     // ReSharper disable once CollectionNeverQueried.Global
     public List<string> DependsOn { get; set; } = new();
 
+    [TemplateProperty]
     [MemberName("property_bag")]
     public virtual DscConfigurationPropertyBag PropertyBag { get; } = new();
 
     [IgnoreMember]
     public virtual bool RequiresPlainTextPassword => this.PropertyBag.ContainsValue<IRequiresPlainTextPassword>();
     
+    [TemplateProperty]
     [MemberName("has_ensure")]
     public abstract bool HasEnsure { get; }
     

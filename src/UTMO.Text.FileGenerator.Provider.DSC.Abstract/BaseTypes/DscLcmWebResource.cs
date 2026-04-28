@@ -18,16 +18,20 @@ public class DscLcmWebResource : SubTemplateResourceBase
 
     public sealed override bool GenerateManifest => false;
     
+    [TemplateProperty]
     [MemberName("lcm_resource_type")]
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public required DscWebResourceTypes LcmResourceType { get; init; }
 
+    [TemplateProperty]
     [MemberName("lcm_resource_name")]
     public required string LcmResourceName { get; init; }
     
+    [TemplateProperty]
     [MemberName("server_url")]
     public required string ServerUrl { get; init; }
 
+    [TemplateProperty]
     [MemberName("configuration_names")]
     public List<string> ConfigurationNames =>
         this.LcmResourceType == DscWebResourceTypes.ConfigurationRepositoryWeb ? this.Parent.DscConfiguration.Select(a => a.FullName).ToList() : [];
