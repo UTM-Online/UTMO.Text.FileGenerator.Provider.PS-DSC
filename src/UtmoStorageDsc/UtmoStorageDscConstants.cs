@@ -9,7 +9,6 @@ public static class UtmoStorageDscConstants
         public static class Properties
         {
             public const string DriveLetter = "DriveLetter";
-            public const string Ensure = "Ensure";
         }
     }
 }

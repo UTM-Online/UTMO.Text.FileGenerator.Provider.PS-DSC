@@ -8,6 +8,9 @@ using Constants = UtmoStorageDscConstants.XReadOnlyDrive;
 /// <summary>
 /// Represents the xReadOnlyDrive DSC resource from the UtmoStorageDsc module.
 /// This resource enforces a read-only disk state for the disk that owns a given drive letter.
+/// Use <see cref="UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums.DscEnsure.Present"/> to enforce
+/// read-only and <see cref="UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums.DscEnsure.Absent"/> to
+/// enforce writable.
 /// </summary>
 public sealed class ReadOnlyDriveResource : UtmoStorageDscBase, IReadOnlyDriveResource
 {
@@ -20,13 +23,6 @@ public sealed class ReadOnlyDriveResource : UtmoStorageDscBase, IReadOnlyDriveRe
     {
         get => this.PropertyBag.Get(Constants.Properties.DriveLetter);
         set => this.PropertyBag.Set(Constants.Properties.DriveLetter, value);
-    }
-
-    /// <inheritdoc />
-    public ReadOnlyDriveEnsure DriveEnsure
-    {
-        get => this.PropertyBag.Get<ReadOnlyDriveEnsure>(Constants.Properties.Ensure);
-        set => this.PropertyBag.Set(Constants.Properties.Ensure, value);
     }
 
     /// <summary>
@@ -70,5 +66,5 @@ public sealed class ReadOnlyDriveResource : UtmoStorageDscBase, IReadOnlyDriveRe
     public override string ResourceId => Constants.ResourceId;
 
     /// <inheritdoc />
-    public override bool HasEnsure => false;
+    public override bool HasEnsure => true;
 }

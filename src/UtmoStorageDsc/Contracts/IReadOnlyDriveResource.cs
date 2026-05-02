@@ -13,10 +13,4 @@ public interface IReadOnlyDriveResource : IDscResourceConfig
     /// internally to uppercase single-letter format.
     /// </summary>
     string DriveLetter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the desired ensure state for the drive.
-    /// Currently only <see cref="ReadOnlyDriveEnsure.ReadOnly"/> is supported.
-    /// </summary>
-    ReadOnlyDriveEnsure DriveEnsure { get; set; }
 }
