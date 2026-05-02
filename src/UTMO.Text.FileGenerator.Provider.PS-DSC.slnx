@@ -4,6 +4,7 @@
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.cChoco/UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.ChocoModule/UTMO.Text.FileGenerator.Provider.DSC.ChocoModule.csproj" />
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.WindowsCore/UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />
+    <Project Path="UtmoStorageDsc/UtmoStorageDsc.csproj" />
     <Project Path="WindowsDefenderDsc/WindowsDefenderDsc.csproj" />
   </Folder>
   <Folder Name="/Solution Folder/">

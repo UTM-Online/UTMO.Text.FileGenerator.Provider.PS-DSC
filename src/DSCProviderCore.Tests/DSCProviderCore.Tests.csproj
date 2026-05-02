@@ -26,6 +26,7 @@
         <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.AD-DSC\UTMO.Text.FileGenerator.Provider.DSC.AD-DSC.csproj" />
         <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.cChoco\UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
         <ProjectReference Include="..\UTMO.Text.FileGenerator.Provider.DSC.ChocoModule\UTMO.Text.FileGenerator.Provider.DSC.ChocoModule.csproj" />
+        <ProjectReference Include="..\UtmoStorageDsc\UtmoStorageDsc.csproj" />
         <ProjectReference Include="..\WindowsDefenderDsc\WindowsDefenderDsc.csproj" />
     </ItemGroup>
 

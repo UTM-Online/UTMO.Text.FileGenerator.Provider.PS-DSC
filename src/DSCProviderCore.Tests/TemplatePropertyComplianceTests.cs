@@ -25,6 +25,7 @@ public class TemplatePropertyComplianceTests
         yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.cChoco.cChocoConstants).Assembly; // cChoco
         yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.ChocoModule.Resources.ChocolateyPackageResource).Assembly; // ChocoModule
         yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.WindowsDefender.WindowsDefenderConstants).Assembly; // WindowsDefenderDsc
+        yield return typeof(UTMO.Text.FileGenerator.Provider.DSC.UtmoStorage.UtmoStorageDscConstants).Assembly; // UtmoStorageDsc
     }
 
     /// <summary>
