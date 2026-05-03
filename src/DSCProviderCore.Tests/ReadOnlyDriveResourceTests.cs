@@ -73,7 +73,7 @@ public class ReadOnlyDriveResourceTests
     public async Task Validate_WithNullDriveLetter_ReturnsError()
     {
         // Arrange
-        var resource = ReadOnlyDriveResource.Create("DataDisk", r => { /* DriveLetter not set */ });
+        var resource = ReadOnlyDriveResource.Create("DataDisk", r => { });
 
         // Act
         var errors = await resource.Validate();
