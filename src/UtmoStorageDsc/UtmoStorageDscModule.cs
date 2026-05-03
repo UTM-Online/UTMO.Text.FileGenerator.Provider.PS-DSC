@@ -10,7 +10,7 @@ public class UtmoStorageDsc : RequiredModule
 
     public override string ModuleName => "UtmoStorageDsc";
 
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "0.1.3";
 
     public static RequiredModule Instance { get; } = new UtmoStorageDsc();
 }
