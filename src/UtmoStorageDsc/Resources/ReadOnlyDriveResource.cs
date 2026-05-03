@@ -1,5 +1,6 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.UtmoStorage.Resources;
 
+using UTMO.Text.FileGenerator.Abstract;
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
 using UTMO.Text.FileGenerator.Provider.DSC.UtmoStorage.Contracts;
 using UTMO.Text.FileGenerator.Validators;
@@ -22,7 +23,15 @@ public sealed class ReadOnlyDriveResource : UtmoStorageDscBase, IReadOnlyDriveRe
     public string DriveLetter
     {
         get => this.PropertyBag.Get(Constants.Properties.DriveLetter);
-        set => this.PropertyBag.Set(Constants.Properties.DriveLetter, value);
+        set => this.PropertyBag.Set(Constants.Properties.DriveLetter, NormalizeDriveLetter(value));
+    }
+
+    private static string NormalizeDriveLetter(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return value;
+
+        return value.Trim().TrimEnd(':').ToUpperInvariant();
     }
 
     /// <summary>
@@ -58,6 +67,16 @@ public sealed class ReadOnlyDriveResource : UtmoStorageDscBase, IReadOnlyDriveRe
         var errors = this.ValidationBuilder()
             .ValidateStringNotNullOrEmpty(this.DriveLetter, nameof(this.DriveLetter))
             .errors;
+
+        if (!string.IsNullOrEmpty(this.DriveLetter) &&
+            (this.DriveLetter.Length != 1 || !char.IsAsciiLetterUpper(this.DriveLetter[0])))
+        {
+            errors.Add(new ValidationFailedException(
+                nameof(this.DriveLetter),
+                nameof(ReadOnlyDriveResource),
+                ValidationFailureType.InvalidConfiguration,
+                $"{nameof(this.DriveLetter)} must be a single letter A-Z."));
+        }
 
         return Task.FromResult(errors);
     }

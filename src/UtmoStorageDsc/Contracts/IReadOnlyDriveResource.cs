@@ -9,8 +9,8 @@ public interface IReadOnlyDriveResource : IDscResourceConfig
 {
     /// <summary>
     /// Gets or sets the drive letter to enforce a read-only disk state on.
-    /// Supports <c>X</c> or <c>X:</c> formats. Drive letters are normalized
-    /// internally to uppercase single-letter format.
+    /// Accepts a single letter (<c>X</c>) or letter-colon (<c>X:</c>) format.
+    /// The value is normalized to an uppercase single letter before storage.
     /// </summary>
     string DriveLetter { get; set; }
 }
