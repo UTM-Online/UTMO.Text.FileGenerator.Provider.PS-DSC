@@ -33,8 +33,9 @@ public class ReadOnlyDriveResourceTests
         var resource = ReadOnlyDriveResource.Create("DataDisk", r => r.DriveLetter = "E:");
 
         // Assert
-        Assert.IsInstanceOfType(resource.PropertyBag.ToLiquid(), typeof(Dictionary<string, object>));
-        var liquid = (Dictionary<string, object>)resource.PropertyBag.ToLiquid()!;
+        var rawLiquid = resource.PropertyBag.ToLiquid();
+        Assert.IsInstanceOfType(rawLiquid, typeof(Dictionary<string, object>));
+        var liquid = (Dictionary<string, object>)rawLiquid!;
         Assert.IsTrue(liquid.TryGetValue(Constants.Properties.DriveLetter, out var driveLetterValue));
         Assert.AreEqual("\"E\"", driveLetterValue);
     }
