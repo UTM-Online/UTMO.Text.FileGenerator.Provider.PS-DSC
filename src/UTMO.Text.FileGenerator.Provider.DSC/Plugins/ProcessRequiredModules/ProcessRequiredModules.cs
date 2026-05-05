@@ -21,6 +21,8 @@ public class ProcessRequiredModules : IPipelinePlugin
 
     public TimeSpan MaxRuntime => TimeSpan.FromMinutes(10);
 
+    public bool RequiresGeneration => true;
+
     public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         var manifestPath = Path.Join(this.Options.OutputPath, "Manifests", environment.EnvironmentName, "RequiredModule.Manifest.json");
@@ -30,20 +32,20 @@ public class ProcessRequiredModules : IPipelinePlugin
             this.Logger.LogError("Required Module Manifest not found at {ManifestPath}", manifestPath);
             return false;
         }
-        
+
         this.Logger.LogInformation("Starting Process Required Modules Plugin");
         var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var scriptPath = Path.Join(rootPath, "Scripts", ScriptConstants.ProcessRequiredModules);
-        
+
         string? stdErr = null;
-        
+
         var scriptArgs = $"-ExecutionPolicy Bypass -NoProfile -File {scriptPath} -ManifestPath \"{manifestPath}\" -OutputPath \"{this.Options.OutputPath}\"";
 
         if (this.Options is DscCliOptions {IsCiCd: false})
         {
             scriptArgs += " -NoArchive";
         }
-        
+
         try
         {
             var processInfo = new ProcessStartInfo
@@ -60,12 +62,12 @@ public class ProcessRequiredModules : IPipelinePlugin
             // Ensure PowerShell module path includes the current user's modules directory
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
             var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
-            
+
             if (!currentPSModulePath.Contains(userModulePath))
             {
                 processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
             }
-            
+
             // Ensure the process runs with the current user's environment
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
             processInfo.EnvironmentVariables["HOMEDRIVE"] = System.Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:";
@@ -74,14 +76,14 @@ public class ProcessRequiredModules : IPipelinePlugin
             processInfo.EnvironmentVariables["LOCALAPPDATA"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
 
             string? stdOut;
-        
+
             using (var process = Process.Start(processInfo))
             {
                 stdOut = await process?.StandardOutput.ReadToEndAsync()!;
                 stdErr = await process?.StandardError.ReadToEndAsync()!;
                 await process?.WaitForExitAsync()!;
             }
-        
+
             if (!string.IsNullOrWhiteSpace(stdErr))
             {
                 this.Logger.LogError("Error occurred while processing required modules:\r\n{Error}", stdErr);
@@ -100,9 +102,9 @@ public class ProcessRequiredModules : IPipelinePlugin
     }
 
     private ILogger<ProcessRequiredModules> Logger { get; }
-    
+
     private IGeneratorCliOptions Options { get; }
-    
+
     public IGeneralFileWriter? Writer { get; init; }
 
     public ITemplateGenerationEnvironment? Environment { get; init; }

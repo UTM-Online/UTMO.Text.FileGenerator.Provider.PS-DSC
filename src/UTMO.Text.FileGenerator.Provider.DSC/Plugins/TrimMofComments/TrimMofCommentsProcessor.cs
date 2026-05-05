@@ -18,6 +18,8 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
 
     public TimeSpan MaxRuntime => TimeSpan.FromMinutes(2);
 
+    public bool RequiresGeneration => true;
+
     public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
         this.Logger.LogInformation("Starting plugin: trim comments from MOF files");
@@ -52,7 +54,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
                 }
             }
         }
-        
+
         this.Logger.LogInformation("Finished plugin: trim comments from MOF files");
         return true;
     }
@@ -62,10 +64,10 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
     public ITemplateGenerationEnvironment? Environment { get; init; }
 
     public PluginPosition Position => PluginPosition.After;
-    
+
     private Regex HeaderMatcher = new Regex(@"(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
-    
+
     private string OutputPath { get; }
-    
+
     private ILogger<TrimMofCommentsProcessor> Logger { get; }
 }
