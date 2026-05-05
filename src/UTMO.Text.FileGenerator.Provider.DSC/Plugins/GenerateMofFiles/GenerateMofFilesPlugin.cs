@@ -49,7 +49,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
 
         Guard.StringNotNull(nameof(scriptConfig), scriptConfig);
-        
+
         this.Logger.LogTrace(LogMessages.ScriptConfigPath, scriptConfig);
 
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
@@ -67,7 +67,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
 
         Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
-        
+
         this.Logger.LogTrace(LogMessages.MofOutputPath, mofOutputFile);
 
         string? stdErr = null;
@@ -87,12 +87,12 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             // Ensure PowerShell module path includes the current user's modules directory
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
             var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
-            
+
             if (!currentPSModulePath.Contains(userModulePath))
             {
                 processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
             }
-            
+
             // Ensure the process runs with the current user's environment
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
             processInfo.EnvironmentVariables["HOMEDRIVE"] = System.Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:";
@@ -101,20 +101,20 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             processInfo.EnvironmentVariables["LOCALAPPDATA"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
 
             string? stdOut;
-            
+
             using (var process = Process.Start(processInfo))
             {
                 stdOut = await process?.StandardOutput.ReadToEndAsync()!;
                 stdErr = await process?.StandardError.ReadToEndAsync()!;
                 await process?.WaitForExitAsync()!;
             }
-            
+
             this.Logger.LogTrace(LogMessages.MofGenerationStdOut, stdOut ?? "None");
-            
+
             if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
             {
                 stdErr = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
-                
+
                 this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
                 stdErr = null;
                 return false;
@@ -133,7 +133,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         catch (Exception ex)
         {
             string parsedError;
-            
+
             if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
             {
                 parsedError = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
@@ -142,7 +142,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             {
                 parsedError = stdErr ?? ex.Message;
             }
-            
+
             this.Logger.LogError(LogMessages.MofGenerationException, ex.GetType().Name, model.ResourceName, parsedError);
             return false;
         }
@@ -157,8 +157,10 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     private string OutputPath { get; init; }
 
     public TimeSpan MaxRuntime { get; }
-    
+
+    public bool RequiresGeneration => true;
+
     private ILogger<GenerateMofFilesPlugin> Logger { get; }
-    
+
     private readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
 }

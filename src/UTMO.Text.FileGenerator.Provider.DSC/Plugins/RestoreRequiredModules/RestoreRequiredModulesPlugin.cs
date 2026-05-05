@@ -22,10 +22,12 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
     }
 
     private ILogger<RestoreRequiredModulesPlugin> Logger { get; }
-    
+
     private IGeneratorCliOptions Options { get; }
 
     public TimeSpan MaxRuntime { get; }
+
+    public bool RequiresGeneration => true;
 
     public async Task<bool> ProcessPlugin(ITemplateGenerationEnvironment environment)
     {
@@ -43,7 +45,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             this.Logger.LogError("Required Module Manifest not found at {ManifestPath}", manifestPath);
             return false;
         }
-        
+
         this.Logger.LogInformation(LogMessages.StartingRestoreRequiredModules);
         var scriptPath = Path.Combine(AppContext.BaseDirectory, "Scripts", ScriptConstants.RestoreRequiredModules);
 
@@ -78,7 +80,7 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             {
                 processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath}{Path.PathSeparator}{currentPSModulePath}";
             }
-            
+
             // Ensure the process runs with the current user's environment
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
             processInfo.EnvironmentVariables["HOMEDRIVE"] = System.Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:";
@@ -89,18 +91,18 @@ public class RestoreRequiredModulesPlugin : IPipelinePlugin
             this.Logger.LogDebug("Starting Windows PowerShell process for module restoration");
 
             process = this.StartProcess(processInfo);
-            
+
             stdOutTask = this.ReadStandardOutputAsync(process);
             stdErrTask = this.ReadStandardErrorAsync(process);
-            
+
             using var cancellationTokenSource = new CancellationTokenSource(this.MaxRuntime);
             await this.WaitForExitAsync(process, cancellationTokenSource.Token);
-            
+
             var stdOut = await this.ReadStreamSafelyAsync(stdOutTask, "stdout");
             var stdErr = await this.ReadStreamSafelyAsync(stdErrTask, "stderr");
-            
+
             this.Logger.LogTrace(LogMessages.RestoreModulesStdOut, stdOut);
-            
+
             if (process.ExitCode != 0)
             {
                 var errorMessage = !string.IsNullOrWhiteSpace(stdErr) ? stdErr : $"Process exited with code {process.ExitCode}";
