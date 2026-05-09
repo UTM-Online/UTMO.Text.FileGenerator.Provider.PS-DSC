@@ -5,9 +5,7 @@ param
     [Parameter(Mandatory=$false)]
     [string]$Username = "homenet\HN0-SVC-AZAutomatRW",
     [Parameter(Mandatory=$true)]
-    [string]$Password,
-    [Parameter(Mandatory=$false)]
-    [switch]$ShowVerbose
+    [string]$Password
 )
 
 Write-Output "Gathering a list of machines"
@@ -21,9 +19,17 @@ Write-Output "Validating Endpoint Availability"
 foreach($machine in $machines)
 {
     Write-Host "Testing Host ${machine}: " -NoNewline
-    ($TestResult = Test-NetConnection -ComputerName $machine -WarningAction SilentlyContinue) | out-null
+    $TestResult = $null
+    try
+    {
+        $TestResult = Test-WSMan -ComputerName $machine -ErrorAction Stop
+    }
+    catch
+    {
+        $TestResult = $_
+    }
 
-    if(-not $TestResult.PingSucceeded)
+    if($null -eq $TestResult -or $TestResult -is [System.Management.Automation.ErrorRecord])
     {
         $machines = $machines | ?{$_ -ne $machine}
         Write-Host "Fail!" -ForegroundColor Red
@@ -58,26 +64,8 @@ else
     write-host "Successfully authenticated with domain $($domain.name)"
 }
 
-$dscParams = @{ComputerName = $machines; Wait = $true; Credential = $creds; ErrorAction = "Continue"}
-
-if($ShowVerbose -eq $true)
-{
-    $dscParams.Add("Verbose",$true)
-}
-
 Write-Output "Setting DSC LCM"
 
-Set-DscLocalConfigurationManager -Path $Path -Force -Credential $creds -ErrorAction Continue
-
-Write-Output "Updating DSC LCM"
-
-Update-DscConfiguration @dscParams
-
-$dscParams.Add("Force",$true)
-$dscParams.Add("UseExisting",$true)
-
-Write-Output "Starting DSC LCM"
-
-Start-DscConfiguration @dscParams
+Set-DscLocalConfigurationManager -ComputerName $machines -Path $Path -Credential $creds -Force -Verbose
 
 Write-Output "Deployment Completed Successfully"
