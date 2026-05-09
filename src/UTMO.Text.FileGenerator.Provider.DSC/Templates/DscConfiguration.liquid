@@ -42,3 +42,4 @@ $CompileParameters = @{ OutputPath = $OutputPath }
 {% endif %}{{ FullName }} @CompileParameters
 Rename-Item -Path $(Join-Path -Path $OutputPath -ChildPath "localhost.mof") -NewName "{{ FullName }}.mof"
 {% endblock %}
+New-DscChecksum -Path $(Join-Path -Path $OutputPath -ChildPath "{{ FullName }}.mof") -OutPath $(Join-Path -Path $OutputPath -ChildPath "{{ FullName }}.checksum")
