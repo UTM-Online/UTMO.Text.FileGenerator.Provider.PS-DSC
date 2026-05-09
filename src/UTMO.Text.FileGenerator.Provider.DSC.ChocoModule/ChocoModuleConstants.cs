@@ -39,6 +39,8 @@ public static class ChocoModuleConstants
             public const string Source = "Source";
 
             public const string UpdateOnly = "UpdateOnly";
+
+            public const string ChocolateyOptions = "ChocolateyOptions";
         }
     }
 

@@ -36,7 +36,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
     {
         this._ownerType = ownerType;
     }
-    
+
     public void Set<T>(string key, T value, [CallerMemberName] string? callerMemberName = null)
     {
         if (value is null)
@@ -80,14 +80,14 @@ public class DscConfigurationPropertyBag : ILiquidizable
             }
         }
     }
-    
+
     private void CheckAndMarkUnquotedEnum(string? propertyName, string key)
     {
         if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(key))
         {
             return;
         }
-        
+
         try
         {
             // Prefer using the known owner type to resolve the property
@@ -165,7 +165,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
             // If reflection fails, just continue without marking it as unquoted
         }
     }
-    
+
     private void CheckAndMarkScriptBlock(string? propertyName, string key)
     {
         if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(key))
@@ -261,10 +261,10 @@ public class DscConfigurationPropertyBag : ILiquidizable
         {
             this.Logger?.Fatal(LogMessages.MandatoryPropertyBagParameterNameNull, true, 22, nameof(key));
         }
-        
+
         this._propertyBag[key] = string.Empty;
     }
-    
+
     public T Get<T>(string key, [CallerFilePath] string caller = "")
     {
         try
@@ -276,13 +276,13 @@ public class DscConfigurationPropertyBag : ILiquidizable
 
             var targetType = typeof(T);
             var underlyingType = Nullable.GetUnderlyingType(targetType);
-            
+
             // Check if T is an enum or a nullable enum
             if (targetType.IsEnum || (underlyingType != null && underlyingType.IsEnum))
             {
                 return this.SafeParseEnum<T>(value.ToString()!);
             }
-            
+
             return (T)value;
         }
         catch (NullReferenceException)
@@ -302,7 +302,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
             throw;
         }
     }
-    
+
     #pragma warning disable CS8601 // Possible null reference assignment.
     private T SafeParseEnum<T>(string value, T defaultValue = default)
         #pragma warning restore CS8601 // Possible null reference assignment.
@@ -311,7 +311,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
         {
             var targetType = typeof(T);
             var underlyingType = Nullable.GetUnderlyingType(targetType);
-            
+
             // If T is a nullable enum, parse to the underlying enum type first
             if (underlyingType != null && underlyingType.IsEnum)
             {
@@ -319,7 +319,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 // Boxing is necessary to convert from the underlying enum type to Nullable<TEnum>
                 return (T)(object)enumValue!;
             }
-            
+
             // T is a non-nullable enum
             return (T) Enum.Parse(typeof(T), value);
         }
@@ -328,7 +328,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
             return defaultValue!;
         }
     }
-    
+
     public string Get(string key, [CallerFilePath] string caller = "")
     {
         // ReSharper disable once ExplicitCallerInfoArgument
@@ -360,7 +360,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     }
                 }
             }
-            
+
             switch (prop.Value)
             {
                 case IPowerShellExpression powerShellExpression:
@@ -436,6 +436,18 @@ public class DscConfigurationPropertyBag : ILiquidizable
                     liquidObject[prop.Key] = $"\"{ch}\"";
                     break;
                 }
+                case Dictionary<string, string> hashtable:
+                {
+                    // Render as a multi-line PowerShell hashtable matching DSC resource property indentation.
+                    // Properties sit at 12 spaces in the template; entries are indented 4 more (16 spaces),
+                    // and the closing brace returns to 12 spaces.
+                    // Values use single quotes to match the PowerShell DSC convention for hashtable literals.
+                    const string propertyIndent = "            "; // 12 spaces
+                    const string entryIndent    = "                "; // 16 spaces
+                    var entries = string.Join("\n", hashtable.Select(kvp => $"{entryIndent}{kvp.Key} = '{kvp.Value}'"));
+                    liquidObject[prop.Key] = $"@{{\n{entries}\n{propertyIndent}}}";
+                    break;
+                }
                 default:
                 {
                     // For non-string values, just pass through as-is
@@ -444,7 +456,7 @@ public class DscConfigurationPropertyBag : ILiquidizable
                 }
             }
         }
-        
+
         return liquidObject;
     }
 }

@@ -39,6 +39,17 @@ public class ChocolateyPackageResource : ChocoModuleBase, IChocolateyPackageReso
         set => this.PropertyBag.Set(Constants.Parameters.UpdateOnly, value);
     }
 
+    private Dictionary<string, string>? _chocolateyOptions;
+
+    /// <inheritdoc />
+    public IChocolateyPackageResource AddOption(string key, string value)
+    {
+        this._chocolateyOptions ??= new Dictionary<string, string>();
+        this._chocolateyOptions[key] = value;
+        this.PropertyBag.Set(Constants.Parameters.ChocolateyOptions, this._chocolateyOptions);
+        return this;
+    }
+
     public static ChocolateyPackageResource Create(string name, Action<IChocolateyPackageResource> configure)
     {
         var resource = new ChocolateyPackageResource(name);
