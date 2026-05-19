@@ -66,7 +66,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 throw new InvalidOperationException("MOF file type path segment cannot be rooted.");
             }
 
-            mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeFileType);
+            mofOutputFile = Path.Join(this.OutputPath, "MOF", safeFileType);
         }
         catch (Exception)
         {
@@ -230,7 +230,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             throw new InvalidOperationException("Temporary MOF file type path segment cannot be rooted.");
         }
 
-        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", safeFileType);
+        return Path.Join(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", safeFileType);
     }
 
     private async Task CopyGeneratedMofIfChangedAsync(ITemplateModel model, string sourceDirectory, string destinationDirectory)
@@ -270,7 +270,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             throw new InvalidOperationException("Generated MOF file name segment cannot be rooted.");
         }
 
-        return Path.Combine(outputDirectory, safeFileName);
+        return Path.Join(outputDirectory, safeFileName);
     }
 
     private string NormalizePathSegment(string segment)

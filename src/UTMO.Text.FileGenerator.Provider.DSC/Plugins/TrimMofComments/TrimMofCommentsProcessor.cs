@@ -32,7 +32,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
                 throw new InvalidOperationException("MOF resource type path segment cannot be rooted.");
             }
 
-            var mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeResourceType);
+            var mofOutputFile = Path.Join(this.OutputPath, "MOF", safeResourceType);
 
             switch (resourceType)
             {
