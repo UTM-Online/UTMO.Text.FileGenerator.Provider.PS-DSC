@@ -173,6 +173,7 @@ public class GenerateMofFilesPluginTests
 
     private static string GetMofFilePath(string outputRoot, TestTemplateModel model)
     {
+        var normalizedOutputRoot = NormalizeOutputRoot(outputRoot);
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
         var safeFileType = Path.GetFileName(fileType);
         var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
@@ -181,14 +182,15 @@ public class GenerateMofFilesPluginTests
         var safeFileName = Path.GetFileName(fileName);
         var safeMofSegment = EnsureNotRooted("MOF");
 
-        return Path.Combine(outputRoot, safeMofSegment, EnsureNotRooted(safeFileType), EnsureNotRooted(safeFileName));
+        return Path.Join(normalizedOutputRoot, safeMofSegment, EnsureNotRooted(safeFileType), EnsureNotRooted(safeFileName));
     }
 
     private static string CreateOutputRoot()
     {
         var uniqueFolderName = Guid.NewGuid().ToString("N");
         var safeUniqueFolderName = EnsureNotRooted(Path.GetFileName(uniqueFolderName));
-        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), safeUniqueFolderName);
+        var safeTestFolderName = EnsureNotRooted(nameof(GenerateMofFilesPluginTests));
+        return Path.Join(Path.GetTempPath(), safeTestFolderName, safeUniqueFolderName);
     }
 
     private static void CleanupOutputRoot(string outputRoot)
@@ -224,7 +226,7 @@ public class GenerateMofFilesPluginTests
             var safeFileName = Path.GetFileName(fileName);
             var validatedFileName = EnsureNotRooted(safeFileName);
 
-            return Path.Combine(outputDirectory, validatedFileName);
+            return Path.Join(outputDirectory, validatedFileName);
         }
     }
 
@@ -280,5 +282,15 @@ public class GenerateMofFilesPluginTests
         }
 
         return segment;
+    }
+
+    private static string NormalizeOutputRoot(string outputRoot)
+    {
+        if (string.IsNullOrWhiteSpace(outputRoot))
+        {
+            throw new ArgumentException("Output root cannot be null or whitespace.", nameof(outputRoot));
+        }
+
+        return Path.GetFullPath(outputRoot);
     }
 }
