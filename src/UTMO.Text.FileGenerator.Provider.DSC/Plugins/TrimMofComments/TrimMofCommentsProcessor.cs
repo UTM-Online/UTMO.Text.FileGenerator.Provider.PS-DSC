@@ -26,7 +26,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         foreach (var resource in environment.Resources)
         {
             var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-            var mofOutputFile = Path.Combine(this.OutputPath, $@"MOF\{resourceType}");
+            var mofOutputFile = Path.Combine(this.OutputPath, "MOF", resourceType);
 
             switch (resourceType)
             {
@@ -42,7 +42,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
                 }
             }
 
-            if (resource is IManifestProducer producer && producer.GenerateManifest)
+            if (resource is UTMO.Text.FileGenerator.Abstract.Contracts.IManifestProducer producer && producer.GenerateManifest)
             {
                 Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
                 Guard.Requires<InvalidOperationException>(File.Exists(mofOutputFile), $"!ERROR! MOF output file does not exist: {mofOutputFile}");

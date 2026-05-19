@@ -16,6 +16,8 @@ using UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 {
+    private const string GenerationDatePlaceholder = "@GenerationDate=__UTMO_IGNORED__";
+
     public GenerateMofFilesPlugin(IGeneralFileWriter writer, IGeneratorCliOptions options, ILogger<GenerateMofFilesPlugin> logger)
     {
         this.Writer = writer;
@@ -58,7 +60,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.Combine(this.OutputPath, $@"MOF\{fileType}");
+            mofOutputFile = Path.Combine(this.OutputPath, "MOF", fileType);
         }
         catch (Exception)
         {
@@ -70,13 +72,61 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         this.Logger.LogTrace(LogMessages.MofOutputPath, mofOutputFile);
 
+        var tempMofOutputPath = this.CreateTemporaryOutputPath(fileType);
+
+        try
+        {
+            this.EnsureDirectoryExists(tempMofOutputPath);
+            var generated = await this.GenerateMofAsync(model, scriptConfig, tempMofOutputPath);
+
+            if (!generated)
+            {
+                return false;
+            }
+
+            await this.CopyGeneratedMofIfChangedAsync(model, tempMofOutputPath, mofOutputFile);
+
+            return true;
+        }
+        finally
+        {
+            if (this.DirectoryExists(tempMofOutputPath))
+            {
+                this.DeleteDirectory(tempMofOutputPath);
+            }
+        }
+    }
+
+    public IGeneralFileWriter Writer { get; init; }
+
+    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+
+    public PluginPosition Position => PluginPosition.After;
+
+    private string OutputPath { get; init; }
+
+    public TimeSpan MaxRuntime { get; }
+
+    public bool RequiresGeneration => true;
+
+    private ILogger<GenerateMofFilesPlugin> Logger { get; }
+
+    private readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private readonly Regex HeaderMatcher = new(@"(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
+
+    private readonly Regex GenerationDateMatcher = new(@"(?m)^(?<Prefix>\s*@GenerationDate\s*=\s*).*$", RegexOptions.Compiled);
+
+    protected virtual async Task<bool> GenerateMofAsync(ITemplateModel model, string scriptConfig, string mofOutputFile)
+    {
         string? stdErr = null;
+
         try
         {
             var processInfo = new ProcessStartInfo
                               {
                                   FileName = "powershell.exe", // Use Windows PowerShell explicitly
-                                  Arguments = $"-ExecutionPolicy Bypass -NoProfile -File {scriptConfig} -OutputPath {mofOutputFile}",
+                                  Arguments = $"-ExecutionPolicy Bypass -NoProfile -File \"{scriptConfig}\" -OutputPath \"{mofOutputFile}\"",
                                   RedirectStandardOutput = true,
                                   RedirectStandardError = true,
                                   UseShellExecute = false,
@@ -84,7 +134,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                                   WorkingDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), // Set working directory to user profile
                               };
 
-            // Ensure PowerShell module path includes the current user's modules directory
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
             var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
 
@@ -93,7 +142,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
             }
 
-            // Ensure the process runs with the current user's environment
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
             processInfo.EnvironmentVariables["HOMEDRIVE"] = System.Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:";
             processInfo.EnvironmentVariables["HOMEPATH"] = System.Environment.GetEnvironmentVariable("HOMEPATH") ?? "\\";
@@ -102,11 +150,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
             string? stdOut;
 
-            using (var process = Process.Start(processInfo))
+            using (var process = this.StartProcess(processInfo))
             {
-                stdOut = await process?.StandardOutput.ReadToEndAsync()!;
-                stdErr = await process?.StandardError.ReadToEndAsync()!;
-                await process?.WaitForExitAsync()!;
+                stdOut = await this.ReadStandardOutputAsync(process);
+                stdErr = await this.ReadStandardErrorAsync(process);
+                await this.WaitForExitAsync(process);
             }
 
             this.Logger.LogTrace(LogMessages.MofGenerationStdOut, stdOut ?? "None");
@@ -116,7 +164,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                 stdErr = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
 
                 this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
-                stdErr = null;
                 return false;
             }
 
@@ -127,7 +174,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             }
 
             this.Logger.LogTrace(LogMessages.MofGenerationSucceeded, model.ResourceName);
-
             return true;
         }
         catch (Exception ex)
@@ -148,19 +194,121 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
     }
 
-    public IGeneralFileWriter Writer { get; init; }
+    protected virtual Process StartProcess(ProcessStartInfo processInfo)
+    {
+        var process = new Process { StartInfo = processInfo };
+        process.Start();
+        return process;
+    }
 
-    public ITemplateGenerationEnvironment Environment { get; init; } = null!;
+    protected virtual Task<string> ReadStandardOutputAsync(Process process)
+    {
+        return process.StandardOutput.ReadToEndAsync();
+    }
 
-    public PluginPosition Position => PluginPosition.After;
+    protected virtual Task<string> ReadStandardErrorAsync(Process process)
+    {
+        return process.StandardError.ReadToEndAsync();
+    }
 
-    private string OutputPath { get; init; }
+    protected virtual Task WaitForExitAsync(Process process)
+    {
+        return process.WaitForExitAsync();
+    }
 
-    public TimeSpan MaxRuntime { get; }
+    private string CreateTemporaryOutputPath(string fileType)
+    {
+        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", fileType);
+    }
 
-    public bool RequiresGeneration => true;
+    private async Task CopyGeneratedMofIfChangedAsync(ITemplateModel model, string sourceDirectory, string destinationDirectory)
+    {
+        var sourceFile = this.GetGeneratedMofFilePath(model, sourceDirectory);
+        Guard.Requires<FileNotFoundException>(this.FileExists(sourceFile), $"Generated MOF output file does not exist: {sourceFile}");
 
-    private ILogger<GenerateMofFilesPlugin> Logger { get; }
+        var destinationFile = this.GetGeneratedMofFilePath(model, destinationDirectory);
+        if (this.FileExists(destinationFile))
+        {
+            var existingContent = await this.ReadAllTextAsync(destinationFile);
+            var generatedContent = await this.ReadAllTextAsync(sourceFile);
 
-    private readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
+            if (this.NormalizeMofContent(existingContent) == this.NormalizeMofContent(generatedContent)
+                || this.StripHeaderComment(existingContent) == this.StripHeaderComment(generatedContent))
+            {
+                this.Logger.LogInformation("Skipping MOF overwrite for {ResourceName} because only the PowerShell DSC generation timestamp changed.", model.ResourceName);
+                return;
+            }
+        }
+
+        var destinationFolder = Path.GetDirectoryName(destinationFile);
+        Guard.StringNotNull(nameof(destinationFolder), destinationFolder);
+        this.EnsureDirectoryExists(destinationFolder!);
+        this.CopyFile(sourceFile, destinationFile, overwrite: true);
+    }
+
+    private string GetGeneratedMofFilePath(ITemplateModel model, string outputDirectory)
+    {
+        var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
+            ? $"{model.ResourceName}.mof"
+            : $"{model.ResourceName}.meta.mof";
+
+        return Path.Combine(outputDirectory, fileName);
+    }
+
+    private string NormalizeMofContent(string content)
+    {
+        var normalizedContent = content.Replace("\r\n", "\n");
+        if (!this.HeaderMatcher.IsMatch(normalizedContent))
+        {
+            return normalizedContent.Trim();
+        }
+
+        var match = this.HeaderMatcher.Match(normalizedContent);
+        var header = match.Groups["comments"].Value;
+        var body = match.Groups["Body"].Value;
+
+        header = this.GenerationDateMatcher.Replace(header, "${Prefix}" + GenerationDatePlaceholder);
+        return $"{header}\n{body}".Trim();
+    }
+
+    private string StripHeaderComment(string content)
+    {
+        var normalizedContent = content.Replace("\r\n", "\n");
+        if (!this.HeaderMatcher.IsMatch(normalizedContent))
+        {
+            return normalizedContent.Trim();
+        }
+
+        return this.HeaderMatcher.Match(normalizedContent).Groups["Body"].Value.Trim();
+    }
+
+    protected virtual Task<string> ReadAllTextAsync(string path)
+    {
+        return File.ReadAllTextAsync(path);
+    }
+
+    protected virtual bool FileExists(string path)
+    {
+        return File.Exists(path);
+    }
+
+    protected virtual void EnsureDirectoryExists(string path)
+    {
+        Directory.CreateDirectory(path);
+    }
+
+    protected virtual void CopyFile(string sourcePath, string destinationPath, bool overwrite)
+    {
+        File.Copy(sourcePath, destinationPath, overwrite);
+    }
+
+    protected virtual bool DirectoryExists(string path)
+    {
+        return Directory.Exists(path);
+    }
+
+    protected virtual void DeleteDirectory(string path)
+    {
+        Directory.Delete(path, recursive: true);
+    }
 }
