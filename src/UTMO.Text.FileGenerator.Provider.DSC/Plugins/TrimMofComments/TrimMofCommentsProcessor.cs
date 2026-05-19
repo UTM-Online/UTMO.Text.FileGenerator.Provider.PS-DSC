@@ -27,24 +27,16 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         {
             var resourceType = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
             var mofOutputFile = Path.Join(this.OutputPath, "MOF", resourceType);
-            string fileName;
-
-            switch (resourceType)
+            var fileName = resourceType switch
             {
-                case "Computers":
-                {
-                    fileName = this.EnsureFileNameOnly($"{resource.ResourceName}.meta.mof", nameof(resource.ResourceName));
-                    break;
-                }
-                case "Configurations":
-                {
-                    fileName = this.EnsureFileNameOnly($"{resource.ResourceName}.mof", nameof(resource.ResourceName));
-                    break;
-                }
-                default:
-                {
-                    continue;
-                }
+                "Computers" => this.EnsureFileNameOnly($"{resource.ResourceName}.meta.mof", nameof(resource.ResourceName)),
+                "Configurations" => this.EnsureFileNameOnly($"{resource.ResourceName}.mof", nameof(resource.ResourceName)),
+                _ => string.Empty,
+            };
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                continue;
             }
 
             mofOutputFile = Path.Join(mofOutputFile, fileName);

@@ -113,7 +113,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     private static readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
 
-    private static readonly Regex HeaderMatcher = new(@"^\s*(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
+    private static readonly Regex HeaderMatcher = new(@"^\s*(?<comments>\/\*[\s\S]*?\*\/)\s*(?<Body>[\s\S]*)", RegexOptions.Compiled);
 
     private static readonly Regex GenerationDateMatcher = new(@"(?m)^(?<Prefix>\s*@GenerationDate\s*=\s*).*$", RegexOptions.Compiled);
 
