@@ -26,7 +26,8 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         foreach (var resource in environment.Resources)
         {
             var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-            var mofOutputFile = Path.Combine(this.OutputPath, "MOF", resourceType);
+            var safeResourceType = resourceType.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeResourceType);
 
             switch (resourceType)
             {

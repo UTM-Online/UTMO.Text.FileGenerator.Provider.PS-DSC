@@ -174,16 +174,19 @@ public class GenerateMofFilesPluginTests
     private static string GetMofFilePath(string outputRoot, TestTemplateModel model)
     {
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+        var safeFileType = Path.GetFileName(fileType);
         var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
             ? $"{model.ResourceName}.mof"
             : $"{model.ResourceName}.meta.mof";
+        var safeFileName = Path.GetFileName(fileName);
 
-        return Path.Combine(outputRoot, "MOF", fileType, fileName);
+        return Path.Combine(outputRoot, "MOF", safeFileType, safeFileName);
     }
 
     private static string CreateOutputRoot()
     {
-        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), Guid.NewGuid().ToString("N"));
+        var uniqueFolderName = Path.GetFileName(Guid.NewGuid().ToString("N"));
+        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), uniqueFolderName);
     }
 
     private static void CleanupOutputRoot(string outputRoot)
@@ -216,8 +219,9 @@ public class GenerateMofFilesPluginTests
             var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
                 ? $"{model.ResourceName}.mof"
                 : $"{model.ResourceName}.meta.mof";
+            var safeFileName = Path.GetFileName(fileName);
 
-            return Path.Combine(outputDirectory, fileName);
+            return Path.Combine(outputDirectory, safeFileName);
         }
     }
 
@@ -249,7 +253,8 @@ public class GenerateMofFilesPluginTests
 
         public string ProduceOutputPath(string basePath)
         {
-            return Path.Combine(basePath, $"{this.ResourceName}.ps1");
+            var safeFileName = Path.GetFileName($"{this.ResourceName}.ps1");
+            return Path.Combine(basePath, safeFileName);
         }
 
         public ITemplateModel AddAdditionalProperty<T>(string key, T value)

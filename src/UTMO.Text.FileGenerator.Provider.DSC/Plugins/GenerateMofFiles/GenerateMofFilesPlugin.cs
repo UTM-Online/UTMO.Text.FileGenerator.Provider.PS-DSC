@@ -60,7 +60,8 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            mofOutputFile = Path.Combine(this.OutputPath, "MOF", fileType);
+            var safeFileType = this.NormalizePathSegment(fileType);
+            mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeFileType);
         }
         catch (Exception)
         {
@@ -218,7 +219,8 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     private string CreateTemporaryOutputPath(string fileType)
     {
-        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", fileType);
+        var safeFileType = this.NormalizePathSegment(fileType);
+        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", safeFileType);
     }
 
     private async Task CopyGeneratedMofIfChangedAsync(ITemplateModel model, string sourceDirectory, string destinationDirectory)
@@ -252,7 +254,24 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             ? $"{model.ResourceName}.mof"
             : $"{model.ResourceName}.meta.mof";
 
-        return Path.Combine(outputDirectory, fileName);
+        var safeFileName = this.EnsureFileNameOnly(fileName, nameof(model.ResourceName));
+        return Path.Combine(outputDirectory, safeFileName);
+    }
+
+    private string NormalizePathSegment(string segment)
+    {
+        var normalized = segment.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return this.EnsureFileNameOnly(normalized, nameof(segment));
+    }
+
+    private string EnsureFileNameOnly(string value, string paramName)
+    {
+        if (Path.IsPathRooted(value) || value != Path.GetFileName(value))
+        {
+            throw new ArgumentException($"Path segment '{value}' is not a valid file name.", paramName);
+        }
+
+        return value;
     }
 
     private string NormalizeMofContent(string content)
