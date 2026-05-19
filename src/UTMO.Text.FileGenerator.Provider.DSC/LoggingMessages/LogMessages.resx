@@ -46,6 +46,9 @@ Error Stream: {StandardError}</value>
     <data name="MofGenerationSucceeded" xml:space="preserve">
         <value>Successfully generated the MOF file for {ResourceName}</value>
     </data>
+    <data name="MofPreservedDueToTimestampOnlyChange" xml:space="preserve">
+        <value>Skipping MOF overwrite for {ResourceName} because only the PowerShell DSC generation timestamp changed.</value>
+    </data>
     <data name="DscPropertyBagUnhandledException" xml:space="preserve">
         <value>Encountered Unhandled Exception Fetching a property from the property bag. Exception Message: {ExceptionMessage}</value>
     </data>

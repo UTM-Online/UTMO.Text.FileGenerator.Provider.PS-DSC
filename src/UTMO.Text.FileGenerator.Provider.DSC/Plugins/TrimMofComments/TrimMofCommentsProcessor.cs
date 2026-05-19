@@ -25,30 +25,31 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         this.Logger.LogInformation("Starting plugin: trim comments from MOF files");
         foreach (var resource in environment.Resources)
         {
-            var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-            var safeResourceType = resourceType.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            if (Path.IsPathRooted(safeResourceType))
-            {
-                throw new InvalidOperationException("MOF resource type path segment cannot be rooted.");
-            }
-
-            var mofOutputFile = Path.Join(this.OutputPath, "MOF", safeResourceType);
+            var resourceType = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+            var mofOutputFile = Path.Join(this.OutputPath, "MOF", resourceType);
+            string fileName;
 
             switch (resourceType)
             {
                 case "Computers":
                 {
-                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.meta.mof");
+                    fileName = this.EnsureFileNameOnly($"{resource.ResourceName}.meta.mof", nameof(resource.ResourceName));
                     break;
                 }
                 case "Configurations":
                 {
-                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.mof");
+                    fileName = this.EnsureFileNameOnly($"{resource.ResourceName}.mof", nameof(resource.ResourceName));
                     break;
+                }
+                default:
+                {
+                    continue;
                 }
             }
 
-            if (resource is UTMO.Text.FileGenerator.Abstract.Contracts.IManifestProducer producer && producer.GenerateManifest)
+            mofOutputFile = Path.Join(mofOutputFile, fileName);
+
+            if (resource is IManifestProducer producer && producer.GenerateManifest)
             {
                 Guard.StringNotNull(nameof(mofOutputFile), mofOutputFile);
                 Guard.Requires<InvalidOperationException>(File.Exists(mofOutputFile), $"!ERROR! MOF output file does not exist: {mofOutputFile}");
@@ -76,4 +77,14 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
     private string OutputPath { get; }
 
     private ILogger<TrimMofCommentsProcessor> Logger { get; }
+
+    private string EnsureFileNameOnly(string value, string paramName)
+    {
+        if (Path.IsPathRooted(value) || value != Path.GetFileName(value))
+        {
+            throw new ArgumentException($"Path segment '{value}' is not a valid file name.", paramName);
+        }
+
+        return value;
+    }
 }

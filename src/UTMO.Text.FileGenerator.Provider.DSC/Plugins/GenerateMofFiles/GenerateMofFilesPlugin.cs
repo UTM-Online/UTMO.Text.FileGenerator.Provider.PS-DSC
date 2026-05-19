@@ -60,13 +60,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
         try
         {
-            var safeFileType = this.NormalizePathSegment(fileType);
-            if (Path.IsPathRooted(safeFileType))
-            {
-                throw new InvalidOperationException("MOF file type path segment cannot be rooted.");
-            }
-
-            mofOutputFile = Path.Join(this.OutputPath, "MOF", safeFileType);
+            mofOutputFile = Path.Join(this.OutputPath, "MOF", fileType);
         }
         catch (Exception)
         {
@@ -117,11 +111,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     private ILogger<GenerateMofFilesPlugin> Logger { get; }
 
-    private readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex ErrorParser = new(@"^(?<ErrorText>(?<Source>.*?)\s:\s(?<Message>.*?))(?:\vAt\v)", RegexOptions.Compiled | RegexOptions.Singleline);
 
-    private readonly Regex HeaderMatcher = new(@"(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
+    private static readonly Regex HeaderMatcher = new(@"^\s*(?<comments>\/\*[\s\S]*?\*\/)\v*(?<Body>[\s\S]*)", RegexOptions.Compiled);
 
-    private readonly Regex GenerationDateMatcher = new(@"(?m)^(?<Prefix>\s*@GenerationDate\s*=\s*).*$", RegexOptions.Compiled);
+    private static readonly Regex GenerationDateMatcher = new(@"(?m)^(?<Prefix>\s*@GenerationDate\s*=\s*).*$", RegexOptions.Compiled);
 
     protected virtual async Task<bool> GenerateMofAsync(ITemplateModel model, string scriptConfig, string mofOutputFile)
     {
@@ -165,9 +159,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
             this.Logger.LogTrace(LogMessages.MofGenerationStdOut, stdOut ?? "None");
 
-            if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
+            if (!string.IsNullOrWhiteSpace(stdErr) && ErrorParser.IsMatch(stdErr))
             {
-                stdErr = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
+                stdErr = ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
 
                 this.Logger.LogError(LogMessages.MofGenerationFailed, model.ResourceName, stdErr);
                 return false;
@@ -186,9 +180,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         {
             string parsedError;
 
-            if (!string.IsNullOrWhiteSpace(stdErr) && this.ErrorParser.IsMatch(stdErr))
+            if (!string.IsNullOrWhiteSpace(stdErr) && ErrorParser.IsMatch(stdErr))
             {
-                parsedError = this.ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
+                parsedError = ErrorParser.Match(stdErr).Groups["ErrorText"].Value;
             }
             else
             {
@@ -224,13 +218,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
     private string CreateTemporaryOutputPath(string fileType)
     {
-        var safeFileType = this.NormalizePathSegment(fileType);
-        if (Path.IsPathRooted(safeFileType))
-        {
-            throw new InvalidOperationException("Temporary MOF file type path segment cannot be rooted.");
-        }
-
-        return Path.Join(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", safeFileType);
+        return Path.Join(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", fileType);
     }
 
     private async Task CopyGeneratedMofIfChangedAsync(ITemplateModel model, string sourceDirectory, string destinationDirectory)
@@ -247,7 +235,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             if (this.NormalizeMofContent(existingContent) == this.NormalizeMofContent(generatedContent)
                 || this.StripHeaderComment(existingContent) == this.StripHeaderComment(generatedContent))
             {
-                this.Logger.LogInformation("Skipping MOF overwrite for {ResourceName} because only the PowerShell DSC generation timestamp changed.", model.ResourceName);
+                this.Logger.LogInformation(LogMessages.MofPreservedDueToTimestampOnlyChange, model.ResourceName);
                 return;
             }
         }
@@ -273,12 +261,6 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         return Path.Join(outputDirectory, safeFileName);
     }
 
-    private string NormalizePathSegment(string segment)
-    {
-        var normalized = segment.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return this.EnsureFileNameOnly(normalized, nameof(segment));
-    }
-
     private string EnsureFileNameOnly(string value, string paramName)
     {
         if (Path.IsPathRooted(value) || value != Path.GetFileName(value))
@@ -292,28 +274,28 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     private string NormalizeMofContent(string content)
     {
         var normalizedContent = content.Replace("\r\n", "\n");
-        if (!this.HeaderMatcher.IsMatch(normalizedContent))
+        if (!HeaderMatcher.IsMatch(normalizedContent))
         {
             return normalizedContent.Trim();
         }
 
-        var match = this.HeaderMatcher.Match(normalizedContent);
+        var match = HeaderMatcher.Match(normalizedContent);
         var header = match.Groups["comments"].Value;
         var body = match.Groups["Body"].Value;
 
-        header = this.GenerationDateMatcher.Replace(header, "${Prefix}" + GenerationDatePlaceholder);
+        header = GenerationDateMatcher.Replace(header, "${Prefix}" + GenerationDatePlaceholder);
         return $"{header}\n{body}".Trim();
     }
 
     private string StripHeaderComment(string content)
     {
         var normalizedContent = content.Replace("\r\n", "\n");
-        if (!this.HeaderMatcher.IsMatch(normalizedContent))
+        if (!HeaderMatcher.IsMatch(normalizedContent))
         {
             return normalizedContent.Trim();
         }
 
-        return this.HeaderMatcher.Match(normalizedContent).Groups["Body"].Value.Trim();
+        return HeaderMatcher.Match(normalizedContent).Groups["Body"].Value.Trim();
     }
 
     protected virtual Task<string> ReadAllTextAsync(string path)

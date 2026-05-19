@@ -153,6 +153,45 @@ public class GenerateMofFilesPluginTests
         }
     }
 
+    [TestMethod]
+    public async Task HandleTemplate_WhenInlineBodyCommentDiffers_OverwritesExistingMofFile()
+    {
+        var outputRoot = CreateOutputRoot();
+        var model = new TestTemplateModel
+        {
+            ResourceName = "WebServer",
+            ResourceTypeName = DscResourceTypeNames.DscConfiguration,
+            GenerateManifest = false,
+        };
+
+        var existingContent = """
+                              prefix text
+                              /* inline comment */
+                              value-one
+                              """;
+
+        var generatedContent = """
+                               prefix text
+                               /* inline comment */
+                               value-two
+                               """;
+
+        try
+        {
+            WriteExistingMof(outputRoot, model, existingContent);
+            var plugin = CreatePlugin(outputRoot, generatedContent);
+
+            var result = await plugin.HandleTemplate(model);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(generatedContent, await File.ReadAllTextAsync(GetMofFilePath(outputRoot, model)));
+        }
+        finally
+        {
+            CleanupOutputRoot(outputRoot);
+        }
+    }
+
     private static TestableGenerateMofFilesPlugin CreatePlugin(string outputRoot, string generatedContent)
     {
         var options = new Mock<IGeneratorCliOptions>();
