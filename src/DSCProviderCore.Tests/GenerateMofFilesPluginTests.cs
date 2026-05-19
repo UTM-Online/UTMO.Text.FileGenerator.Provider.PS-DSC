@@ -187,9 +187,7 @@ public class GenerateMofFilesPluginTests
     private static string CreateOutputRoot()
     {
         var uniqueFolderName = Guid.NewGuid().ToString("N");
-        var safeUniqueFolderName = EnsureNotRooted(uniqueFolderName);
-        var safeTestFolderName = EnsureNotRooted(nameof(GenerateMofFilesPluginTests));
-        return Path.Join(Path.GetTempPath(), safeTestFolderName, safeUniqueFolderName);
+        return Path.Join(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), uniqueFolderName);
     }
 
     private static void CleanupOutputRoot(string outputRoot)
