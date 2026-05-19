@@ -175,20 +175,19 @@ public class GenerateMofFilesPluginTests
     {
         var normalizedOutputRoot = NormalizeOutputRoot(outputRoot);
         var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-        var safeFileType = Path.GetFileName(fileType);
         var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
             ? $"{model.ResourceName}.mof"
             : $"{model.ResourceName}.meta.mof";
         var safeFileName = Path.GetFileName(fileName);
         var safeMofSegment = EnsureNotRooted("MOF");
 
-        return Path.Join(normalizedOutputRoot, safeMofSegment, EnsureNotRooted(safeFileType), EnsureNotRooted(safeFileName));
+        return Path.Join(normalizedOutputRoot, safeMofSegment, EnsureNotRooted(fileType), EnsureNotRooted(safeFileName));
     }
 
     private static string CreateOutputRoot()
     {
         var uniqueFolderName = Guid.NewGuid().ToString("N");
-        var safeUniqueFolderName = EnsureNotRooted(Path.GetFileName(uniqueFolderName));
+        var safeUniqueFolderName = EnsureNotRooted(uniqueFolderName);
         var safeTestFolderName = EnsureNotRooted(nameof(GenerateMofFilesPluginTests));
         return Path.Join(Path.GetTempPath(), safeTestFolderName, safeUniqueFolderName);
     }
