@@ -174,14 +174,14 @@ public class GenerateMofFilesPluginTests
     private static string GetMofFilePath(string outputRoot, TestTemplateModel model)
     {
         var normalizedOutputRoot = NormalizeOutputRoot(outputRoot);
-        var fileType = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+        var directoryName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
         var fileName = model.ResourceTypeName == DscResourceTypeNames.DscConfiguration
             ? $"{model.ResourceName}.mof"
             : $"{model.ResourceName}.meta.mof";
         var safeFileName = Path.GetFileName(fileName);
         var safeMofSegment = EnsureNotRooted("MOF");
 
-        return Path.Join(normalizedOutputRoot, safeMofSegment, EnsureNotRooted(fileType), EnsureNotRooted(safeFileName));
+        return Path.Join(normalizedOutputRoot, safeMofSegment, EnsureNotRooted(directoryName), EnsureNotRooted(safeFileName));
     }
 
     private static string CreateOutputRoot()
