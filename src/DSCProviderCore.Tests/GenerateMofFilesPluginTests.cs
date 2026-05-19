@@ -185,7 +185,7 @@ public class GenerateMofFilesPluginTests
 
     private static string CreateOutputRoot()
     {
-        var uniqueFolderName = Path.GetFileName(Guid.NewGuid().ToString("N"));
+        var uniqueFolderName = Guid.NewGuid().ToString("N");
         return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), uniqueFolderName);
     }
 
