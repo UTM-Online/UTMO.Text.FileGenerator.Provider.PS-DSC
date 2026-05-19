@@ -27,6 +27,7 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         {
             var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
             var safeResourceType = resourceType.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            Guard.Requires<InvalidOperationException>(!Path.IsPathRooted(safeResourceType), "MOF resource type path segment cannot be rooted.");
             var mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeResourceType);
 
             switch (resourceType)

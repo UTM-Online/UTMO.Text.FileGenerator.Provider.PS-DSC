@@ -61,6 +61,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         try
         {
             var safeFileType = this.NormalizePathSegment(fileType);
+            Guard.Requires<InvalidOperationException>(!Path.IsPathRooted(safeFileType), "MOF file type path segment cannot be rooted.");
             mofOutputFile = Path.Combine(this.OutputPath, "MOF", safeFileType);
         }
         catch (Exception)
@@ -220,6 +221,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     private string CreateTemporaryOutputPath(string fileType)
     {
         var safeFileType = this.NormalizePathSegment(fileType);
+        Guard.Requires<InvalidOperationException>(!Path.IsPathRooted(safeFileType), "Temporary MOF file type path segment cannot be rooted.");
         return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPlugin), Guid.NewGuid().ToString("N"), "MOF", safeFileType);
     }
 
@@ -255,6 +257,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             : $"{model.ResourceName}.meta.mof";
 
         var safeFileName = this.EnsureFileNameOnly(fileName, nameof(model.ResourceName));
+        Guard.Requires<InvalidOperationException>(!Path.IsPathRooted(safeFileName), "Generated MOF file name segment cannot be rooted.");
         return Path.Combine(outputDirectory, safeFileName);
     }
 

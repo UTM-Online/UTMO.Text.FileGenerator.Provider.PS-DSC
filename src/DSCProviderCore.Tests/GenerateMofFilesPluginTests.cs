@@ -179,14 +179,16 @@ public class GenerateMofFilesPluginTests
             ? $"{model.ResourceName}.mof"
             : $"{model.ResourceName}.meta.mof";
         var safeFileName = Path.GetFileName(fileName);
+        var safeMofSegment = EnsureNotRooted("MOF");
 
-        return Path.Combine(outputRoot, "MOF", safeFileType, safeFileName);
+        return Path.Combine(outputRoot, safeMofSegment, EnsureNotRooted(safeFileType), EnsureNotRooted(safeFileName));
     }
 
     private static string CreateOutputRoot()
     {
         var uniqueFolderName = Guid.NewGuid().ToString("N");
-        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), uniqueFolderName);
+        var safeUniqueFolderName = EnsureNotRooted(Path.GetFileName(uniqueFolderName));
+        return Path.Combine(Path.GetTempPath(), nameof(GenerateMofFilesPluginTests), safeUniqueFolderName);
     }
 
     private static void CleanupOutputRoot(string outputRoot)
@@ -220,8 +222,9 @@ public class GenerateMofFilesPluginTests
                 ? $"{model.ResourceName}.mof"
                 : $"{model.ResourceName}.meta.mof";
             var safeFileName = Path.GetFileName(fileName);
+            var validatedFileName = EnsureNotRooted(safeFileName);
 
-            return Path.Combine(outputDirectory, safeFileName);
+            return Path.Combine(outputDirectory, validatedFileName);
         }
     }
 
@@ -254,7 +257,8 @@ public class GenerateMofFilesPluginTests
         public string ProduceOutputPath(string basePath)
         {
             var safeFileName = Path.GetFileName($"{this.ResourceName}.ps1");
-            return Path.Combine(basePath, safeFileName);
+            var validatedFileName = EnsureNotRooted(safeFileName);
+            return Path.Join(basePath, validatedFileName);
         }
 
         public ITemplateModel AddAdditionalProperty<T>(string key, T value)
@@ -266,5 +270,15 @@ public class GenerateMofFilesPluginTests
         {
             return Task.FromResult<object?>(new object());
         }
+    }
+
+    private static string EnsureNotRooted(string segment)
+    {
+        if (Path.IsPathRooted(segment))
+        {
+            throw new ArgumentException($"Path segment '{segment}' cannot be rooted.", nameof(segment));
+        }
+
+        return segment;
     }
 }
