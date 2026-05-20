@@ -25,22 +25,21 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
         this.Logger.LogInformation("Starting plugin: trim comments from MOF files");
         foreach (var resource in environment.Resources)
         {
-            var resourceType  = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
-            var mofOutputFile = Path.Combine(this.OutputPath, $@"MOF\{resourceType}");
-
-            switch (resourceType)
+            var resourceType = resource.ResourceTypeName == DscResourceTypeNames.DscConfiguration ? "Configurations" : "Computers";
+            var mofOutputFile = Path.Join(this.OutputPath, "MOF", resourceType);
+            var fileName = resourceType switch
             {
-                case "Computers":
-                {
-                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.meta.mof");
-                    break;
-                }
-                case "Configurations":
-                {
-                    mofOutputFile = Path.Combine(mofOutputFile, $"{resource.ResourceName}.mof");
-                    break;
-                }
+                "Computers" => this.EnsureFileNameOnly($"{resource.ResourceName}.meta.mof", nameof(resource.ResourceName)),
+                "Configurations" => this.EnsureFileNameOnly($"{resource.ResourceName}.mof", nameof(resource.ResourceName)),
+                _ => string.Empty,
+            };
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                continue;
             }
+
+            mofOutputFile = Path.Join(mofOutputFile, fileName);
 
             if (resource is IManifestProducer producer && producer.GenerateManifest)
             {
@@ -70,4 +69,14 @@ public class TrimMofCommentsProcessor : IPipelinePlugin
     private string OutputPath { get; }
 
     private ILogger<TrimMofCommentsProcessor> Logger { get; }
+
+    private string EnsureFileNameOnly(string value, string paramName)
+    {
+        if (Path.IsPathRooted(value) || value != Path.GetFileName(value))
+        {
+            throw new ArgumentException($"Path segment '{value}' is not a valid file name.", paramName);
+        }
+
+        return value;
+    }
 }

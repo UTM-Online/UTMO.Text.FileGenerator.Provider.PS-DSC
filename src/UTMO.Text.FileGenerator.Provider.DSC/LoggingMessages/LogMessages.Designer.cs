@@ -123,6 +123,15 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.LoggingMessages {
                 return ResourceManager.GetString("MofGenerationSucceeded", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping MOF overwrite for {ResourceName} because only the PowerShell DSC generation timestamp changed..
+        /// </summary>
+        internal static string MofPreservedDueToTimestampOnlyChange {
+            get {
+                return ResourceManager.GetString("MofPreservedDueToTimestampOnlyChange", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to MOF Output Path: {mofOutputFile}.
