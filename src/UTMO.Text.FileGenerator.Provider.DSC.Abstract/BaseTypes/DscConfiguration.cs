@@ -69,7 +69,7 @@ public abstract class DscConfiguration : DscResourceBase
     [MemberName("config_source")]
     public abstract string ConfigSource { get; }
 
-    public sealed override bool GenerateManifest => false;
+    public sealed override bool GenerateManifest => true;
 
     public sealed override Task<dynamic?> ToManifest()
     {
