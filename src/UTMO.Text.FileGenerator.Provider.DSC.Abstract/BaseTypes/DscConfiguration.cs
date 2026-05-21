@@ -75,7 +75,7 @@ public abstract class DscConfiguration : DscResourceBase
     {
         var manifest = new
         {
-            FullName = this.FullName,
+            this.FullName,
             RequiredModules = this.RequiredModules.Select(a => a.ResourceName).ToList(),
             ConfigurationResources = this.ConfigurationResources.Select(r => r.ToManifest().Result).ToList(),
             Mode = this.Mode.ToString(),
