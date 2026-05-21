@@ -35,7 +35,7 @@ public abstract class DscConfiguration : DscResourceBase
 
     [TemplateProperty]
     public virtual string Description { get; } = string.Empty;
-        
+
     [TemplateProperty]
     public abstract string FullName { get; }
 
@@ -45,14 +45,14 @@ public abstract class DscConfiguration : DscResourceBase
     public virtual DscMode Mode { get; } = DscMode.Pull;
 
     public virtual string TemplateName => nameof(DscConfiguration);
-		
+
     [TemplateProperty]
     [MemberName(nameof(RequiredModules))]
     public List<RequiredModule> RequiredModules => this.ConfigurationItems().Select(x => x.SourceModule).Distinct().ToList();
-    
+
     // ReSharper disable once MemberCanBeProtected.Global
     protected abstract IEnumerable<DscConfigurationItem> ConfigurationItems();
-        
+
     [TemplateProperty]
     [MemberName(nameof(ConfigurationResources))]
     public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems().ToList();
@@ -60,11 +60,11 @@ public abstract class DscConfiguration : DscResourceBase
     [TemplateProperty]
     [MemberName("requires_plaintext_password")]
     public bool RequiresPlainTextPassword => this.ConfigurationItems().Any(x => x.RequiresPlainTextPassword);
-        
+
     [TemplateProperty]
     [MemberName("module_source")]
     public abstract string ModuleSource { get; }
-        
+
     [TemplateProperty]
     [MemberName("config_source")]
     public abstract string ConfigSource { get; }
@@ -73,9 +73,17 @@ public abstract class DscConfiguration : DscResourceBase
 
     public sealed override Task<dynamic?> ToManifest()
     {
-        return Task.FromResult<dynamic?>(null);
+        var manifest = new
+        {
+            FullName = this.FullName,
+            RequiredModules = this.RequiredModules.Select(a => a.ResourceName).ToList(),
+            ConfigurationResources = this.ConfigurationResources.Select(r => r.ToManifest().Result).ToList(),
+            Mode = this.Mode.ToString(),
+        };
+
+        return Task.FromResult<dynamic?>(manifest);
     }
-        
+
     public override async Task<List<ValidationFailedException>> Validate()
     {
         Log.Debug(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
@@ -108,7 +116,7 @@ public abstract class DscConfiguration : DscResourceBase
                 validationErrors.Add(new ValidationFailedException(item.Name, item.GetType().Name, ValidationFailureType.InvalidResource, "Resource name must be unique within a configuration"));
             }
         }
-            
+
         return Task.CompletedTask;
     }
 }

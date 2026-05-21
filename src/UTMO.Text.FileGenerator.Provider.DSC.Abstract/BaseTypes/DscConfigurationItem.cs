@@ -45,16 +45,29 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
 
     [IgnoreMember]
     public virtual bool RequiresPlainTextPassword => this.PropertyBag.ContainsValue<IRequiresPlainTextPassword>();
-    
+
     [TemplateProperty]
     [MemberName("has_ensure")]
     public abstract bool HasEnsure { get; }
-    
+
     public override bool GenerateManifest => false;
 
     public string DependencyName => $"[{this.ResourceId}]{this.Name}";
 
     public abstract RequiredModule SourceModule { get; }
+
+    public override Task<object?> ToManifest()
+    {
+        var manifest = new
+        {
+            Name = this.Name,
+            Ensure = this.HasEnsure ? this.Ensure.ToString().ToLower() : null,
+            DependsOn = this.DependsOn?.ToArray() ?? Array.Empty<string>(),
+            DependencyName = this.DependencyName
+        };
+
+        return Task.FromResult<object?>(manifest);
+    }
 
     public DscConfigurationItem AddDependency<T>(T resource) where T : DscConfigurationItem
     {
