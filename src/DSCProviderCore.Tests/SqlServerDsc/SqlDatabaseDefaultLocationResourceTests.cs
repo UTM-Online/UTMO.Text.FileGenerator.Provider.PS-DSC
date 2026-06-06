@@ -43,8 +43,9 @@ public class SqlDatabaseDefaultLocationResourceTests
             r.Type = SqlDatabaseDefaultLocationType.Data;
         });
 
-        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
-        Assert.IsNotNull(liquid);
+        var liquidObject = resource.PropertyBag.ToLiquid();
+        Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
+        var liquid = (Dictionary<string, object>)liquidObject;
         Assert.IsTrue(liquid.ContainsKey(Constants.SqlDatabaseDefaultLocation.Properties.Type));
         Assert.AreEqual("\"Data\"", liquid[Constants.SqlDatabaseDefaultLocation.Properties.Type]);
     }

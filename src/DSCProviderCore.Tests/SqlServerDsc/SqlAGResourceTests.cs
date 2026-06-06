@@ -44,8 +44,9 @@ public class SqlAGResourceTests
             r.AutomatedBackupPreference = SqlAGAutomatedBackupPreference.Primary;
         });
 
-        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
-        Assert.IsNotNull(liquid);
+        var liquidObject = resource.PropertyBag.ToLiquid();
+        Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
+        var liquid = (Dictionary<string, object>)liquidObject;
         Assert.IsTrue(liquid.ContainsKey(Constants.SqlAG.Properties.AutomatedBackupPreference));
         Assert.AreEqual("\"Primary\"", liquid[Constants.SqlAG.Properties.AutomatedBackupPreference]);
     }

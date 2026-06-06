@@ -43,8 +43,9 @@ public class SqlEndpointResourceTests
             r.EndpointType = SqlEndpointType.DatabaseMirroring;
         });
 
-        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
-        Assert.IsNotNull(liquid);
+        var liquidObject = resource.PropertyBag.ToLiquid();
+        Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
+        var liquid = (Dictionary<string, object>)liquidObject;
         Assert.IsTrue(liquid.ContainsKey(Constants.SqlEndpoint.Properties.EndpointType));
         Assert.AreEqual("\"DatabaseMirroring\"", liquid[Constants.SqlEndpoint.Properties.EndpointType]);
     }
