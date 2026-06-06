@@ -71,18 +71,6 @@ public abstract class DscConfiguration : DscResourceBase
 
     public sealed override bool GenerateManifest => true;
 
-    public sealed override Task<dynamic?> ToManifest()
-    {
-        var manifest = new
-        {
-            this.FullName,
-            RequiredModules = this.RequiredModules.Select(a => a.ResourceName).ToList(),
-            ConfigurationResources = this.ConfigurationResources.Select(r => r.ToManifest().Result).ToList(),
-            Mode = this.Mode.ToString(),
-        };
-
-        return Task.FromResult<dynamic?>(manifest);
-    }
 
     public override async Task<List<ValidationFailedException>> Validate()
     {

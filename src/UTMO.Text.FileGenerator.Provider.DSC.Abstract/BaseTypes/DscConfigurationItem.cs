@@ -56,18 +56,6 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
 
     public abstract RequiredModule SourceModule { get; }
 
-    public override Task<object?> ToManifest()
-    {
-        var manifest = new
-        {
-            Name = this.Name,
-            Ensure = this.HasEnsure ? this.Ensure.ToString().ToLower() : null,
-            DependsOn = this.DependsOn?.ToArray() ?? Array.Empty<string>(),
-            DependencyName = this.DependencyName
-        };
-
-        return Task.FromResult<object?>(manifest);
-    }
 
     public DscConfigurationItem AddDependency<T>(T resource) where T : DscConfigurationItem
     {

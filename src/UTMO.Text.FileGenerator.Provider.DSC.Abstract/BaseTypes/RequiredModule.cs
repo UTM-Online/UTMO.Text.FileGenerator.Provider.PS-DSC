@@ -20,7 +20,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     public abstract partial class RequiredModule : SubTemplateResourceBase
     {
         public override bool GenerateManifest => true;
-        
+
         [TemplateProperty]
         [MemberName("Name")]
         public abstract string ModuleName { get; }
@@ -30,12 +30,12 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         public abstract string ModuleVersion { get; }
 
         public virtual bool IsPrivate { get; } = false;
-        
+
         public virtual bool AllowClobber { get; } = false;
 
         [IgnoreMember]
         public virtual string? RewriteModuleVersion { get; } = null;
-        
+
         [TemplateProperty]
         public virtual bool UseAlternateFormat { get; } = false;
 
@@ -55,35 +55,5 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return ctx;
         }
 
-        public override Task<object?> ToManifest()
-        {
-            object? manifest = null; 
-
-            if (this.UseAlternateFormat)
-            {
-                manifest = new
-                           {
-                               Name = this.ModuleName,
-                               Version = this.ModuleVersion,
-                               AlternateVersion = this.RewriteModuleVersion,
-                               IsPrivate = this.IsPrivate,
-                               AllowClobber = this.AllowClobber,
-                               UseAlternateFormat = this.UseAlternateFormat
-                           };
-            }
-            else
-            {
-                manifest = new
-                           {
-                               Name = this.ModuleName,
-                               Version = this.ModuleVersion,
-                               IsPrivate = this.IsPrivate,
-                               AllowClobber = this.AllowClobber,
-                               UseAlternateFormat = this.UseAlternateFormat
-                           };
-            }
-            
-            return Task.FromResult(manifest)!;
-        }
     }
 }
