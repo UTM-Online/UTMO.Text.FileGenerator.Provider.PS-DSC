@@ -1,6 +1,7 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Resources;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Enums;
 using UTMO.Text.FileGenerator.Validators;
@@ -24,9 +25,9 @@ public sealed class SqlSetupResource : SqlServerDscBase, ISqlSetupResource
         set => this.PropertyBag.Set(Constants.Properties.SourcePath, value);
     }
 
-    public string SourceCredential
+    public IPowerShellExpression? SourceCredential
     {
-        get => this.PropertyBag.Get<string>(Constants.Properties.SourceCredential);
+        get => this.PropertyBag.Get<IPowerShellExpression?>(Constants.Properties.SourceCredential);
         set => this.PropertyBag.Set(Constants.Properties.SourceCredential, value);
     }
 

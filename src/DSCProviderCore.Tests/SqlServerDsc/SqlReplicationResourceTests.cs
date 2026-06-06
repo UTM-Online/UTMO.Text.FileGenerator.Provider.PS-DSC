@@ -1,5 +1,6 @@
 namespace DSCProviderCore.Tests;
 
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Resources;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.SqlServerDscConstants;
@@ -14,7 +15,7 @@ public class SqlReplicationResourceTests
         var resource = SqlReplicationResource.Create("Test", r =>
         {
             r.InstanceName = "value";
-            r.AdminLinkCredentials = "value";
+            r.AdminLinkCredentials = new TestCredentialExpression("$adminCredential");
             r.RemoteDistributor = "value";
         });
 
@@ -49,5 +50,10 @@ public class SqlReplicationResourceTests
         var liquid = (Dictionary<string, object>)liquidObject;
         Assert.IsTrue(liquid.TryGetValue(Constants.SqlReplication.Properties.DistributorMode, out var distributorMode));
         Assert.AreEqual("\"Local\"", distributorMode);
+    }
+
+    private sealed class TestCredentialExpression(string expression) : IPowerShellExpression
+    {
+        public string ToPowerShell() => expression;
     }
 }

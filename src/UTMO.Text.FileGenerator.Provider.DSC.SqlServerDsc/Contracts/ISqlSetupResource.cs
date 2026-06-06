@@ -9,7 +9,7 @@ public interface ISqlSetupResource : IDscResourceConfig
 
     string SourcePath { get; set; }
 
-    string SourceCredential { get; set; }
+    IPowerShellExpression? SourceCredential { get; set; }
 
     bool? SuppressReboot { get; set; }
 

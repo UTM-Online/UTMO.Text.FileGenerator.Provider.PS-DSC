@@ -9,7 +9,7 @@ public interface ISqlReplicationResource : IDscResourceConfig
 
     SqlReplicationDistributorMode DistributorMode { get; set; }
 
-    string AdminLinkCredentials { get; set; }
+    IPowerShellExpression AdminLinkCredentials { get; set; }
 
     string DistributionDBName { get; set; }
 

@@ -1,6 +1,7 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Resources;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Contracts;
 using UTMO.Text.FileGenerator.Validators;
 using Constants = UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.SqlServerDscConstants.SqlScript;
@@ -47,9 +48,9 @@ public sealed class SqlScriptResource : SqlServerDscBase, ISqlScriptResource
         set => this.PropertyBag.Set(Constants.Properties.ServerName, value);
     }
 
-    public string Credential
+    public IPowerShellExpression? Credential
     {
-        get => this.PropertyBag.Get<string>(Constants.Properties.Credential);
+        get => this.PropertyBag.Get<IPowerShellExpression?>(Constants.Properties.Credential);
         set => this.PropertyBag.Set(Constants.Properties.Credential, value);
     }
 

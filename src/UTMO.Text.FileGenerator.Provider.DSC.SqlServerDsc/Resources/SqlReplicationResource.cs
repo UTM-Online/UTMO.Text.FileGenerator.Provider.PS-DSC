@@ -1,6 +1,7 @@
 namespace UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Resources;
 
 using UTMO.Text.FileGenerator.Abstract.Exceptions;
+using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Enums;
 using UTMO.Text.FileGenerator.Validators;
@@ -24,9 +25,9 @@ public sealed class SqlReplicationResource : SqlServerDscBase, ISqlReplicationRe
         set => this.PropertyBag.Set(Constants.Properties.DistributorMode, value);
     }
 
-    public string AdminLinkCredentials
+    public IPowerShellExpression AdminLinkCredentials
     {
-        get => this.PropertyBag.Get<string>(Constants.Properties.AdminLinkCredentials);
+        get => this.PropertyBag.Get<IPowerShellExpression>(Constants.Properties.AdminLinkCredentials);
         set => this.PropertyBag.Set(Constants.Properties.AdminLinkCredentials, value);
     }
 
@@ -78,7 +79,7 @@ public sealed class SqlReplicationResource : SqlServerDscBase, ISqlReplicationRe
     {
         var validation = this.ValidationBuilder();
         validation.ValidateStringNotNullOrEmpty(this.InstanceName, nameof(this.InstanceName));
-        validation.ValidateStringNotNullOrEmpty(this.AdminLinkCredentials, nameof(this.AdminLinkCredentials));
+        validation.ValidateNotNull(this.AdminLinkCredentials, nameof(this.AdminLinkCredentials));
         validation.ValidateStringNotNullOrEmpty(this.RemoteDistributor, nameof(this.RemoteDistributor));
         validation.ValidateStringNotNullOrEmpty(this.WorkingDirectory, nameof(this.WorkingDirectory));
         return Task.FromResult(validation.errors);

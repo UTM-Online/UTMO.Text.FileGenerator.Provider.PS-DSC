@@ -11,7 +11,7 @@ public interface ISqlLoginResource : IDscResourceConfig
 
     string ServerName { get; set; }
 
-    string LoginCredential { get; set; }
+    IPowerShellExpression? LoginCredential { get; set; }
 
     bool? LoginMustChangePassword { get; set; }
 

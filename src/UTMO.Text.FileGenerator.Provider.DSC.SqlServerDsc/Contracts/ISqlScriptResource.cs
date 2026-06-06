@@ -16,7 +16,7 @@ public interface ISqlScriptResource : IDscResourceConfig
 
     string ServerName { get; set; }
 
-    string Credential { get; set; }
+    IPowerShellExpression? Credential { get; set; }
 
     string[] Variable { get; set; }
 
