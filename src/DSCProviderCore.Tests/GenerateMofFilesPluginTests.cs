@@ -304,9 +304,9 @@ public class GenerateMofFilesPluginTests
             return this;
         }
 
-        public Task<object?> ToManifest()
+        Task<TManifest?> UTMO.Text.FileGenerator.Abstract.Contracts.IManifestProducer.ToManifest<TManifest>() where TManifest : class
         {
-            return Task.FromResult<object?>(new object());
+            return Task.FromResult<TManifest?>(default);
         }
     }
 

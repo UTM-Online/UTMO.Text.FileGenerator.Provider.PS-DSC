@@ -22,9 +22,9 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
     public abstract class ManagedServiceAccount : SubTemplateResourceBase
     {
         public sealed override bool GenerateManifest => true;
-        
+
         public sealed override string ResourceTypeName => $"{base.ResourceTypeName}/ManagedServiceAccount";
-        
+
         [TemplateProperty]
         public abstract string AccountName { get; }
 
@@ -33,30 +33,18 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
 
         [TemplateProperty]
         public virtual DscEnsure Ensure { get; } = DscEnsure.Present;
-        
+
         [TemplateProperty]
         public string ManagingPrinciples => string.Join(',', this._managingPrinciples.Select(x => $"\"{x.NodeName}$\""));
-        
+
         [IgnoreMember]
         private List<DscLcmConfiguration> _managingPrinciples = new();
-        
+
         public ManagedServiceAccount RegisterPrinciple<T>() where T : DscLcmConfiguration, new()
         {
             this._managingPrinciples.Add(new T());
             return this;
         }
 
-        public override Task<dynamic?> ToManifest()
-        {
-            var manifest = new
-            {
-                Name = this.AccountName,
-                DscDisplayName = this.DscDisplayName,
-                Ensure = this.Ensure,
-                ManagingPrinciples = this._managingPrinciples.Select(x => $"{x.NodeName}$")
-            };
-            
-            return Task.FromResult((dynamic)manifest);
-        }
     }
 }
