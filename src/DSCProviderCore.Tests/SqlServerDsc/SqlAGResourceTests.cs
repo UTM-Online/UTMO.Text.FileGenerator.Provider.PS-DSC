@@ -47,7 +47,7 @@ public class SqlAGResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlAG.Properties.AutomatedBackupPreference));
-        Assert.AreEqual("\"Primary\"", liquid[Constants.SqlAG.Properties.AutomatedBackupPreference]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlAG.Properties.AutomatedBackupPreference, out var automatedBackupPreference));
+        Assert.AreEqual("\"Primary\"", automatedBackupPreference);
     }
 }

@@ -47,7 +47,7 @@ public class SqlReplicationResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlReplication.Properties.DistributorMode));
-        Assert.AreEqual("\"Local\"", liquid[Constants.SqlReplication.Properties.DistributorMode]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlReplication.Properties.DistributorMode, out var distributorMode));
+        Assert.AreEqual("\"Local\"", distributorMode);
     }
 }

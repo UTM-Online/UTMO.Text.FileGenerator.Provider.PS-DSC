@@ -46,7 +46,7 @@ public class SqlAgentFailsafeResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlAgentFailsafe.Properties.NotificationMethod));
-        Assert.AreEqual("\"None\"", liquid[Constants.SqlAgentFailsafe.Properties.NotificationMethod]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlAgentFailsafe.Properties.NotificationMethod, out var notificationMethod));
+        Assert.AreEqual("\"None\"", notificationMethod);
     }
 }

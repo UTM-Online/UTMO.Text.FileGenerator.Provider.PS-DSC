@@ -46,7 +46,7 @@ public class SqlSetupResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlSetup.Properties.Action));
-        Assert.AreEqual("\"Install\"", liquid[Constants.SqlSetup.Properties.Action]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlSetup.Properties.Action, out var actionValue));
+        Assert.AreEqual("\"Install\"", actionValue);
     }
 }

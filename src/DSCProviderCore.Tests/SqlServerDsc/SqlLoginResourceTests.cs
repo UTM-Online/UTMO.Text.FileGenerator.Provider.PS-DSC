@@ -46,7 +46,7 @@ public class SqlLoginResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlLogin.Properties.LoginType));
-        Assert.AreEqual("\"WindowsUser\"", liquid[Constants.SqlLogin.Properties.LoginType]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlLogin.Properties.LoginType, out var loginType));
+        Assert.AreEqual("\"WindowsUser\"", loginType);
     }
 }

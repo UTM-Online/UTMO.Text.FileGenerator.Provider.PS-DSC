@@ -47,7 +47,7 @@ public class SqlAGReplicaResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlAGReplica.Properties.AvailabilityMode));
-        Assert.AreEqual("\"AsynchronousCommit\"", liquid[Constants.SqlAGReplica.Properties.AvailabilityMode]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlAGReplica.Properties.AvailabilityMode, out var availabilityMode));
+        Assert.AreEqual("\"AsynchronousCommit\"", availabilityMode);
     }
 }

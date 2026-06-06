@@ -45,7 +45,7 @@ public class SqlProtocolResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlProtocol.Properties.ProtocolName));
-        Assert.AreEqual("\"TcpIp\"", liquid[Constants.SqlProtocol.Properties.ProtocolName]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlProtocol.Properties.ProtocolName, out var protocolNameValue));
+        Assert.AreEqual("\"TcpIp\"", protocolNameValue);
     }
 }
