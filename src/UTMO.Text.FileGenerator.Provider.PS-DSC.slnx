@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Definitions/">
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.AD-DSC/UTMO.Text.FileGenerator.Provider.DSC.AD-DSC.csproj" />
+    <Project Path="UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc/UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.csproj" />
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.cChoco/UTMO.Text.FileGenerator.Provider.DSC.cChoco.csproj" />
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.ChocoModule/UTMO.Text.FileGenerator.Provider.DSC.ChocoModule.csproj" />
     <Project Path="UTMO.Text.FileGenerator.Provider.DSC.WindowsCore/UTMO.Text.FileGenerator.Provider.DSC.WindowsCore.csproj" />

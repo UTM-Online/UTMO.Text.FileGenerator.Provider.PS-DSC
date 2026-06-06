@@ -1,0 +1,52 @@
+namespace DSCProviderCore.Tests;
+
+using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Contracts;
+using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Resources;
+using Constants = UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.SqlServerDscConstants;
+using UTMO.Text.FileGenerator.Provider.DSC.SqlServerDsc.Enums;
+
+[TestClass]
+public class SqlAGReplicaResourceTests
+{
+    [TestMethod]
+    public void Create_HappyPath_ReturnsResource()
+    {
+        var resource = SqlAGReplicaResource.Create("Test", r =>
+        {
+            r.ReplicaName = "value";
+            r.AvailabilityGroupName = "value";
+            r.ServerName = "value";
+        });
+
+        Assert.IsNotNull(resource);
+    }
+
+    [TestMethod]
+    public void ResourceId_IsExpectedValue()
+    {
+        var resource = SqlAGReplicaResource.Create("Test", _ => { });
+        Assert.AreEqual("SqlAGReplica", resource.ResourceId);
+    }
+
+    [TestMethod]
+    public async Task Validate_MissingRequiredProperties_ReturnsErrors()
+    {
+        var resource = SqlAGReplicaResource.Create("Test", _ => { });
+        var errors = await resource.Validate();
+        Assert.IsTrue(errors.Count > 0);
+    }
+
+    [TestMethod]
+    public void EnumProperty_RendersAsExpected()
+    {
+        var resource = SqlAGReplicaResource.Create("Test", r =>
+        {
+            r.AvailabilityMode = SqlAGAvailabilityMode.AsynchronousCommit;
+        });
+
+        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
+        Assert.IsNotNull(liquid);
+        Assert.IsTrue(liquid.ContainsKey(Constants.SqlAGReplica.Properties.AvailabilityMode));
+        Assert.AreEqual("\"AsynchronousCommit\"", liquid[Constants.SqlAGReplica.Properties.AvailabilityMode]);
+    }
+}
