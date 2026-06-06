@@ -46,7 +46,7 @@ public class SqlServiceAccountResourceTests
         var liquidObject = resource.PropertyBag.ToLiquid();
         Assert.IsInstanceOfType(liquidObject, typeof(Dictionary<string, object>));
         var liquid = (Dictionary<string, object>)liquidObject;
-        Assert.IsTrue(liquid.ContainsKey(Constants.SqlServiceAccount.Properties.ServiceType));
-        Assert.AreEqual("DatabaseEngine", liquid[Constants.SqlServiceAccount.Properties.ServiceType]);
+        Assert.IsTrue(liquid.TryGetValue(Constants.SqlServiceAccount.Properties.ServiceType, out var serviceType));
+        Assert.AreEqual("DatabaseEngine", serviceType);
     }
 }
