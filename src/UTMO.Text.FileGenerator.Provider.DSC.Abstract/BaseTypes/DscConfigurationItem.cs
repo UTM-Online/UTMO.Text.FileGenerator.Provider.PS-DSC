@@ -1,4 +1,6 @@
-﻿namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
+﻿using UTMO.Text.FileGenerator.Abstract.Contracts;
+
+namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes;
 
 using System.Diagnostics.CodeAnalysis;
 using Models;
@@ -7,7 +9,7 @@ using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Contracts;
 using UTMO.Text.FileGenerator.Provider.DSC.Abstract.Enums;
 
 [SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "API Surface, must remain public for consumers")]
-public abstract class DscConfigurationItem : SubTemplateResourceBase
+public abstract class DscConfigurationItem : SubTemplateResourceBase, IManifestProducer
 {
     // ReSharper disable once PublicConstructorInAbstractClass
     public DscConfigurationItem(string name)
@@ -56,6 +58,19 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase
 
     public abstract RequiredModule SourceModule { get; }
 
+    public override Task<TManifest?> ToManifest<TManifest>() where TManifest : class
+    {
+        var manifest = new DscConfigurationItemManifest()
+        {
+            DependencyName = this.DependencyName,
+            DependsOn = this.DependsOn,
+            Ensure = this.Ensure,
+            Name = this.Name,
+            ResourceId = this.ResourceId
+        };
+
+        return Task.FromResult(manifest as TManifest);
+    }
 
     public DscConfigurationItem AddDependency<T>(T resource) where T : DscConfigurationItem
     {

@@ -71,6 +71,19 @@ public abstract class DscConfiguration : DscResourceBase
 
     public sealed override bool GenerateManifest => true;
 
+    public override Task<TManifest?> ToManifest<TManifest>() where TManifest : class
+    {
+        var manifest = new DscConfigurationManifest()
+        {
+            ConfigurationName = this.FullName,
+            ConfigurationMode = this.Mode,
+            RequiredModules = this.RequiredModules.Select(x => x.ModuleName).ToList(),
+            ConfigurationItems = this.ConfigurationItems().Select(x => x.ToManifest<DscConfigurationItemManifest>().Result!).ToList()
+        };
+
+        return Task.FromResult(manifest as TManifest);
+    }
+
     public override async Task<List<ValidationFailedException>> Validate()
     {
         Log.Debug(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
