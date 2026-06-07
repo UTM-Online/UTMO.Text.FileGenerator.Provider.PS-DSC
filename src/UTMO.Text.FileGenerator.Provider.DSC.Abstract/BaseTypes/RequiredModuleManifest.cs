@@ -14,5 +14,5 @@ public class RequiredModuleManifest : IManifest
 
     public bool UseAlternateFormat { get; init; }
 
-    public string? RewriteModuleVersion  { get; init; }
+    public string? AlternateVersion  { get; init; }
 }

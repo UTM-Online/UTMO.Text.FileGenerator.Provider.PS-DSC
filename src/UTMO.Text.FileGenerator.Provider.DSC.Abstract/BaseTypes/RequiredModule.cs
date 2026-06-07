@@ -64,7 +64,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
                 IsPrivate = this.IsPrivate,
                 AllowClobber = this.AllowClobber,
                 UseAlternateFormat = this.UseAlternateFormat,
-                RewriteModuleVersion = this.RewriteModuleVersion
+                AlternateVersion = this.RewriteModuleVersion
             };
 
             return Task.FromResult(manifest as TManifest);
