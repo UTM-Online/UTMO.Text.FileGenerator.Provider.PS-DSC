@@ -13,17 +13,17 @@ public class DscComputerConfiguration : DscResourceBase
     public override string TemplatePath => "DscNodeConfiguration";
 
     public override string ResourceName => this.NodeName;
-    
+
     public override bool GenerateManifest => false;
-    
+
     [TemplateProperty]
     [MemberName("node_name")]
     public required string NodeName { get; init; }
-    
+
     [TemplateProperty]
     [MemberName("ConfigurationResources")]
     public required List<DscConfigurationItem> NodeConfigurations { get; init; }
-    
+
     [TemplateProperty]
     [MemberName("RequiredModules")]
     public List<RequiredModule> RequiredModules { get; init; } = [];
@@ -40,5 +40,19 @@ public class DscComputerConfiguration : DscResourceBase
                    NodeConfigurations = cfg.NodeConfigurations,
                    RequiredModules = cfg.NodeConfigurations.Select(a => a.SourceModule).DistinctBy(a => a.ModuleName).ToList(),
                };
+    }
+
+    public override Task<TManifest?> ToManifest<TManifest>() where TManifest : class
+    {
+        var manifest = new DscComputerConfigurationManifest()
+                       {
+                           NodeName = this.NodeName,
+                           Enabled = true,
+                           IsClientNode = true,
+                           RunAsAccounts = [], // Not Implemented
+                           PartialConfigs = this.NodeConfigurations.Select(x => x.SourceModule.ModuleName).Distinct().ToList(),
+                       };
+
+        return Task.FromResult(manifest as TManifest);
     }
 }

@@ -58,6 +58,8 @@ public abstract class DscConfigurationItem : SubTemplateResourceBase, IManifestP
 
     public abstract RequiredModule SourceModule { get; }
 
+    public sealed override string ResourceTypeName => "/DSC/ConfigurationItem";
+
     public override Task<TManifest?> ToManifest<TManifest>() where TManifest : class
     {
         var manifest = new DscConfigurationItemManifest()

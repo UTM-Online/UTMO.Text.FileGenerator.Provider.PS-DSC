@@ -55,5 +55,19 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
             return ctx;
         }
 
+        public override Task<TManifest?> ToManifest<TManifest>() where TManifest : class
+        {
+            var manifest = new RequiredModuleManifest()
+            {
+                Name = this.ModuleName,
+                Version = this.ModuleVersion,
+                IsPrivate = this.IsPrivate,
+                AllowClobber = this.AllowClobber,
+                UseAlternateFormat = this.UseAlternateFormat,
+                RewriteModuleVersion = this.RewriteModuleVersion
+            };
+
+            return Task.FromResult(manifest as TManifest);
+        }
     }
 }
