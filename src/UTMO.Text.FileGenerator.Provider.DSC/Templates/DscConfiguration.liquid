@@ -25,7 +25,7 @@ Configuration {{ FullName }}
     Node 'localhost'
     {
     {% for resource in ConfigurationResources -%}
-        {{ resource.resource_id }} {{ resource.name }}
+    {{ resource.resource_id }} {{ resource.name }}
         {
             {% for value in resource.property_bag %}{{ value.Key }} = {{ value.Value }}{% if forloop.last == false %}
             {% endif %}{% endfor %}{% if resource.has_ensure == true %}
