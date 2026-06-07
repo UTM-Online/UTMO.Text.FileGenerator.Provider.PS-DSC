@@ -71,7 +71,6 @@ public abstract class DscConfiguration : DscResourceBase
 
     public sealed override bool GenerateManifest => true;
 
-
     public override async Task<List<ValidationFailedException>> Validate()
     {
         Log.Debug(ValidationMessages.BeginningValidation, this.ResourceTypeName, this.ResourceName);
