@@ -34,7 +34,7 @@ public class DscLcmWebResource : SubTemplateResourceBase
     [TemplateProperty]
     [MemberName("configuration_names")]
     public List<string> ConfigurationNames =>
-        this.LcmResourceType == DscWebResourceTypes.ConfigurationRepositoryWeb ? this.Parent.DscConfiguration.Select(a => a.FullName).ToList() : [];
+        this.LcmResourceType == DscWebResourceTypes.ConfigurationRepositoryWeb ? this.Parent.DscConfiguration.Where(a => a.Mode == DscMode.Pull).Select(a => a.FullName).ToList() : [];
     
     [IgnoreMember]
     private DscLcmConfiguration Parent { get; }
