@@ -41,7 +41,7 @@
         <Delete Files="@(_GeneratedFiles)" Condition="'@(_GeneratedFiles)' != ''" />
         <RemoveDir Directories="$(GeneratedOutputPath)" Condition="'$(GeneratedOutputPath)' != '' and Exists('$(GeneratedOutputPath)')" />
         <RemoveDir Directories="$(OutputPath)\Templates" Condition="'$(OutputPath)' != '' and Exists('$(OutputPath)\Templates')" />
-        <RemoveDir Directories="$(_ProcessingDirectory_)" Condition="Exists('$(_ProcessingDirectory_)')" />
+        <RemoveDir Directories="$(_ProcessingDirectory_)" Condition="'$(_ProcessingDirectory_)' != '' and Exists('$(_ProcessingDirectory_)')" />
     </Target>
 
     <Target Name="CreateOutputDirectories" BeforeTargets="Build" >
