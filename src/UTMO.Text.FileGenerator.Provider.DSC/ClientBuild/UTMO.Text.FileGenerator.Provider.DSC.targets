@@ -30,16 +30,18 @@
     </PropertyGroup>
     
     <Target Name="CleanGeneratedOutput" BeforeTargets="Clean;Build" Condition="'$(EnablePreBuildCleanup)' == 'true' ">
-        <ItemGroup>
+        <ItemGroup Condition="'$(OutputPath)' != ''">
             <_OutTemplateFiles Include="$(OutputPath)\Templates\**\*.liquid" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(GeneratedOutputPath)' != ''">
             <_GeneratedFiles Include="$(GeneratedOutputPath)\**\*.*" />
         </ItemGroup>
         <Message Text="Cleaning Output and Template Directories via &quot;CleanGeneratedOutput&quot; target." Importance="high" />
-        <Delete Files="@(_OutTemplateFiles)" />
-        <Delete Files="@(_GeneratedFiles)" />
-        <RemoveDir Directories="$(GeneratedOutputPath)"/>
-        <RemoveDir Directories="$(OutputPath)\Templates" />
-        <RemoveDir Directories="$(_ProcessingDirectory_)" />
+        <Delete Files="@(_OutTemplateFiles)" Condition="'@(_OutTemplateFiles)' != ''" />
+        <Delete Files="@(_GeneratedFiles)" Condition="'@(_GeneratedFiles)' != ''" />
+        <RemoveDir Directories="$(GeneratedOutputPath)" Condition="'$(GeneratedOutputPath)' != '' and Exists('$(GeneratedOutputPath)')" />
+        <RemoveDir Directories="$(OutputPath)\Templates" Condition="'$(OutputPath)' != '' and Exists('$(OutputPath)\Templates')" />
+        <RemoveDir Directories="$(_ProcessingDirectory_)" Condition="'$(_ProcessingDirectory_)' != '' and Exists('$(_ProcessingDirectory_)')" />
     </Target>
 
     <Target Name="CreateOutputDirectories" BeforeTargets="Build" >
