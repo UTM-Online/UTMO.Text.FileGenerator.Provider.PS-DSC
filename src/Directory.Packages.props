@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- DO NOT MERGE TO MAIN WITH UNSTABLE DEPENDENCIES -->
-    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="2.18.3" />
+    <PackageVersion Include="UTMO.Text.FileGenerator.Validators" Version="2.18.5" />
     <PackageVersion Include="System.Management.Automation" Version="7.5.6" />
     <PackageVersion Include="UTMO.Common.Guards" Version="1.0.7" />
     <PackageVersion Include="UTMO.Text.FileGenerator" Version="2.18.3" />
