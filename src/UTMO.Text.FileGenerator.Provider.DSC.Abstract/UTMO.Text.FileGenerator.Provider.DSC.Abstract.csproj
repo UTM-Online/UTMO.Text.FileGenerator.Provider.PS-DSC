@@ -39,6 +39,12 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ValidationMessages.resx</DependentUpon>
       </Compile>
+      <Compile Update="Constants\WindowsFeatureNames.IIS.cs">
+        <DependentUpon>WindowsFeatureNames.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Constants\WindowsFeatureNames.NetFramework.cs">
+        <DependentUpon>WindowsFeatureNames.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
