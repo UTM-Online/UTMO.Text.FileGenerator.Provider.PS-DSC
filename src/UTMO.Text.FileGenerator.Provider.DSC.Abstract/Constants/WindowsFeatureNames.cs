@@ -7,11 +7,6 @@ public partial class WindowsFeatureNames
         public const string NetFx3 = "NET-Framework-Core";
     }
 
-    public class RSAT
-    {
-        public const string ActiveDirectory = "RSAT-AD-Tools";
-    }
-
     public class ActiveDirectory
     {
         public const string DomainServices = "AD-Domain-Services";
