@@ -149,7 +149,7 @@ public class DscGenerator
                             FileGenerator = FileGenerator.Create(args, logLevel),
                         };
 
-        generator.FileGenerator.ConfigureHost(a => a.ConfigureHostConfiguration(config => config.EnableSuppressNonPublicPropertyWarnings()));
+        generator.FileGenerator.ConfigureHost(a => a.ConfigureHostConfiguration(config => config.EnableSuppressNonPublicPropertyWarnings().EnableParallelPropertyRendering().EnableParallelResourceRendering()));
 
         Logger.Information(@"Configuring DSC Generator");
 
