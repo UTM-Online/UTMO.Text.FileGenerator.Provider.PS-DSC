@@ -48,14 +48,14 @@ public abstract class DscConfiguration : DscResourceBase
 
     [TemplateProperty]
     [MemberName(nameof(RequiredModules))]
-    public List<RequiredModule> RequiredModules => this.ConfigurationItems().Select(x => x.SourceModule).Distinct().OrderBy(x => x.ModuleName).ToList();
+    public List<RequiredModule> RequiredModules => this.ConfigurationItems().Select(x => x.SourceModule).Distinct().ToList();
 
     // ReSharper disable once MemberCanBeProtected.Global
     protected abstract IEnumerable<DscConfigurationItem> ConfigurationItems();
 
     [TemplateProperty]
     [MemberName(nameof(ConfigurationResources))]
-    public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems().OrderBy(x => x.Name).ToList();
+    public List<DscConfigurationItem> ConfigurationResources => this.ConfigurationItems().ToList();
 
     [TemplateProperty]
     [MemberName("requires_plaintext_password")]

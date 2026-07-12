@@ -46,7 +46,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         [TemplateProperty]
         [MemberName("partial_configs")]
         // ReSharper disable once MemberCanBePrivate.Global
-        public List<DscConfiguration> DscConfiguration { get => field.OrderBy(a => a.FullName).ToList(); } = new();
+        public List<DscConfiguration> DscConfiguration { get; } = new();
 
         [TemplateProperty]
         [MemberName("lcm_settings")]
@@ -65,7 +65,7 @@ namespace UTMO.Text.FileGenerator.Provider.DSC.Abstract.BaseTypes
         public abstract DscLcmWebResource ReportServerWebResource { get; }
 
         [IgnoreMember]
-        public virtual List<DscConfigurationItem> NodeConfigurations { get => field.OrderBy(a => a.Name).ToList(); } = new();
+        public virtual List<DscConfigurationItem> NodeConfigurations { get; } = new();
 
         [TemplateProperty]
         [MemberName("has_local_configuration")]
