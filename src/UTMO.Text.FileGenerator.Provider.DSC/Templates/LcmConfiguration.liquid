@@ -35,17 +35,15 @@ Configuration LocalConfigApplication
             RegistrationKey = '{{ registration_key }}'{% if pull_server_web.configuration_names != empty %}
             ConfigurationNames = @({% for cfg in pull_server_web.configuration_names %}'{{ cfg }}'{% if forloop.last == false  %},{% endif %}{% endfor %}{% if has_local_configuration %},'{{ node_name }}'{% endif %}){% endif %}
         }
-
-{% for cfg in partial_configs %}
+{% assign configs = partial_configs | sort: 'FullName' %}{% for cfg in configs %}
         PartialConfiguration {{ cfg.FullName }}
         {
             Description = '{{ cfg.Description }}'
             RefreshMode = '{{ cfg.Mode }}'{%- if cfg.Mode == 'Pull' %}
             ResourceModuleSource = '[ResourceRepositoryWeb]{{ cfg.module_source }}'
             ConfigurationSource = '[ConfigurationRepositoryWeb]{{ cfg.config_source }}'{%- endif %}
-        }{% if forloop.last == false %}
-{% endif %}{% endfor %}{% if has_local_configuration %}
-    
+        }{% if forloop.last == false %}{% endif %}{% endfor %}{% if has_local_configuration %}
+
         PartialConfiguration '{{ node_name }}'
         {
             Description = 'Per-node configuration'

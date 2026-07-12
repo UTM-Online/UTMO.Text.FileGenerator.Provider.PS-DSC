@@ -1,6 +1,6 @@
-{% extends "script_base" %}
-{% block script %}
-{% if requires_plaintext_password == true %}
+{%- extends "script_base" %}
+{%- block script %}
+{%- if requires_plaintext_password == true %}
 $ConfigurationData = @{
     AllNodes = @(
         @{
@@ -14,17 +14,19 @@ $ConfigurationData = @{
     )
 }
 
-{% endif %}
+{%- endif %}
 Configuration {{ FullName }}
 {
-{%- for module in RequiredModules %}
-    {% if module.UseAlternateFormat == true -%}
+{%- assign reqModule = RequiredModules | sort: 'Name' %}
+{%- for module in reqModule %}
+{% if module.UseAlternateFormat == true -%}
     Import-DscResource -ModuleName @{ModuleName = '{{ module.Name }}'; RequiredVersion = '{{ module.Version }}'}{%- else -%}
     Import-DscResource -ModuleName '{{ module.Name }}' {% if module.Version and module.Name != "PSDesiredStateConfiguration" %}-ModuleVersion '{{ module.Version }}'{% endif -%}{% endif -%}{% endfor %}
 
     Node 'localhost'
     {
-    {% for resource in ConfigurationResources -%}
+{%- assign confResources = ConfigurationResources | sort: 'Name' %}
+{% for resource in confResources -%}
     {{ resource.resource_id }} {{ resource.name }}
         {
             {% for value in resource.property_bag %}{{ value.Key }} = {{ value.Value }}{% if forloop.last == false %}
