@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [string]$moduleManifestPath
+    [string]$moduleManifestPath,
+    [string]$ModulesBasePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,12 +15,12 @@ $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
 $Repository = "DSCResources"
 
 # Copy bootstrap modules from system path to user profile
-$userModulesBasePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+
 Write-Output "Bootstrapping required modules from system to user profile..."
 
 foreach ($moduleName in $ModulesToBootstrap) {
     $sourceModulePath = Join-Path -Path $SystemModulesBasePath -ChildPath $moduleName
-    $destinationModulePath = Join-Path -Path $userModulesBasePath -ChildPath $moduleName
+    $destinationModulePath = Join-Path -Path $ModulesBasePath -ChildPath $moduleName
 
     if (Test-Path $sourceModulePath) {
         Write-Output "Copying module $moduleName from $sourceModulePath to $destinationModulePath"
@@ -31,8 +32,8 @@ foreach ($moduleName in $ModulesToBootstrap) {
         }
 
         # Create the user modules directory if it doesn't exist
-        if (-not (Test-Path $userModulesBasePath)) {
-            New-Item -Path $userModulesBasePath -ItemType Directory -Force | Out-Null
+        if (-not (Test-Path $ModulesBasePath)) {
+            New-Item -Path $ModulesBasePath -ItemType Directory -Force | Out-Null
         }
 
         # Copy the module
@@ -61,11 +62,11 @@ function Repair-ModuleVersionDirectory {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$StandardVersion,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AlternateVersion
@@ -164,7 +165,7 @@ function Test-DSCResourcesInModule {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleVersion
@@ -272,23 +273,23 @@ try {
     if ([string]::IsNullOrWhiteSpace($jsonContent)) {
         throw "Module manifest file is empty"
     }
-    
+
     $moduleManifest = $jsonContent | ConvertFrom-Json -ErrorAction Stop
-    
+
     if (-not $moduleManifest) {
         throw "Module manifest is null or empty after parsing"
     }
-    
+
     # Validate manifest structure
     if (-not ($moduleManifest -is [array]) -and -not $moduleManifest.Count -and -not $moduleManifest.Name) {
         throw "Invalid module manifest structure - expected array of module objects or single module object"
     }
-    
+
     # Convert single object to array for consistent processing
     if ($moduleManifest -isnot [array]) {
         $moduleManifest = @($moduleManifest)
     }
-    
+
     Write-Output "Successfully loaded module manifest with $($moduleManifest.Count) modules"
 }
 catch {
@@ -320,13 +321,13 @@ $currentModule = 0
 foreach($module in $moduleManifest)
 {
     $currentModule++
-    
+
     # Validate module object and required properties
     if (-not $module -or -not $module.Name -or -not $module.Version) {
         Write-Warning "Invalid module object found at index $($currentModule - 1) - missing Name or Version property"
         continue
     }
-    
+
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
@@ -443,7 +444,7 @@ foreach($module in $moduleManifest)
         Write-Warning "Invalid module object found during verification - missing Name or Version property"
         continue
     }
-    
+
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
