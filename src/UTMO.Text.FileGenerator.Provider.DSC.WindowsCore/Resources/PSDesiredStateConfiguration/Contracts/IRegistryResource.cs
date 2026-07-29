@@ -11,5 +11,5 @@ public interface IRegistryResource : IDscResourceConfig
 
     string ValueData { get; set; }
 
-    RegistryValueType? ValueType { get; set; }
+    RegistryValueType ValueType { get; set; }
 }

@@ -34,21 +34,19 @@ public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResour
         set => this.PropertyBag.Set(Constants.Properties.ValueData, value);
     }
 
-    public RegistryValueType? ValueType
+    public RegistryValueType ValueType
     {
-        get
-        {
-            var valueType = this.PropertyBag.Get<RegistryValueType>(Constants.Properties.ValueType);
+        get => this.PropertyBag.Get<RegistryValueType>(Constants.Properties.ValueType);
 
-            if (valueType == RegistryValueType.DWord)
+        set
+        {
+            if (value is RegistryValueType.DWord)
             {
-                return null;
+                return;
             }
 
-            return valueType;
+            this.PropertyBag.Set(Constants.Properties.ValueType, value);
         }
-
-        set => this.PropertyBag.Set(Constants.Properties.ValueType, value);
     }
 
     public static RegistryResource Create(string name, Action<IRegistryResource> configure)
