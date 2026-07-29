@@ -12,4 +12,8 @@ public interface IRegistryResource : IDscResourceConfig
     string ValueData { get; set; }
 
     RegistryValueType ValueType { get; set; }
+
+    bool Force { get; set; }
+
+    bool Hex { get; set; }
 }
