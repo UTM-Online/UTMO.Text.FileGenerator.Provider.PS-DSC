@@ -12,12 +12,49 @@ Write-Output "Gathering a list of machines"
 
 $machines = Get-ChildItem -Path $Path | ?{$_.Extension -eq ".mof"} | %{$_.Name.TrimEnd(".meta.mof".ToCharArray())}
 
+function Test-IsLocalMachine {
+    param(
+        [string]$ComputerName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ComputerName)) {
+        return $false
+    }
+
+    $candidateNames = @(
+        $ComputerName.Trim(),
+        $ComputerName.Trim().TrimEnd('.'),
+        $ComputerName.Split('.')[0]
+    ) | Where-Object { $_ }
+
+    $localNames = @(
+        $env:COMPUTERNAME,
+        [System.Net.Dns]::GetHostName(),
+        $env:COMPUTERNAME.Split('.')[0],
+        ([System.Net.Dns]::GetHostName()).Split('.')[0],
+        "localhost",
+        "127.0.0.1"
+    ) | ForEach-Object { $_.Trim().TrimEnd('.') } | Where-Object { $_ }
+
+    return (($candidateNames | Where-Object { $_ -in $localNames }).Count -gt 0)
+}
+
 Write-Output "Single Threaded Validation"
 
 Write-Output "Validating Endpoint Availability"
 
+$localMachines = @()
+$remoteMachines = @()
+
 foreach($machine in $machines)
 {
+    if (Test-IsLocalMachine -ComputerName $machine)
+    {
+        $localMachines += $machine
+        Write-Host "Local host detected for ${machine}; skipping WSMan validation." -ForegroundColor Yellow
+        continue
+    }
+
     Write-Host "Testing Host ${machine}: " -NoNewline
     $TestResult = $null
     try
@@ -31,7 +68,6 @@ foreach($machine in $machines)
 
     if($null -eq $TestResult -or $TestResult -is [System.Management.Automation.ErrorRecord])
     {
-        $machines = $machines | ?{$_ -ne $machine}
         Write-Host "Fail!" -ForegroundColor Red
         Write-Host "Failed Test Results:"
         $TestResult
@@ -39,6 +75,7 @@ foreach($machine in $machines)
     }
     else
     {
+        $remoteMachines += $machine
         Write-Host "Succeeded!" -ForegroundColor Green
     }
 }
@@ -66,6 +103,17 @@ else
 
 Write-Output "Setting DSC LCM"
 
-Set-DscLocalConfigurationManager -ComputerName $machines -Path $Path -Credential $creds -Force -Verbose
+if ($localMachines.Count -gt 0)
+{
+    foreach($machine in $localMachines)
+    {
+        Set-DscLocalConfigurationManager -ComputerName $machine -Path $Path -Force -Verbose
+    }
+}
+
+if ($remoteMachines.Count -gt 0)
+{
+    Set-DscLocalConfigurationManager -ComputerName $remoteMachines -Path $Path -Credential $creds -Force -Verbose
+}
 
 Write-Output "Deployment Completed Successfully"
