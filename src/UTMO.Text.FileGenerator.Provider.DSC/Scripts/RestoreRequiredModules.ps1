@@ -36,6 +36,11 @@ foreach ($moduleName in $ModulesToBootstrap) {
     $sourceModulePath = Join-Path -Path $SystemModulesBasePath -ChildPath $moduleName
     $destinationModulePath = Join-Path -Path $ModulesBasePath -ChildPath $moduleName
 
+    if ([string]::Equals($sourceModulePath, $destinationModulePath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Write-Warning "ModulesBasePath '$ModulesBasePath' resolves to the system module directory for $moduleName; skipping bootstrap copy to avoid deleting the source module."
+        continue
+    }
+
     if (Test-Path $sourceModulePath) {
         Write-Output "Copying module $moduleName from $sourceModulePath to $destinationModulePath"
 
