@@ -42,6 +42,16 @@ public class GenerateMofFilesPluginTests
     }
 
     [TestMethod]
+    public void BuildChildProcessModulePath_WhenPathIsEmptyAndNormalConfiguration_AddsUserModulePath()
+    {
+        const string userModulePath = @"C:\Users\ExampleUser\Documents\WindowsPowerShell\Modules";
+
+        var resolved = TestableGenerateMofFilesPlugin.FilterModulePathForProcess(string.Empty, userModulePath, true);
+
+        Assert.AreEqual(userModulePath, resolved);
+    }
+
+    [TestMethod]
     public async Task HandleTemplate_WhenOnlyGenerationDateChanges_PreservesExistingMofFile()
     {
         var outputRoot = CreateOutputRoot();

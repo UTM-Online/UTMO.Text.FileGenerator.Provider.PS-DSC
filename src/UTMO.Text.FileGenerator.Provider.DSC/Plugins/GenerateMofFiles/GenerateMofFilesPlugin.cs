@@ -200,7 +200,7 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
     {
         if (string.IsNullOrWhiteSpace(currentPSModulePath))
         {
-            return string.Empty;
+            return includeUserModulePath ? userModulePath : string.Empty;
         }
 
         var modulePaths = currentPSModulePath
