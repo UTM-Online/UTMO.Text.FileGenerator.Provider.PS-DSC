@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
@@ -201,15 +202,9 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             return string.Empty;
         }
 
-        var filteredPaths = new List<string>();
-
-        foreach (var path in currentPSModulePath.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            if (!string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase))
-            {
-                filteredPaths.Add(path);
-            }
-        }
+        var filteredPaths = currentPSModulePath
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(path => !string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase));
 
         return string.Join(Path.PathSeparator, filteredPaths);
     }

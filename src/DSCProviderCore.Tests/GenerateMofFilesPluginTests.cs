@@ -13,7 +13,7 @@ public class GenerateMofFilesPluginTests
     [TestMethod]
     public void BuildChildProcessModulePath_WhenUserModulePathPresent_RemovesIt()
     {
-        var userModulePath = Path.Combine("C:\\Users", "ExampleUser", "Documents", "WindowsPowerShell", "Modules");
+        const string userModulePath = @"C:\Users\ExampleUser\Documents\WindowsPowerShell\Modules";
         var currentModulePath = string.Join(Path.PathSeparator, new[]
         {
             userModulePath,
