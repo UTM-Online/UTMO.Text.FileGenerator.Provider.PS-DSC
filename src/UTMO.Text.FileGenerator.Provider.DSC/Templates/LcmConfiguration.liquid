@@ -5,10 +5,6 @@ $userModulesPath = [System.IO.Path]::Combine(
     [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments),
     'WindowsPowerShell',
     'Modules')
-$env:PSModulePath = @(
-    $env:PSModulePath -split [System.IO.Path]::PathSeparator |
-    Where-Object { $_ -and $_ -ne $userModulesPath }
-) -join [System.IO.Path]::PathSeparator
 
 [DscLocalConfigurationManager()]
 Configuration LocalConfigApplication
@@ -64,5 +60,16 @@ Configuration LocalConfigApplication
     }
 }
 
-LocalConfigApplication -OutputPath $OutputPath
-$env:PSModulePath = $currentPsModulePath{% endblock %}
+try
+{
+    $env:PSModulePath = @(
+        $env:PSModulePath -split [System.IO.Path]::PathSeparator |
+        Where-Object { $_ -and $_ -ne $userModulesPath }
+    ) -join [System.IO.Path]::PathSeparator
+
+    LocalConfigApplication -OutputPath $OutputPath
+}
+finally
+{
+    $env:PSModulePath = $currentPsModulePath
+}{% endblock %}
