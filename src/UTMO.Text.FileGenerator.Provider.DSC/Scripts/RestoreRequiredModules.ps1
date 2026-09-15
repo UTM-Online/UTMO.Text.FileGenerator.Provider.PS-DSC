@@ -10,11 +10,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+$originalPsModulePath = [string]$env:PSModulePath
 $SystemModulesBasePath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
 
 $moduleSearchPaths = @(
     $ModulesBasePath,
-    @($env:PSModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
+    @($originalPsModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
 )
 $env:PSModulePath = @(
     $moduleSearchPaths |
@@ -65,14 +66,8 @@ foreach ($moduleName in $ModulesToBootstrap) {
 
 Write-Output "Bootstrap module copying completed."
 
-$currentPsModulePath = [string]$env:PSModulePath
-$moduleSearchPaths = @()
-if (-not [string]::IsNullOrWhiteSpace($currentPsModulePath)) {
-    $moduleSearchPaths = @($currentPsModulePath -split [System.IO.Path]::PathSeparator | Where-Object { $_ })
-}
-
 $moduleSearchPaths = @(
-    $moduleSearchPaths |
+    $originalPsModulePath -split [System.IO.Path]::PathSeparator |
     Where-Object { $_ -and $_ -ne $SystemModulesBasePath -and $_ -ne $ModulesBasePath }
 ) + $ModulesBasePath
 
@@ -654,4 +649,4 @@ if($versionDirectoryErrors.Count -gt 0)
 
 Write-Output "Finished Installing and Verifying Modules"
 
-$env:PSModulePath = $currentPsModulePath
+$env:PSModulePath = $originalPsModulePath
