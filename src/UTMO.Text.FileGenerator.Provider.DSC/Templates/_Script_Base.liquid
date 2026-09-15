@@ -3,7 +3,20 @@ param(
 )
 
 $currentPsModulePath = $env:PSModulePath
-$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:USERPROFILE\Documents\WindowsPowerShell\Modules" };
+$userModulesPath = [System.IO.Path]::Combine(
+    [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments),
+    'WindowsPowerShell',
+    'Modules')
+$moduleSearchPaths = @()
+if (-not [string]::IsNullOrWhiteSpace($currentPsModulePath)) {
+    $moduleSearchPaths = @($currentPsModulePath -split [System.IO.Path]::PathSeparator | Where-Object { $_ })
+}
+
+$env:PSModulePath = (
+    $moduleSearchPaths |
+    Where-Object { $_ -and $_ -ne $userModulesPath } |
+    Select-Object -Unique
+) -join [System.IO.Path]::PathSeparator
 
 {% block script %}
 {% endblock %}

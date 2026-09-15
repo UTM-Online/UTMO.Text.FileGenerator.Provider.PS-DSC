@@ -2,12 +2,15 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$moduleManifestPath,
-    [string]$ModulesBasePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+    [string]$ModulesBasePath = [System.IO.Path]::Combine(
+        [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments),
+        'WindowsPowerShell',
+        'Modules')
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$SystemModulesBasePath = "$env:ProgramFiles\WindowsPowerShell\Modules"
+$SystemModulesBasePath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
 
 # Bootstrap required modules
 $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
@@ -52,9 +55,18 @@ foreach ($moduleName in $ModulesToBootstrap) {
 
 Write-Output "Bootstrap module copying completed."
 
-$currentPsModulePath = $env:PSModulePath;
-$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" };
-# $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+$currentPsModulePath = [string]$env:PSModulePath
+$moduleSearchPaths = @()
+if (-not [string]::IsNullOrWhiteSpace($currentPsModulePath)) {
+    $moduleSearchPaths = @($currentPsModulePath -split [System.IO.Path]::PathSeparator | Where-Object { $_ })
+}
+
+$moduleSearchPaths = @(
+    $moduleSearchPaths |
+    Where-Object { $_ -and $_ -ne $SystemModulesBasePath -and $_ -ne $ModulesBasePath }
+) + $ModulesBasePath
+
+$env:PSModulePath = ($moduleSearchPaths | Select-Object -Unique) -join [System.IO.Path]::PathSeparator
 
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
