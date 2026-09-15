@@ -1,12 +1,27 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [string]$moduleManifestPath
+    [string]$moduleManifestPath,
+    [string]$ModulesBasePath = [System.IO.Path]::Combine(
+        [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments),
+        'WindowsPowerShell',
+        'Modules')
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$SystemModulesBasePath = "$env:ProgramFiles\WindowsPowerShell\Modules"
+$originalPsModulePath = [string]$env:PSModulePath
+$SystemModulesBasePath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+
+$moduleSearchPaths = @(
+    $ModulesBasePath,
+    @($originalPsModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
+)
+$env:PSModulePath = @(
+    $moduleSearchPaths |
+    Where-Object { $_ } |
+    Select-Object -Unique
+) -join [IO.Path]::PathSeparator
 
 # Bootstrap required modules
 $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
@@ -14,12 +29,17 @@ $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
 $Repository = "DSCResources"
 
 # Copy bootstrap modules from system path to user profile
-$userModulesBasePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+
 Write-Output "Bootstrapping required modules from system to user profile..."
 
 foreach ($moduleName in $ModulesToBootstrap) {
     $sourceModulePath = Join-Path -Path $SystemModulesBasePath -ChildPath $moduleName
-    $destinationModulePath = Join-Path -Path $userModulesBasePath -ChildPath $moduleName
+    $destinationModulePath = Join-Path -Path $ModulesBasePath -ChildPath $moduleName
+
+    if ([string]::Equals($sourceModulePath, $destinationModulePath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Write-Warning "ModulesBasePath '$ModulesBasePath' resolves to the system module directory for $moduleName; skipping bootstrap copy to avoid deleting the source module."
+        continue
+    }
 
     if (Test-Path $sourceModulePath) {
         Write-Output "Copying module $moduleName from $sourceModulePath to $destinationModulePath"
@@ -31,8 +51,8 @@ foreach ($moduleName in $ModulesToBootstrap) {
         }
 
         # Create the user modules directory if it doesn't exist
-        if (-not (Test-Path $userModulesBasePath)) {
-            New-Item -Path $userModulesBasePath -ItemType Directory -Force | Out-Null
+        if (-not (Test-Path $ModulesBasePath)) {
+            New-Item -Path $ModulesBasePath -ItemType Directory -Force | Out-Null
         }
 
         # Copy the module
@@ -51,9 +71,12 @@ foreach ($moduleName in $ModulesToBootstrap) {
 
 Write-Output "Bootstrap module copying completed."
 
-$currentPsModulePath = $env:PSModulePath;
-$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" };
-# $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
+$moduleSearchPaths = @(
+    $originalPsModulePath -split [System.IO.Path]::PathSeparator |
+    Where-Object { $_ -and $_ -ne $SystemModulesBasePath -and $_ -ne $ModulesBasePath }
+) + $ModulesBasePath
+
+$env:PSModulePath = ($moduleSearchPaths | Select-Object -Unique) -join [System.IO.Path]::PathSeparator
 
 # Function to fix module version directory names when UseAlternateFormat is true
 function Repair-ModuleVersionDirectory {
@@ -61,11 +84,11 @@ function Repair-ModuleVersionDirectory {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$StandardVersion,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$AlternateVersion
@@ -164,7 +187,7 @@ function Test-DSCResourcesInModule {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleName,
-        
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$ModuleVersion
@@ -272,23 +295,23 @@ try {
     if ([string]::IsNullOrWhiteSpace($jsonContent)) {
         throw "Module manifest file is empty"
     }
-    
+
     $moduleManifest = $jsonContent | ConvertFrom-Json -ErrorAction Stop
-    
+
     if (-not $moduleManifest) {
         throw "Module manifest is null or empty after parsing"
     }
-    
+
     # Validate manifest structure
     if (-not ($moduleManifest -is [array]) -and -not $moduleManifest.Count -and -not $moduleManifest.Name) {
         throw "Invalid module manifest structure - expected array of module objects or single module object"
     }
-    
+
     # Convert single object to array for consistent processing
     if ($moduleManifest -isnot [array]) {
         $moduleManifest = @($moduleManifest)
     }
-    
+
     Write-Output "Successfully loaded module manifest with $($moduleManifest.Count) modules"
 }
 catch {
@@ -320,13 +343,13 @@ $currentModule = 0
 foreach($module in $moduleManifest)
 {
     $currentModule++
-    
+
     # Validate module object and required properties
     if (-not $module -or -not $module.Name -or -not $module.Version) {
         Write-Warning "Invalid module object found at index $($currentModule - 1) - missing Name or Version property"
         continue
     }
-    
+
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
@@ -443,7 +466,7 @@ foreach($module in $moduleManifest)
         Write-Warning "Invalid module object found during verification - missing Name or Version property"
         continue
     }
-    
+
     $Name = $module.Name
 
     # Determine which version to use based on UseAlternateFormat property
@@ -631,4 +654,4 @@ if($versionDirectoryErrors.Count -gt 0)
 
 Write-Output "Finished Installing and Verifying Modules"
 
-$env:PSModulePath = $currentPsModulePath
+$env:PSModulePath = $originalPsModulePath

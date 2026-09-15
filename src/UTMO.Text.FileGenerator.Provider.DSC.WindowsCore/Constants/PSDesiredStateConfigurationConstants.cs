@@ -5,7 +5,7 @@ public static class PSDesiredStateConfigurationConstants
     public static class File
     {
         public const string ResourceId = "File";
-        
+
         public static class Properties
         {
             public const string DestinationPath = "DestinationPath";
@@ -31,9 +31,11 @@ public static class PSDesiredStateConfigurationConstants
             public const string ValueName = "ValueName";
             public const string ValueData = "ValueData";
             public const string ValueType = "ValueType";
+            public const string Force = "Force";
+            public const string Hex = "Hex";
         }
     }
-    
+
     public static class WindowsFeature
     {
         public const string ResourceId = "WindowsFeature";
@@ -48,18 +50,18 @@ public static class PSDesiredStateConfigurationConstants
     public static class Group
     {
         public const string ResourceId = "Group";
-        
+
         public static class Properties
         {
             public const string GroupName = "GroupName";
             public const string MembersToInclude = "MembersToInclude";
         }
     }
-    
+
     public static class Package
     {
         public const string ResourceId = "Package";
-        
+
         public static class Properties
         {
             public const string Name = "Name";
@@ -70,11 +72,11 @@ public static class PSDesiredStateConfigurationConstants
             public const string ReturnCode = "ReturnCode";
         }
     }
-    
+
     public static class Service
     {
         public const string ResourceId = "Service";
-        
+
         public static class Properties
         {
             public const string Name = "Name";
@@ -88,11 +90,11 @@ public static class PSDesiredStateConfigurationConstants
             public const string Path = "Path";
         }
     }
-    
+
     public static class Script
     {
         public const string ResourceId = "Script";
-        
+
         public static class Properties
         {
             public const string GetScript = "GetScript";
