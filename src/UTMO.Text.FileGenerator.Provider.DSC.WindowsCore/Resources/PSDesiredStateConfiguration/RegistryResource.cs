@@ -39,14 +39,7 @@ public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResour
     {
         get => this.PropertyBag.Get<RegistryValueType>(Constants.Properties.ValueType);
 
-        set
-        {
-            this.PropertyBag.Set(Constants.Properties.ValueType, value);
-            if (this.Hex && !RegistryResource.IsCompatibleHexValueType(value))
-            {
-                this.PropertyBag.Set(Constants.Properties.ValueType, RegistryValueType.DWord);
-            }
-        }
+        set => this.PropertyBag.Set(Constants.Properties.ValueType, value);
     }
 
     public bool Force
@@ -69,9 +62,8 @@ public class RegistryResource : PSDesiredStateConfigurationBase, IRegistryResour
 
             var liquidBag = this.PropertyBag.ToLiquid() as Dictionary<string, object>;
             var hasExplicitValueType = liquidBag is not null && liquidBag.ContainsKey(Constants.Properties.ValueType);
-            var valueType = this.ValueType;
 
-            if (!hasExplicitValueType || !RegistryResource.IsCompatibleHexValueType(valueType))
+            if (!hasExplicitValueType)
             {
                 this.PropertyBag.Set(Constants.Properties.ValueType, RegistryValueType.DWord);
             }

@@ -27,7 +27,7 @@ public class RegistryResourceTests
     }
 
     [TestMethod]
-    public void HexTrue_WithStringValueType_ShouldForceCompatibleDWordValueType()
+    public void HexTrue_WithStringValueType_ShouldPreserveExplicitTypeForValidation()
     {
         // Arrange & Act
         var resource = RegistryResource.Create("SetRegistryValue", r =>
@@ -42,7 +42,7 @@ public class RegistryResourceTests
         // Assert
         var liquid = GetLiquidPropertyBag(resource);
         Assert.IsTrue(liquid.TryGetValue(RegistryConstants.Properties.ValueType, out var valueType));
-        Assert.AreEqual("\"DWord\"", valueType);
+        Assert.AreEqual("\"String\"", valueType);
     }
 
     private static Dictionary<string, object> GetLiquidPropertyBag(RegistryResource resource)
