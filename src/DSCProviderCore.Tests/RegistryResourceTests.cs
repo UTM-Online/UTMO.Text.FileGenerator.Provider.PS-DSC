@@ -21,10 +21,9 @@ public class RegistryResourceTests
         });
 
         // Assert
-        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
-        Assert.IsNotNull(liquid);
-        Assert.IsTrue(liquid.ContainsKey(RegistryConstants.Properties.ValueType));
-        Assert.AreEqual("\"DWord\"", liquid[RegistryConstants.Properties.ValueType]);
+        var liquid = GetLiquidPropertyBag(resource);
+        Assert.IsTrue(liquid.TryGetValue(RegistryConstants.Properties.ValueType, out var valueType));
+        Assert.AreEqual("\"DWord\"", valueType);
     }
 
     [TestMethod]
@@ -41,9 +40,22 @@ public class RegistryResourceTests
         });
 
         // Assert
-        var liquid = resource.PropertyBag.ToLiquid() as Dictionary<string, object>;
-        Assert.IsNotNull(liquid);
-        Assert.AreEqual("\"DWord\"", liquid[RegistryConstants.Properties.ValueType]);
+        var liquid = GetLiquidPropertyBag(resource);
+        Assert.IsTrue(liquid.TryGetValue(RegistryConstants.Properties.ValueType, out var valueType));
+        Assert.AreEqual("\"DWord\"", valueType);
+    }
+
+    private static Dictionary<string, object> GetLiquidPropertyBag(RegistryResource resource)
+    {
+        var liquid = resource.PropertyBag.ToLiquid();
+
+        if (liquid is not Dictionary<string, object> propertyBag)
+        {
+            Assert.Fail($"Expected PropertyBag.ToLiquid() to return Dictionary<string, object>, but got '{liquid?.GetType().FullName ?? "null"}'.");
+            return new Dictionary<string, object>();
+        }
+
+        return propertyBag;
     }
 
     [TestMethod]
