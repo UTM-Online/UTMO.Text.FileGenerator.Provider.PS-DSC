@@ -21,9 +21,24 @@ public class GenerateMofFilesPluginTests
             @"D:\CustomModules",
         });
 
-        var filtered = TestableGenerateMofFilesPlugin.FilterModulePathForProcess(currentModulePath, userModulePath);
+        var filtered = TestableGenerateMofFilesPlugin.FilterModulePathForProcess(currentModulePath, userModulePath, false);
 
         Assert.AreEqual(string.Join(Path.PathSeparator, new[] { @"C:\Program Files\WindowsPowerShell\Modules", @"D:\CustomModules" }), filtered);
+    }
+
+    [TestMethod]
+    public void BuildChildProcessModulePath_WhenUserModulePathMissing_AddsItForNormalConfigurations()
+    {
+        const string userModulePath = @"C:\Users\ExampleUser\Documents\WindowsPowerShell\Modules";
+        var currentModulePath = string.Join(Path.PathSeparator, new[]
+        {
+            @"C:\Program Files\WindowsPowerShell\Modules",
+            @"D:\CustomModules",
+        });
+
+        var resolved = TestableGenerateMofFilesPlugin.FilterModulePathForProcess(currentModulePath, userModulePath, true);
+
+        Assert.AreEqual(string.Join(Path.PathSeparator, new[] { userModulePath, @"C:\Program Files\WindowsPowerShell\Modules", @"D:\CustomModules" }), resolved);
     }
 
     [TestMethod]
@@ -263,9 +278,9 @@ public class GenerateMofFilesPluginTests
             this.generatedContent = generatedContent;
         }
 
-        public static string FilterModulePathForProcess(string? currentModulePath, string userModulePath)
+        public static string FilterModulePathForProcess(string? currentModulePath, string userModulePath, bool includeUserModulePath)
         {
-            return BuildChildProcessModulePath(currentModulePath, userModulePath);
+            return BuildChildProcessModulePath(currentModulePath, userModulePath, includeUserModulePath);
         }
 
         protected override Task<bool> GenerateMofAsync(ITemplateModel model, string scriptConfig, string mofOutputFile)

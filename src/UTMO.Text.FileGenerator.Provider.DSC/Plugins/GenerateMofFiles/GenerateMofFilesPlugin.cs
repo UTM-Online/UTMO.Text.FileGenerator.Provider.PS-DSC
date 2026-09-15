@@ -137,10 +137,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
 
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
             var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath");
+            var shouldFilterUserModulePath = model.ResourceTypeName == DscResourceTypeNames.DscLcmConfiguration;
 
             if (currentPSModulePath is not null)
             {
-                processInfo.EnvironmentVariables["PSModulePath"] = BuildChildProcessModulePath(currentPSModulePath, userModulePath);
+                processInfo.EnvironmentVariables["PSModulePath"] = BuildChildProcessModulePath(currentPSModulePath, userModulePath, !shouldFilterUserModulePath);
             }
 
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
@@ -195,15 +196,30 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
         }
     }
 
-    protected static string BuildChildProcessModulePath(string? currentPSModulePath, string userModulePath)
+    protected static string BuildChildProcessModulePath(string? currentPSModulePath, string userModulePath, bool includeUserModulePath)
     {
         if (string.IsNullOrWhiteSpace(currentPSModulePath))
         {
             return string.Empty;
         }
 
-        var filteredPaths = currentPSModulePath
+        var modulePaths = currentPSModulePath
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(path => !string.IsNullOrWhiteSpace(path));
+
+        if (includeUserModulePath)
+        {
+            var resolvedPaths = modulePaths.ToList();
+
+            if (!resolvedPaths.Any(path => string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase)))
+            {
+                resolvedPaths.Insert(0, userModulePath);
+            }
+
+            return string.Join(Path.PathSeparator, resolvedPaths);
+        }
+
+        var filteredPaths = modulePaths
             .Where(path => !string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase));
 
         return string.Join(Path.PathSeparator, filteredPaths);
