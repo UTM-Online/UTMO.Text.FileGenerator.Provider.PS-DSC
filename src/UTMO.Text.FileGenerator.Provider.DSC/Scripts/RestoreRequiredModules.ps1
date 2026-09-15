@@ -12,6 +12,16 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $SystemModulesBasePath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
 
+$moduleSearchPaths = @(
+    $ModulesBasePath,
+    @($env:PSModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
+)
+$env:PSModulePath = @(
+    $moduleSearchPaths |
+    Where-Object { $_ } |
+    Select-Object -Unique
+) -join [IO.Path]::PathSeparator
+
 # Bootstrap required modules
 $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
 

@@ -1,5 +1,15 @@
 {% extends 'script_base' %}
 {% block script %}
+$currentPsModulePath = $env:PSModulePath
+$userModulesPath = [System.IO.Path]::Combine(
+    [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments),
+    'WindowsPowerShell',
+    'Modules')
+$env:PSModulePath = @(
+    $env:PSModulePath -split [System.IO.Path]::PathSeparator |
+    Where-Object { $_ -and $_ -ne $userModulesPath }
+) -join [System.IO.Path]::PathSeparator
+
 [DscLocalConfigurationManager()]
 Configuration LocalConfigApplication
 {
@@ -54,4 +64,5 @@ Configuration LocalConfigApplication
     }
 }
 
-LocalConfigApplication -OutputPath $OutputPath{% endblock %}
+LocalConfigApplication -OutputPath $OutputPath
+$env:PSModulePath = $currentPsModulePath{% endblock %}
