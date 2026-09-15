@@ -9,6 +9,16 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $SystemModulesBasePath = "$env:ProgramFiles\WindowsPowerShell\Modules"
 
+$moduleSearchPaths = @(
+    $ModulesBasePath,
+    @($env:PSModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
+)
+$env:PSModulePath = @(
+    $moduleSearchPaths |
+    Where-Object { $_ } |
+    Select-Object -Unique
+) -join [IO.Path]::PathSeparator
+
 # Bootstrap required modules
 $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
 
@@ -52,8 +62,11 @@ foreach ($moduleName in $ModulesToBootstrap) {
 
 Write-Output "Bootstrap module copying completed."
 
-$currentPsModulePath = $env:PSModulePath;
-$env:PSModulePath = $env:PSModulePath | Where-Object { $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" };
+$currentPsModulePath = $env:PSModulePath
+$env:PSModulePath = @(
+    $env:PSModulePath -split [IO.Path]::PathSeparator |
+    Where-Object { $_ -and $_ -ne "$env:ProgramFiles\WindowsPowerShell\Modules" }
+) -join [IO.Path]::PathSeparator
 # $env:PSModulePath = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
 
 # Function to fix module version directory names when UseAlternateFormat is true
