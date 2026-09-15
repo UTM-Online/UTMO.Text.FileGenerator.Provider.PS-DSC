@@ -135,11 +135,11 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                               };
 
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
-            var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
+            var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath");
 
-            if (!currentPSModulePath.Contains(userModulePath))
+            if (currentPSModulePath is not null)
             {
-                processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
+                processInfo.EnvironmentVariables["PSModulePath"] = BuildChildProcessModulePath(currentPSModulePath, userModulePath);
             }
 
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
@@ -192,6 +192,26 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             this.Logger.LogError(LogMessages.MofGenerationException, ex.GetType().Name, model.ResourceName, parsedError);
             return false;
         }
+    }
+
+    protected static string BuildChildProcessModulePath(string? currentPSModulePath, string userModulePath)
+    {
+        if (string.IsNullOrWhiteSpace(currentPSModulePath))
+        {
+            return string.Empty;
+        }
+
+        var filteredPaths = new List<string>();
+
+        foreach (var path in currentPSModulePath.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase))
+            {
+                filteredPaths.Add(path);
+            }
+        }
+
+        return string.Join(Path.PathSeparator, filteredPaths);
     }
 
     protected virtual Process StartProcess(ProcessStartInfo processInfo)

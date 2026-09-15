@@ -11,6 +11,22 @@ namespace DSCProviderCore.Tests;
 public class GenerateMofFilesPluginTests
 {
     [TestMethod]
+    public void BuildChildProcessModulePath_WhenUserModulePathPresent_RemovesIt()
+    {
+        var userModulePath = Path.Combine("C:\\Users", "ExampleUser", "Documents", "WindowsPowerShell", "Modules");
+        var currentModulePath = string.Join(Path.PathSeparator, new[]
+        {
+            userModulePath,
+            @"C:\Program Files\WindowsPowerShell\Modules",
+            @"D:\CustomModules",
+        });
+
+        var filtered = TestableGenerateMofFilesPlugin.FilterModulePathForProcess(currentModulePath, userModulePath);
+
+        Assert.AreEqual(string.Join(Path.PathSeparator, new[] { @"C:\Program Files\WindowsPowerShell\Modules", @"D:\CustomModules" }), filtered);
+    }
+
+    [TestMethod]
     public async Task HandleTemplate_WhenOnlyGenerationDateChanges_PreservesExistingMofFile()
     {
         var outputRoot = CreateOutputRoot();
@@ -245,6 +261,11 @@ public class GenerateMofFilesPluginTests
             : base(writer, options, NullLogger<GenerateMofFilesPlugin>.Instance)
         {
             this.generatedContent = generatedContent;
+        }
+
+        public static string FilterModulePathForProcess(string? currentModulePath, string userModulePath)
+        {
+            return BuildChildProcessModulePath(currentModulePath, userModulePath);
         }
 
         protected override Task<bool> GenerateMofAsync(ITemplateModel model, string scriptConfig, string mofOutputFile)
