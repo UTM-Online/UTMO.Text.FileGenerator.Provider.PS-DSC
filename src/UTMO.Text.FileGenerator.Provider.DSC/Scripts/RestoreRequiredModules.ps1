@@ -11,7 +11,14 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $originalPsModulePath = [string]$env:PSModulePath
-$SystemModulesBasePath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+$systemModuleRoots = @(
+    [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules'),
+    [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules'),
+    [System.IO.Path]::Combine($env:ProgramFiles, 'Common Files', 'PowerShell', 'Modules')
+) | Where-Object { $_ }
+$SystemModulesBasePath = $systemModuleRoots |
+    Where-Object { Test-Path $_ } |
+    Select-Object -First 1
 
 $moduleSearchPaths = @(
     $ModulesBasePath,
@@ -25,6 +32,73 @@ $env:PSModulePath = @(
 
 # Bootstrap required modules
 $ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
+
+function Import-PowerShellRepositoryModules {
+    param(
+        [string[]]$ModuleNames = @("PackageManagement", "PowerShellGet")
+    )
+
+    foreach ($moduleName in $ModuleNames) {
+        $availableModule = Get-Module -ListAvailable -Name $moduleName -ErrorAction SilentlyContinue |
+            Sort-Object Version -Descending |
+            Select-Object -First 1
+
+        if (-not $availableModule) {
+            Write-Warning "Required module '$moduleName' was not found in the configured PSModulePath: $($env:PSModulePath)"
+            continue
+        }
+
+        $loadedModule = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($loadedModule) {
+            Write-Output "PowerShell package module '$moduleName' already loaded from $($loadedModule.Path)"
+            continue
+        }
+
+        try {
+            Import-Module -Name $availableModule.Path -Force -ErrorAction Stop
+            Write-Output "Imported PowerShell package module '$moduleName' from $($availableModule.Path)"
+            continue
+        }
+        catch {
+            $moduleManifestPath = Join-Path -Path $availableModule.ModuleBase -ChildPath "$moduleName.psd1"
+            if (Test-Path $moduleManifestPath) {
+                try {
+                    Import-Module -Name $moduleManifestPath -Force -ErrorAction Stop
+                    Write-Output "Imported PowerShell package module '$moduleName' from $moduleManifestPath"
+                    continue
+                }
+                catch {
+                    Write-Warning "Failed to import $moduleName from $moduleManifestPath`: $($_.Exception.Message)"
+                }
+            }
+
+            throw "Failed to import required module '$moduleName': $($_.Exception.Message)"
+        }
+    }
+}
+
+function Get-ModuleManifestValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        $InputObject,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PropertyName,
+
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $InputObject) {
+        return $DefaultValue
+    }
+
+    $property = $InputObject.PSObject.Properties[$PropertyName]
+    if ($null -eq $property) {
+        return $DefaultValue
+    }
+
+    return $property.Value
+}
 
 $Repository = "DSCResources"
 
@@ -321,6 +395,7 @@ catch {
 $MaxRetryCount = 5
 
 Write-Output "Validate and Configure DSC Module Repository"
+Import-PowerShellRepositoryModules
 
 $repoExists = Get-PSRepository -Name $Repository -ErrorAction SilentlyContinue
 
@@ -352,10 +427,13 @@ foreach($module in $moduleManifest)
 
     $Name = $module.Name
 
-    # Determine which version to use based on UseAlternateFormat property
-    if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion)
+    # Determine which version to use based on the optional manifest properties
+    $useAlternateFormat = [bool](Get-ModuleManifestValue -InputObject $module -PropertyName 'UseAlternateFormat' -DefaultValue $false)
+    $alternateVersion = Get-ModuleManifestValue -InputObject $module -PropertyName 'AlternateVersion'
+
+    if($useAlternateFormat -and $alternateVersion)
     {
-        $Version = $module.AlternateVersion
+        $Version = $alternateVersion
         Write-Information "Using alternate version for $Name`: $Version" -InformationAction Continue
     }
     else
@@ -393,7 +471,8 @@ foreach($module in $moduleManifest)
 
                 $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
 
-                if($module.AllowClobber)
+                $allowClobber = [bool](Get-ModuleManifestValue -InputObject $module -PropertyName 'AllowClobber' -DefaultValue $false)
+                if($allowClobber)
                 {
                     $parameters.Add("AllowClobber",$true)
                 }
@@ -403,11 +482,11 @@ foreach($module in $moduleManifest)
                 break  # Exit the loop on successful installation
 
                 # Fix version directory naming if using alternate format
-                if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
+                if($useAlternateFormat -and $alternateVersion) {
                     Write-Information "Module $Name uses alternate format, checking version directory..." -InformationAction Continue
-                    $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $module.AlternateVersion
+                    $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $alternateVersion
                     if(-not $fixResult) {
-                        $versionDirectoryErrors += "Failed to fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $($module.AlternateVersion))"
+                        $versionDirectoryErrors += "Failed to fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $alternateVersion)"
                         Write-Warning "Failed to fix version directory for module $Name - this may cause import issues"
                     }
                 }
@@ -437,11 +516,11 @@ foreach($module in $moduleManifest)
         Write-Information "$Name already installed" -InformationAction Continue
 
         # Even if module is already installed, check if version directory needs fixing for alternate format
-        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion) {
+        if($useAlternateFormat -and $alternateVersion) {
             Write-Information "Module $Name uses alternate format, verifying version directory..." -InformationAction Continue
-            $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $module.AlternateVersion
+            $fixResult = Repair-ModuleVersionDirectory -ModuleName $Name -StandardVersion $module.Version -AlternateVersion $alternateVersion
             if(-not $fixResult) {
-                $versionDirectoryErrors += "Failed to verify/fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $($module.AlternateVersion))"
+                $versionDirectoryErrors += "Failed to verify/fix version directory for module $Name (Standard: $($module.Version) -> Alternate: $alternateVersion)"
                 Write-Warning "Failed to verify/fix version directory for module $Name - this may cause import issues"
             }
         }
@@ -469,10 +548,13 @@ foreach($module in $moduleManifest)
 
     $Name = $module.Name
 
-    # Determine which version to use based on UseAlternateFormat property
-    if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion)
+    # Determine which version to use based on the optional manifest properties
+    $useAlternateFormat = [bool](Get-ModuleManifestValue -InputObject $module -PropertyName 'UseAlternateFormat' -DefaultValue $false)
+    $alternateVersion = Get-ModuleManifestValue -InputObject $module -PropertyName 'AlternateVersion'
+
+    if($useAlternateFormat -and $alternateVersion)
     {
-        $Version = $module.AlternateVersion
+        $Version = $alternateVersion
     }
     else
     {
@@ -487,7 +569,7 @@ foreach($module in $moduleManifest)
         $versionsToTry = @()
 
         # If module not found with alternate version, try with standard version
-        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.AlternateVersion)
+        if($useAlternateFormat -and $alternateVersion -and $Version -eq $alternateVersion)
         {
             Write-Information "Module $Name v$Version not found, trying standard version $($module.Version)" -InformationAction Continue
             $versionsToTry += $module.Version
@@ -543,13 +625,13 @@ foreach($module in $moduleManifest)
         $importVersionsToTry = @()
 
         # If using alternate version, try standard version
-        if($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.AlternateVersion)
+        if($useAlternateFormat -and $alternateVersion -and $Version -eq $alternateVersion)
         {
             $importVersionsToTry += $module.Version
         }
-        elseif($module.UseAlternateFormat -eq $true -and $module.AlternateVersion -and $Version -eq $module.Version)
+        elseif($useAlternateFormat -and $alternateVersion -and $Version -eq $module.Version)
         {
-            $importVersionsToTry += $module.AlternateVersion
+            $importVersionsToTry += $alternateVersion
         }
 
         # Try truncated version (remove trailing .0)

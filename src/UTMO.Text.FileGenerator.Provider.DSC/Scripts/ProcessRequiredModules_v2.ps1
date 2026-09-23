@@ -54,6 +54,73 @@ function Initialize-UserModulePath {
     return $userModulesPath
 }
 
+function Import-PowerShellRepositoryModules {
+    param(
+        [string[]]$ModuleNames = @('PackageManagement', 'PowerShellGet')
+    )
+
+    foreach ($moduleName in $ModuleNames) {
+        $availableModule = Get-Module -ListAvailable -Name $moduleName -ErrorAction SilentlyContinue |
+            Sort-Object Version -Descending |
+            Select-Object -First 1
+
+        if (-not $availableModule) {
+            Write-ScriptLog -Message "Required module '$moduleName' was not found in PSModulePath: $($env:PSModulePath)" -Level Warning
+            continue
+        }
+
+        $loadedModule = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($loadedModule) {
+            Write-ScriptLog -Message "PowerShell package module '$moduleName' already loaded from $($loadedModule.Path)"
+            continue
+        }
+
+        try {
+            Import-Module -Name $availableModule.Path -Force -ErrorAction Stop
+            Write-ScriptLog -Message "Imported PowerShell package module '$moduleName' from $($availableModule.Path)"
+            continue
+        }
+        catch {
+            $moduleManifestPath = Join-Path -Path $availableModule.ModuleBase -ChildPath "$moduleName.psd1"
+            if (Test-Path $moduleManifestPath) {
+                try {
+                    Import-Module -Name $moduleManifestPath -Force -ErrorAction Stop
+                    Write-ScriptLog -Message "Imported PowerShell package module '$moduleName' from $moduleManifestPath"
+                    continue
+                }
+                catch {
+                    Write-ScriptLog -Message "Failed to import $moduleName from $moduleManifestPath: $($_.Exception.Message)" -Level Warning
+                }
+            }
+
+            throw "Failed to import required module '$moduleName': $($_.Exception.Message)"
+        }
+    }
+}
+
+function Get-ManifestValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        $InputObject,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PropertyName,
+
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $InputObject) {
+        return $DefaultValue
+    }
+
+    $property = $InputObject.PSObject.Properties[$PropertyName]
+    if ($null -eq $property) {
+        return $DefaultValue
+    }
+
+    return $property.Value
+}
+
 function Test-ManifestFile {
     param(
         [Parameter(Mandatory = $true)]
@@ -172,8 +239,10 @@ function Save-PackageModule {
         $sourcePattern = Join-Path -Path $versionPath -ChildPath '*'
         
         # Determine archive filename
-        if ($Package.UseAlternateFormat -and $Package.AlternateVersion) {
-            $archiveFileName = "$moduleName`_$($Package.AlternateVersion).zip"
+        $useAlternateFormat = [bool](Get-ManifestValue -InputObject $Package -PropertyName 'UseAlternateFormat' -DefaultValue $false)
+        $alternateVersion = Get-ManifestValue -InputObject $Package -PropertyName 'AlternateVersion'
+        if ($useAlternateFormat -and $alternateVersion) {
+            $archiveFileName = "$moduleName`_$alternateVersion.zip"
         }
         else {
             $archiveFileName = "$moduleName`_$moduleVersion.zip"
@@ -204,15 +273,16 @@ try {
     Write-ScriptLog -Message "Output Path: $OutputPath"
     Write-ScriptLog -Message "NoArchive Mode: $NoArchive"
 
+    # Initialize user module path before accessing repository cmdlets
+    $userModulePath = Initialize-UserModulePath
+    Import-PowerShellRepositoryModules
+
     $repoExists = Get-PSRepository -Name "DSCResources" -ErrorAction SilentlyContinue
 
     if(-not $repoExists)
     {
         Register-PSRepository -Name "DSCResources" -SourceLocation "https://packages.public.utmonline.net/nuget/DSCResources/" -InstallationPolicy Trusted
     }
-    
-    # Initialize user module path
-    $userModulePath = Initialize-UserModulePath
     
     # Validate and load manifest
     Write-ScriptLog -Message 'Loading manifest file...'
