@@ -65,8 +65,7 @@ function Import-PowerShellRepositoryModules {
             Select-Object -First 1
 
         if (-not $availableModule) {
-            Write-ScriptLog -Message "Required module '$moduleName' was not found in PSModulePath: $($env:PSModulePath)" -Level Warning
-            continue
+            throw "Required repository module '$moduleName' was not found in PSModulePath: $($env:PSModulePath)"
         }
 
         $loadedModule = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
