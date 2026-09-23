@@ -20,6 +20,11 @@ $SystemModulesBasePath = $systemModuleRoots |
     Where-Object { Test-Path $_ } |
     Select-Object -First 1
 
+if (-not $SystemModulesBasePath) {
+    $SystemModulesBasePath = Join-Path -Path $PSHOME -ChildPath 'Modules'
+    Write-Warning "No system PowerShell module root was found; falling back to $SystemModulesBasePath for bootstrap lookup."
+}
+
 $moduleSearchPaths = @(
     $ModulesBasePath,
     @($originalPsModulePath -split [IO.Path]::PathSeparator | Where-Object { $_ })
@@ -68,7 +73,7 @@ function Import-PowerShellRepositoryModules {
                     continue
                 }
                 catch {
-                    Write-Warning "Failed to import $moduleName from $moduleManifestPath`: $($_.Exception.Message)"
+                    Write-Warning "Failed to import ${moduleName} from ${moduleManifestPath}: $($_.Exception.Message)"
                 }
             }
 
@@ -488,11 +493,7 @@ foreach($module in $moduleManifest)
                     $installMessage = $_.Exception.Message
                     if ($installMessage -match 'Administrator rights are required|requires Administrator rights|Run as Administrator|install by adding ".*-Scope CurrentUser"')
                     {
-                        Write-Warning "Install-Module for $Name requires elevated privileges. Retrying with -Scope AllUsers."
-                        $parameters['Scope'] = 'AllUsers'
-                        Install-Module @parameters
-                        Write-Information "Finished installing $Name with AllUsers scope" -InformationAction Continue
-                        break
+                        throw "Install-Module for $Name requires elevated privileges and cannot be retried with AllUsers from this non-elevated session. Original error: $installMessage"
                     }
 
                     throw

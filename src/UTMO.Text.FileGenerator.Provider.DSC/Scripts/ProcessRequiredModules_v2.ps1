@@ -89,7 +89,7 @@ function Import-PowerShellRepositoryModules {
                     continue
                 }
                 catch {
-                    Write-ScriptLog -Message "Failed to import $moduleName from $moduleManifestPath`: $($_.Exception.Message)" -Level Warning
+                    Write-ScriptLog -Message "Failed to import ${moduleName} from ${moduleManifestPath}: $($_.Exception.Message)" -Level Warning
                 }
             }
 
