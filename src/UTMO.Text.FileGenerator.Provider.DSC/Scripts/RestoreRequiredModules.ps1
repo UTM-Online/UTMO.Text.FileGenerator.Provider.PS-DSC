@@ -11,18 +11,37 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $originalPsModulePath = [string]$env:PSModulePath
+$ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
+
+function Test-ModuleRootContainsModules {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ModuleRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$ModuleNames
+    )
+
+    return (Test-Path $ModuleRoot) -and
+        (@($ModuleNames | Where-Object { -not (Test-Path (Join-Path -Path $ModuleRoot -ChildPath $_)) }).Count -eq 0)
+}
+
 $systemModuleRoots = @(
-    [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules'),
     [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules'),
+    [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules'),
     [System.IO.Path]::Combine($env:ProgramFiles, 'Common Files', 'PowerShell', 'Modules')
 ) | Where-Object { $_ }
 $SystemModulesBasePath = $systemModuleRoots |
-    Where-Object { Test-Path $_ } |
+    Where-Object { Test-ModuleRootContainsModules -ModuleRoot $_ -ModuleNames $ModulesToBootstrap } |
     Select-Object -First 1
 
 if (-not $SystemModulesBasePath) {
     $SystemModulesBasePath = Join-Path -Path $PSHOME -ChildPath 'Modules'
-    Write-Warning "No system PowerShell module root was found; falling back to $SystemModulesBasePath for bootstrap lookup."
+    if (-not (Test-ModuleRootContainsModules -ModuleRoot $SystemModulesBasePath -ModuleNames $ModulesToBootstrap)) {
+        throw "No module root contains all required bootstrap modules: $($ModulesToBootstrap -join ', ')."
+    }
+
+    Write-Warning "No system PowerShell module root contains all bootstrap modules; falling back to $SystemModulesBasePath."
 }
 
 $moduleSearchPaths = @(
@@ -35,22 +54,26 @@ $env:PSModulePath = @(
     Select-Object -Unique
 ) -join [IO.Path]::PathSeparator
 
-# Bootstrap required modules
-$ModulesToBootstrap = @("PackageManagement", "PowerShellGet")
-
 function Import-PowerShellRepositoryModules {
     param(
-        [string[]]$ModuleNames = @("PackageManagement", "PowerShellGet")
+        [string[]]$ModuleNames = @("PackageManagement", "PowerShellGet"),
+
+        [Parameter(Mandatory = $true)]
+        [string]$ModuleRoot
     )
 
     foreach ($moduleName in $ModuleNames) {
         $availableModule = Get-Module -ListAvailable -Name $moduleName -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.ModuleBase.StartsWith(
+                    [System.IO.Path]::GetFullPath($ModuleRoot),
+                    [System.StringComparison]::OrdinalIgnoreCase)
+            } |
             Sort-Object Version -Descending |
             Select-Object -First 1
 
         if (-not $availableModule) {
-            Write-Warning "Required module '$moduleName' was not found in the configured PSModulePath: $($env:PSModulePath)"
-            continue
+            throw "Required module '$moduleName' was not found under the selected module root: $ModuleRoot"
         }
 
         $loadedModule = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
@@ -151,9 +174,10 @@ foreach ($moduleName in $ModulesToBootstrap) {
 Write-Output "Bootstrap module copying completed."
 
 $moduleSearchPaths = @(
+    $ModulesBasePath,
     $originalPsModulePath -split [System.IO.Path]::PathSeparator |
     Where-Object { $_ -and $_ -ne $SystemModulesBasePath -and $_ -ne $ModulesBasePath }
-) + $ModulesBasePath
+)
 
 $env:PSModulePath = ($moduleSearchPaths | Select-Object -Unique) -join [System.IO.Path]::PathSeparator
 
@@ -400,7 +424,7 @@ catch {
 $MaxRetryCount = 5
 
 Write-Output "Validate and Configure DSC Module Repository"
-Import-PowerShellRepositoryModules
+Import-PowerShellRepositoryModules -ModuleNames $ModulesToBootstrap -ModuleRoot $ModulesBasePath
 
 $repoExists = Get-PSRepository -Name $Repository -ErrorAction SilentlyContinue
 
