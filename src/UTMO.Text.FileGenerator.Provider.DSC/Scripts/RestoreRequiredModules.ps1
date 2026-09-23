@@ -511,20 +511,26 @@ foreach($module in $moduleManifest)
             }
             catch
             {
-                $loopCount++
                 $currentError = $_
+                $installMessage = $currentError.Exception.Message
+                if ($installMessage -match 'Administrator rights are required|requires Administrator rights|Run as Administrator|install by adding ".*-Scope CurrentUser"')
+                {
+                    throw $currentError
+                }
+
+                $loopCount++
                 $errorDetails = [PSCustomObject]@{
                     ModuleName = $Name
                     ModuleVersion = $Version
                     Attempt = $loopCount
                     Exception = $currentError
                     ErrorType = $currentError.Exception.GetType().Name
-                    ErrorMessage = $currentError.Exception.Message
+                    ErrorMessage = $installMessage
                 }
                 $moduleInstallErrors += $errorDetails
                 Write-Warning "Failed To Install $Name (Attempt $loopCount)"
                 Write-Warning "ErrorType: $($currentError.Exception.GetType().Name)"
-                Write-Warning "Error Message: $($currentError.Exception.Message)"
+                Write-Warning "Error Message: $installMessage"
             }
         }
         while($loopCount -le $MaxRetryCount)
