@@ -469,7 +469,7 @@ foreach($module in $moduleManifest)
                     }
                 }
 
-                $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'}
+                $parameters = @{Name = $Name; RequiredVersion = $versionToUse; Repository = $Repository; Scope = 'CurrentUser'; ErrorAction = 'Stop'; WarningAction = 'Stop'}
 
                 $allowClobber = [bool](Get-ModuleManifestValue -InputObject $module -PropertyName 'AllowClobber' -DefaultValue $false)
                 if($allowClobber)
@@ -477,9 +477,26 @@ foreach($module in $moduleManifest)
                     $parameters.Add("AllowClobber",$true)
                 }
 
-                Install-Module @parameters
-                Write-Information "Finished installing $Name" -InformationAction Continue
-                break  # Exit the loop on successful installation
+                try
+                {
+                    Install-Module @parameters
+                    Write-Information "Finished installing $Name" -InformationAction Continue
+                    break  # Exit the loop on successful installation
+                }
+                catch
+                {
+                    $installMessage = $_.Exception.Message
+                    if ($installMessage -match 'Administrator rights are required|requires Administrator rights|Run as Administrator|install by adding ".*-Scope CurrentUser"')
+                    {
+                        Write-Warning "Install-Module for $Name requires elevated privileges. Retrying with -Scope AllUsers."
+                        $parameters['Scope'] = 'AllUsers'
+                        Install-Module @parameters
+                        Write-Information "Finished installing $Name with AllUsers scope" -InformationAction Continue
+                        break
+                    }
+
+                    throw
+                }
 
                 # Fix version directory naming if using alternate format
                 if($useAlternateFormat -and $alternateVersion) {
