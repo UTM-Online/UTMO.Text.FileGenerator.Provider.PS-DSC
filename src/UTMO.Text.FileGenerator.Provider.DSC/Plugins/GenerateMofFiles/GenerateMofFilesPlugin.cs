@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
@@ -135,11 +136,12 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
                               };
 
             var userModulePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "WindowsPowerShell", "Modules");
-            var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath") ?? "";
+            var currentPSModulePath = System.Environment.GetEnvironmentVariable("PSModulePath");
+            var shouldFilterUserModulePath = model.ResourceTypeName == DscResourceTypeNames.DscLcmConfiguration;
 
-            if (!currentPSModulePath.Contains(userModulePath))
+            if (currentPSModulePath is not null)
             {
-                processInfo.EnvironmentVariables["PSModulePath"] = $"{userModulePath};{currentPSModulePath}";
+                processInfo.EnvironmentVariables["PSModulePath"] = BuildChildProcessModulePath(currentPSModulePath, userModulePath, !shouldFilterUserModulePath);
             }
 
             processInfo.EnvironmentVariables["USERPROFILE"] = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
@@ -192,6 +194,35 @@ public class GenerateMofFilesPlugin : IRenderingPipelinePlugin
             this.Logger.LogError(LogMessages.MofGenerationException, ex.GetType().Name, model.ResourceName, parsedError);
             return false;
         }
+    }
+
+    protected static string BuildChildProcessModulePath(string? currentPSModulePath, string userModulePath, bool includeUserModulePath)
+    {
+        if (string.IsNullOrWhiteSpace(currentPSModulePath))
+        {
+            return includeUserModulePath ? userModulePath : string.Empty;
+        }
+
+        var modulePaths = currentPSModulePath
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(path => !string.IsNullOrWhiteSpace(path));
+
+        if (includeUserModulePath)
+        {
+            var resolvedPaths = modulePaths.ToList();
+
+            if (!resolvedPaths.Any(path => string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase)))
+            {
+                resolvedPaths.Insert(0, userModulePath);
+            }
+
+            return string.Join(Path.PathSeparator, resolvedPaths);
+        }
+
+        var filteredPaths = modulePaths
+            .Where(path => !string.Equals(path, userModulePath, StringComparison.OrdinalIgnoreCase));
+
+        return string.Join(Path.PathSeparator, filteredPaths);
     }
 
     protected virtual Process StartProcess(ProcessStartInfo processInfo)
